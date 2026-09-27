@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>デスク構成ビルダー</title>
+<meta name="description" content="デスクの機材を並べるだけで、合計金額・カテゴリ別の内訳と、モニターの映り方・ポート数・給電W数の接続チェックまで。構成はURLでそのまま共有できます。登録不要・データは端末内にのみ保存。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22%230f766e%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2214%22%20width%3D%2232%22%20height%3D%2220%22%20rx%3D%223%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%2230%22%20y%3D%2234%22%20width%3D%224%22%20height%3D%228%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%2210%22%20y%3D%2242%22%20width%3D%2244%22%20height%3D%225%22%20rx%3D%222%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="デスク構成ビルダー">
+<meta property="og:description" content="デスクの機材を並べるだけで、合計金額と接続チェック（モニターの映り方・ポート数・給電W数）まで。構成はURLでそのまま共有できます。">
+<meta property="og:url" content="https://82706991hiroto-ship-it.github.io/desk-setup/">
+<meta property="og:image" content="https://82706991hiroto-ship-it.github.io/desk-setup/og.png">
+<meta property="og:site_name" content="デスク構成ビルダー">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --font-sans: "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", sans-serif;
+    --page: #f5f4f0;
+    --card: #ffffff;
+    --text: #22262a;
+    --text-2: #59616b;
+    --muted: #949ba4;
+    --line: #e6e4de;
+    --field: #f3f2ee;
+    --accent: #0f766e;
+    --accent-ink: #ffffff;
+    --accent-soft: #e3f2ef;
+    --good: #15803d;  --good-soft: #e8f5ec;
+    --warn: #b45309;  --warn-soft: #fcf1e1;
+    --crit: #dc2626;  --crit-soft: #fdecec;
+    --info: #57606a;  --info-soft: #eef0f2;
+    --bar: #0f766e;
+    --radius: 12px;
+    --radius-lg: 18px;
+    --shadow: 0 4px 16px rgba(40,36,28,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #141517;
+      --card: #1c1e21;
+      --text: #ecedef;
+      --text-2: #aab0b8;
+      --muted: #7b828c;
+      --line: #2c2f34;
+      --field: #25282c;
+      --accent: #2bb3a3;
+      --accent-ink: #0b1614;
+      --accent-soft: #173330;
+      --good: #4ade80;  --good-soft: #16291d;
+      --warn: #f5a524;  --warn-soft: #33260f;
+      --crit: #f87171;  --crit-soft: #361a1a;
+      --info: #aab0b8;  --info-soft: #25282c;
+      --bar: #2bb3a3;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #141517; --card: #1c1e21; --text: #ecedef; --text-2: #aab0b8; --muted: #7b828c;
+    --line: #2c2f34; --field: #25282c; --accent: #2bb3a3; --accent-ink: #0b1614; --accent-soft: #173330;
+    --good: #4ade80; --good-soft: #16291d; --warn: #f5a524; --warn-soft: #33260f;
+    --crit: #f87171; --crit-soft: #361a1a; --info: #aab0b8; --info-soft: #25282c; --bar: #2bb3a3; --shadow: none;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--page); color: var(--text);
+    font-family: var(--font-sans); font-size: 14px; line-height: 1.6;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+
+  header.top { padding: 28px 0 18px; display: flex; gap: 16px; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; }
+  .brand h1 { margin: 0; font-size: 22px; letter-spacing: .02em; }
+  .brand p { margin: 4px 0 0; color: var(--text-2); font-size: 13px; }
+  .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .btn {
+    border: 1px solid var(--line); background: var(--card); border-radius: 999px;
+    padding: 7px 14px; font-size: 13px; font-weight: 500; line-height: 1.3;
+  }
+  .btn:hover { border-color: var(--muted); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn.primary:hover { filter: brightness(1.05); }
+  .btn.ghost { background: transparent; }
+  .btn.block { width: 100%; border-radius: 10px; padding: 10px 14px; }
+
+  .banner {
+    background: var(--accent-soft); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 16px;
+    display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  }
+  .banner[hidden] { display: none; }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; padding-bottom: 40px; }
+  .side { position: sticky; top: 16px; display: grid; gap: 16px; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .side { position: static; }
+  }
+  .main { display: grid; gap: 16px; min-width: 0; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--shadow); min-width: 0; }
+  .card h2 { margin: 0 0 12px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .card h2 small { font-weight: 400; color: var(--muted); font-size: 12px; }
+
+  .head-fields { display: grid; grid-template-columns: 1fr 200px; gap: 10px; }
+  @media (max-width: 560px) { .head-fields { grid-template-columns: 1fr; } }
+  .text {
+    width: 100%; background: var(--field); border: 1px solid transparent; border-radius: 10px;
+    padding: 9px 12px; outline: none; min-width: 0;
+  }
+  .text:focus { border-color: var(--accent); background: var(--card); }
+  .text.title-input { font-size: 17px; font-weight: 700; }
+  .with-prefix { position: relative; }
+  .with-prefix > span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+  .with-prefix > .text { padding-left: 26px; }
+
+  /* 追加 */
+  .search-row { display: flex; gap: 8px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0 0; }
+  .chip {
+    border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 3px 11px; font-size: 12px; color: var(--text-2);
+  }
+  .chip[aria-pressed="true"] { background: var(--text); color: var(--card); border-color: var(--text); }
+  .results { margin-top: 10px; display: grid; gap: 6px; }
+  .results:empty { display: none; }
+  .result {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; text-align: left;
+    border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 8px 12px;
+  }
+  .result:hover { border-color: var(--accent); }
+  .result b { font-weight: 500; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .result small { color: var(--muted); font-size: 12px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .result .plus { color: var(--accent); font-weight: 700; font-size: 18px; line-height: 1; }
+  .custom { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); display: grid; grid-template-columns: 150px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+  .custom-label { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+  @media (max-width: 560px) { .custom { grid-template-columns: 1fr auto; } .custom select { grid-column: 1 / -1; } }
+  select.text { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 28px; }
+
+  /* 機材リスト */
+  .group { display: grid; gap: 8px; }
+  .group-head { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 4px 0; }
+  .group-head h3 { margin: 0; font-size: 13px; color: var(--text-2); font-weight: 700; }
+  .group-head span { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .item { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 8px; min-width: 0; }
+  .item.sev-error { border-left: 3px solid var(--crit); }
+  .item.sev-warn { border-left: 3px solid var(--warn); }
+  .row1 { display: grid; grid-template-columns: minmax(0, 1fr) 132px 30px; gap: 8px; align-items: center; }
+  .row1 .name { font-weight: 500; }
+  @media (max-width: 560px) {
+    .row1 { grid-template-columns: minmax(0, 1fr) 30px; }
+    .row1 .name { grid-column: 1; grid-row: 1; }
+    .row1 .x { grid-column: 2; grid-row: 1; }
+    .row1 .with-prefix { grid-column: 1; grid-row: 2; max-width: 180px; }
+  }
+  .price { text-align: right; font-variant-numeric: tabular-nums; }
+  .x { width: 30px; height: 30px; border-radius: 8px; border: 0; background: transparent; color: var(--muted); font-size: 18px; line-height: 1; }
+  .x:hover { background: var(--crit-soft); color: var(--crit); }
+  .spec { font-size: 12px; color: var(--text-2); overflow-wrap: anywhere; }
+  .fields { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .fld { display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--text-2); min-width: 0; flex: 1 1 260px; }
+  .fld > span { white-space: nowrap; }
+  .fld .text { padding: 6px 28px 6px 10px; font-size: 13px; }
+  .toggle { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; color: var(--text-2); cursor: pointer; }
+  .hint { font-size: 12px; color: var(--muted); }
+  .item-msg { font-size: 12px; border-radius: 8px; padding: 6px 10px; }
+  .item-msg.warn { background: var(--warn-soft); color: var(--warn); }
+  .item-msg.error { background: var(--crit-soft); color: var(--crit); }
+  details.more summary { font-size: 12px; color: var(--muted); cursor: pointer; width: fit-content; }
+  details.more[open] summary { margin-bottom: 8px; }
+  .spec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .spec-grid label { display: grid; gap: 3px; font-size: 11px; color: var(--muted); }
+  .spec-grid .text { padding: 6px 10px; font-size: 13px; }
+  .spec-grid select.text { padding-right: 28px; }
+
+  .empty { text-align: center; padding: 36px 16px; color: var(--text-2); }
+  .empty p { margin: 0 0 14px; }
+
+  /* サイド */
+  .total-num { font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: .01em; line-height: 1.2; }
+  .total-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .bars { margin-top: 14px; display: grid; gap: 8px; }
+  .bar-row { display: grid; grid-template-columns: 96px minmax(0, 1fr) 76px; gap: 8px; align-items: center; font-size: 12px; }
+  .bar-row .lbl { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar-row .val { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-2); }
+  .track { height: 8px; background: var(--field); border-radius: 4px; overflow: hidden; }
+  .track > i { display: block; height: 100%; background: var(--bar); border-radius: 4px; }
+
+  .summary { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .pill { font-size: 12px; font-weight: 500; border-radius: 999px; padding: 2px 10px; }
+  .pill.ok { background: var(--good-soft); color: var(--good); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.error { background: var(--crit-soft); color: var(--crit); }
+  .checks { display: grid; gap: 8px; }
+  .check { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; font-size: 13px; }
+  .check .mark { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; margin-top: 1px; }
+  .check.ok .mark { background: var(--good-soft); color: var(--good); }
+  .check.warn .mark { background: var(--warn-soft); color: var(--warn); }
+  .check.error .mark { background: var(--crit-soft); color: var(--crit); }
+  .check.info .mark { background: var(--info-soft); color: var(--info); }
+  .check b { font-weight: 500; display: block; overflow-wrap: anywhere; }
+  .check small { color: var(--text-2); font-size: 12px; display: block; overflow-wrap: anywhere; }
+  .fine { font-size: 11px; color: var(--muted); margin: 12px 0 0; }
+  .share-btns { display: grid; gap: 8px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0;
+    background: var(--text); color: var(--card); padding: 10px 18px; border-radius: 999px; font-size: 13px;
+    transition: .2s; pointer-events: none; z-index: 10;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  footer { color: var(--muted); font-size: 12px; padding: 0 0 32px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>デスク構成ビルダー</h1>
+      <p>機材を並べると、合計金額と接続チェック（映り方・ポート数・給電）が出ます。</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn ghost" id="sampleBtn" type="button">サンプルを見る</button>
+      <button class="btn ghost" id="resetBtn" type="button">すべて消す</button>
+    </div>
+  </header>
+
+  <div class="banner" id="sharedBanner" hidden>
+    <span>共有されたデスクを表示中です。編集しても自分のデスクには保存されません。</span>
+    <span style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="adoptBtn" type="button">自分のデスクとして保存</button>
+      <button class="btn primary" id="backBtn" type="button">自分のデスクに戻る</button>
+    </span>
+  </div>
+
+  <div class="layout">
+    <div class="main">
+      <section class="card">
+        <div class="head-fields">
+          <input class="text title-input" id="title" placeholder="デスクの名前（例: 2026 秋のデスク）" maxlength="40" aria-label="デスクの名前">
+          <div class="with-prefix"><span>@</span><input class="text" id="handle" placeholder="Xのユーザー名" maxlength="30" aria-label="Xのユーザー名"></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="addTitle">
+        <h2 id="addTitle">機材を追加 <small>カタログから選ぶか、自分で入力</small></h2>
+        <div class="search-row">
+          <input class="text" id="q" type="search" placeholder="機材名で検索（例: MacBook, U2723QE, HHKB）" autocomplete="off" aria-label="機材を検索">
+        </div>
+        <div class="chips" id="chips"></div>
+        <div class="results" id="results"></div>
+        <div class="custom">
+          <span class="custom-label">カタログにないとき</span>
+          <select class="text" id="customCat" aria-label="カテゴリ"></select>
+          <input class="text" id="customName" placeholder="機材名" maxlength="60" aria-label="機材名">
+          <button class="btn primary" id="customAdd" type="button">追加</button>
+        </div>
+      </section>
+
+      <div id="list" class="main"></div>
+    </div>
+
+    <aside class="side">
+      <section class="card" aria-labelledby="totalTitle">
+        <h2 id="totalTitle">合計</h2>
+        <div class="total-num" id="totalNum">¥0</div>
+        <div class="total-sub" id="totalSub">0点</div>
+        <div class="bars" id="bars"></div>
+      </section>
+
+      <section class="card" aria-labelledby="checkTitle">
+        <h2 id="checkTitle">接続チェック</h2>
+        <div class="summary" id="summary"></div>
+        <div class="checks" id="checks"></div>
+        <p class="fine">スペックは代表的な値からの目安です。購入前にメーカーの公式情報を確認してください。</p>
+      </section>
+
+      <section class="card" aria-labelledby="shareTitle">
+        <h2 id="shareTitle">共有</h2>
+        <div class="share-btns">
+          <button class="btn primary block" id="postBtn" type="button">X でポスト</button>
+          <button class="btn block" id="copyBtn" type="button">共有リンクをコピー</button>
+          <button class="btn block" id="imgBtn" type="button">画像を保存（ポストに添付用）</button>
+        </div>
+        <p class="fine">構成はリンクの中に入っています。サーバーには何も送られません。</p>
+      </section>
+    </aside>
+  </div>
+
+  <footer>データはこのブラウザの中にだけ保存されます。</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// ---- カテゴリ ----
+const CATS = [
+  { id: 'computer',  label: 'PC' },
+  { id: 'monitor',   label: 'モニター' },
+  { id: 'dock',      label: 'ドック・ハブ' },
+  { id: 'keyboard',  label: 'キーボード' },
+  { id: 'mouse',     label: 'マウス・トラックパッド' },
+  { id: 'audio',     label: 'オーディオ' },
+  { id: 'camera',    label: 'カメラ・マイク' },
+  { id: 'lighting',  label: '照明' },
+  { id: 'arm',       label: 'アーム・スタンド' },
+  { id: 'furniture', label: 'デスク・チェア' },
+  { id: 'charger',   label: '充電器' },
+  { id: 'mobile',    label: 'スマホ・タブレット' },
+  { id: 'other',     label: 'その他' },
+];
+const CAT_LABEL = Object.fromEntries(CATS.map(c => [c.id, c.label]));
+
+// ---- 映像信号の帯域（実効データレート Gbps） ----
+const LINK_CAP = { 'hdmi1.4': 8.16, 'hdmi2.0': 14.4, 'hdmi2.1': 42.67, 'dp1.2': 17.28, 'dp1.4': 25.92, 'dp2.1': 52.22 };
+const LINK_LABEL = { 'hdmi1.4': 'HDMI 1.4', 'hdmi2.0': 'HDMI 2.0', 'hdmi2.1': 'HDMI 2.1', 'dp1.2': 'DP 1.2', 'dp1.4': 'DP 1.4', 'dp2.1': 'DP 2.1' };
+const PORT_LABEL = { tb: 'Thunderbolt / USB4', usbc: 'USB-C', usba: 'USB-A', hdmi: 'HDMI', dp: 'DisplayPort', bt: 'Bluetooth' };
+const RES_NAME = { '1920x1080': 'フルHD', '2560x1080': 'UW-FHD', '2560x1440': 'WQHD', '3440x1440': 'UWQHD', '3840x1600': 'UW4K', '3840x2160': '4K', '5120x1440': 'DQHD', '5120x2160': '5K2K', '5120x2880': '5K', '6016x3384': '6K' };
+const REFRESH = [24, 30, 50, 60, 75, 100, 120, 144, 165, 170, 175, 180, 240, 360, 480];
+
+function minLink(a, b) {
+  if (!a) return b; if (!b) return a;
+  return LINK_CAP[a] <= LINK_CAP[b] ? a : b;
+}
+
+// ---- カタログ ----
+// computer: ports, out(ポートごとの映像出力), pxMax(ポートごとの画素レート上限 px/秒), maxDisp(外部ディスプレイ), clamDisp(蓋を閉じた時), chargeW(推奨給電), magsafe
+// monitor:  w,h,hz, in(入力ごとの規格), pdW(USB-C給電), dsc, ports(USBハブ)
+// dock:     up(上流), ports, out, pdW
+// charger:  ports, totalW, portW
+// その他:   conn（bt / receiver / usbc / usba）, chargeW
+const MAC = (name, o) => ({ cat: 'computer', name, spec: Object.assign({ out: { tb: 'dp1.4', hdmi: 'hdmi2.1' }, pxMax: { tb: 1.23e9, hdmi: 2.0e9 }, dsc: true, magsafe: true }, o) });
+const CATALOG = [
+  { id: 'mba-m2',       ...MAC('MacBook Air 13" (M2)',     { ports: { tb: 2 }, maxDisp: 1, chargeW: 35 }) },
+  { id: 'mba-m3',       ...MAC('MacBook Air (M3)',         { ports: { tb: 2 }, maxDisp: 1, clamDisp: 2, chargeW: 35 }) },
+  { id: 'mba-m4',       ...MAC('MacBook Air (M4)',         { ports: { tb: 2 }, maxDisp: 2, chargeW: 35 }) },
+  { id: 'mbp14-m4',     ...MAC('MacBook Pro 14" (M4)',     { ports: { tb: 3, hdmi: 1 }, maxDisp: 2, chargeW: 70 }) },
+  { id: 'mbp14-m4pro',  ...MAC('MacBook Pro 14" (M4 Pro)', { ports: { tb: 3, hdmi: 1 }, maxDisp: 2, chargeW: 96 }) },
+  { id: 'mbp16-m4pro',  ...MAC('MacBook Pro 16" (M4 Pro)', { ports: { tb: 3, hdmi: 1 }, maxDisp: 2, chargeW: 140 }) },
+  { id: 'mbp16-m4max',  ...MAC('MacBook Pro 16" (M4 Max)', { ports: { tb: 3, hdmi: 1 }, maxDisp: 4, chargeW: 140 }) },
+  { id: 'macmini-m4',   ...MAC('Mac mini (M4)',            { ports: { tb: 3, usbc: 2, hdmi: 1 }, maxDisp: 3, chargeW: 0, magsafe: false }) },
+  { id: 'macmini-m4pro',...MAC('Mac mini (M4 Pro)',        { ports: { tb: 3, usbc: 2, hdmi: 1 }, maxDisp: 3, chargeW: 0, magsafe: false }) },
+  { id: 'macstudio-m4max', ...MAC('Mac Studio (M4 Max)',   { ports: { tb: 4, usbc: 2, usba: 2, hdmi: 1 }, maxDisp: 5, chargeW: 0, magsafe: false }) },
+  { id: 'win-laptop',   cat: 'computer', name: 'Windows ノート（Thunderbolt 4×2・HDMI）', spec: { ports: { tb: 2, usba: 1, hdmi: 1 }, out: { tb: 'dp1.4', hdmi: 'hdmi2.0' }, maxDisp: 3, chargeW: 65, dsc: true, magsafe: false } },
+  { id: 'win-desktop',  cat: 'computer', name: 'デスクトップPC（GPU: DP×3・HDMI×1）', spec: { ports: { dp: 3, hdmi: 1, usba: 6, usbc: 1 }, out: { dp: 'dp1.4', hdmi: 'hdmi2.1' }, maxDisp: 4, chargeW: 0, dsc: true, magsafe: false } },
+
+  { id: 'studio-display', cat: 'monitor', name: 'Apple Studio Display', spec: { w: 5120, h: 2880, hz: 60, in: { tb: 'dp1.4' }, pdW: 96, dsc: true, ports: { usbc: 3 } } },
+  { id: 'u2723qe',  cat: 'monitor', name: 'Dell U2723QE',            spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 4, usbc: 1 } } },
+  { id: 'u2724de',  cat: 'monitor', name: 'Dell U2724DE',            spec: { w: 2560, h: 1440, hz: 120, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 4, usbc: 1 } } },
+  { id: '27up850n', cat: 'monitor', name: 'LG 27UP850N-W',           spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 96, dsc: false, ports: { usba: 2 } } },
+  { id: 'pa279crv', cat: 'monitor', name: 'ASUS ProArt PA279CRV',    spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 96, dsc: false, ports: { usba: 2 } } },
+  { id: '32gs95ue', cat: 'monitor', name: 'LG UltraGear 32GS95UE',   spec: { w: 3840, h: 2160, hz: 240, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true } },
+  { id: 'odyssey-g9', cat: 'monitor', name: 'Samsung Odyssey OLED G9 49"', spec: { w: 5120, h: 1440, hz: 240, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true } },
+  { id: 'generic-4k60',   cat: 'monitor', name: '4K 60Hz モニター（HDMI・DP）',        spec: { w: 3840, h: 2160, hz: 60,  in: { hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 0, dsc: false } },
+  { id: 'generic-4k60c',  cat: 'monitor', name: '4K 60Hz モニター（USB-C 65W給電）',   spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 65, dsc: false, ports: { usba: 2 } } },
+  { id: 'generic-4k144',  cat: 'monitor', name: '4K 144Hz ゲーミングモニター',         spec: { w: 3840, h: 2160, hz: 144, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true } },
+  { id: 'generic-wqhd165',cat: 'monitor', name: 'WQHD 165Hz モニター',                 spec: { w: 2560, h: 1440, hz: 165, in: { hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 0, dsc: false } },
+  { id: 'generic-uw',     cat: 'monitor', name: '34" ウルトラワイド 3440×1440 100Hz', spec: { w: 3440, h: 1440, hz: 100, in: { hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 0, dsc: false } },
+  { id: 'generic-fhd',    cat: 'monitor', name: 'フルHD 60Hz モニター',                spec: { w: 1920, h: 1080, hz: 60,  in: { hdmi: 'hdmi1.4' }, pdW: 0, dsc: false } },
+  { id: 'portable',       cat: 'monitor', name: 'モバイルモニター 15.6" フルHD',       spec: { w: 1920, h: 1080, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi1.4' }, pdW: 0, dsc: false } },
+
+  { id: 'caldigit-ts4', cat: 'dock', name: 'CalDigit TS4',                         spec: { up: 'tb', ports: { tb: 3, usbc: 3, usba: 5, dp: 1 }, out: { tb: 'dp1.4', dp: 'dp1.4' }, pdW: 98 } },
+  { id: 'tb4-dock',     cat: 'dock', name: 'Thunderbolt 4 ドック',                  spec: { up: 'tb', ports: { tb: 3, usba: 4, hdmi: 1 }, out: { tb: 'dp1.4', hdmi: 'hdmi2.0' }, pdW: 90 } },
+  { id: 'hub-4k60',     cat: 'dock', name: 'USB-C ハブ（HDMI 4K60Hz・PD 100W）',   spec: { up: 'usbc', ports: { hdmi: 1, usba: 3, usbc: 1 }, out: { hdmi: 'hdmi2.0' }, pdW: 85 } },
+  { id: 'hub-4k30',     cat: 'dock', name: 'USB-C ハブ（HDMI 4K30Hz・PD 100W）',   spec: { up: 'usbc', ports: { hdmi: 1, usba: 2, usbc: 1 }, out: { hdmi: 'hdmi1.4' }, pdW: 85 } },
+
+  { id: 'hhkb-hybrid',  cat: 'keyboard', name: 'HHKB Professional HYBRID Type-S', spec: { conn: ['bt', 'usbc'] } },
+  { id: 'realforce-r3', cat: 'keyboard', name: 'REALFORCE R3',                   spec: { conn: ['bt', 'usbc'] } },
+  { id: 'keychron-q1max', cat: 'keyboard', name: 'Keychron Q1 Max',              spec: { conn: ['bt', 'receiver', 'usbc'] } },
+  { id: 'mx-keys-s',    cat: 'keyboard', name: 'Logicool MX Keys S',             spec: { conn: ['bt', 'receiver'] } },
+  { id: 'mx-mech-mini', cat: 'keyboard', name: 'Logicool MX Mechanical Mini',    spec: { conn: ['bt', 'receiver'] } },
+  { id: 'magic-kb',     cat: 'keyboard', name: 'Apple Magic Keyboard（Touch ID）', spec: { conn: ['bt', 'usbc'] } },
+
+  { id: 'mx-master-3s', cat: 'mouse', name: 'Logicool MX Master 3S',               spec: { conn: ['bt', 'receiver'] } },
+  { id: 'mx-ergo-s',    cat: 'mouse', name: 'Logicool MX ERGO S',                  spec: { conn: ['bt', 'receiver'] } },
+  { id: 'gpx-sl2',      cat: 'mouse', name: 'Logicool G PRO X SUPERLIGHT 2',       spec: { conn: ['receiver', 'usbc'] } },
+  { id: 'magic-trackpad', cat: 'mouse', name: 'Apple Magic Trackpad',             spec: { conn: ['bt', 'usbc'] } },
+  { id: 'magic-mouse',  cat: 'mouse', name: 'Apple Magic Mouse',                   spec: { conn: ['bt', 'usbc'] } },
+
+  { id: 'pebble',       cat: 'audio', name: 'Creative Pebble V3',                  spec: { conn: ['usbc', 'bt'] } },
+  { id: 'usb-speaker',  cat: 'audio', name: 'デスクトップスピーカー（USB給電）',   spec: { conn: ['usba', 'usbc'] } },
+  { id: 'wh1000xm6',    cat: 'audio', name: 'Sony WH-1000XM6',                     spec: { conn: ['bt'] } },
+  { id: 'audio-if',     cat: 'audio', name: 'オーディオインターフェース（USB-C）', spec: { conn: ['usbc'] } },
+
+  { id: 'c920n',        cat: 'camera', name: 'Logicool C920n',                     spec: { conn: ['usba'] } },
+  { id: 'facecam-mk2',  cat: 'camera', name: 'Elgato Facecam MK.2',                spec: { conn: ['usbc'] } },
+  { id: 'mv7plus',      cat: 'camera', name: 'Shure MV7+',                         spec: { conn: ['usbc'] } },
+  { id: 'wave3',        cat: 'camera', name: 'Elgato Wave:3',                      spec: { conn: ['usbc'] } },
+
+  { id: 'screenbar-halo', cat: 'lighting', name: 'BenQ ScreenBar Halo',            spec: { conn: ['usbc', 'usba'], chargeW: 5 } },
+  { id: 'key-light-air',  cat: 'lighting', name: 'Elgato Key Light Air',           spec: { conn: [] } },
+  { id: 'hue-bar',        cat: 'lighting', name: 'Philips Hue ライトバー',          spec: { conn: [] } },
+
+  { id: 'ergotron-lx',  cat: 'arm', name: 'エルゴトロン LX モニターアーム',         spec: { conn: [] } },
+  { id: 'amazon-arm',   cat: 'arm', name: 'Amazonベーシック モニターアーム',        spec: { conn: [] } },
+  { id: 'laptop-stand', cat: 'arm', name: 'ノートPCスタンド（縦置き）',             spec: { conn: [] } },
+
+  { id: 'flexispot-e7', cat: 'furniture', name: 'FlexiSpot E7 電動昇降デスク',      spec: { conn: [] } },
+  { id: 'aeron',        cat: 'furniture', name: 'Herman Miller アーロンチェア',     spec: { conn: [] } },
+  { id: 'ergohuman2',   cat: 'furniture', name: 'エルゴヒューマン プロ2',           spec: { conn: [] } },
+  { id: 'desk-mat',     cat: 'furniture', name: 'デスクマット',                     spec: { conn: [] } },
+
+  { id: 'charger-100',  cat: 'charger', name: 'USB充電器 100W（USB-C×3・USB-A×1）', spec: { ports: { usbc: 3, usba: 1 }, totalW: 100, portW: 100 } },
+  { id: 'charger-65',   cat: 'charger', name: 'USB充電器 65W（USB-C×2）',           spec: { ports: { usbc: 2 }, totalW: 65, portW: 65 } },
+  { id: 'apple-96w',    cat: 'charger', name: 'Apple 96W USB-C電源アダプタ',        spec: { ports: { usbc: 1 }, totalW: 96, portW: 96 } },
+  { id: 'apple-140w',   cat: 'charger', name: 'Apple 140W USB-C電源アダプタ',       spec: { ports: { usbc: 1 }, totalW: 140, portW: 140 } },
+
+  { id: 'phone',        cat: 'mobile', name: 'スマートフォン',                      spec: { conn: ['usbc'], chargeW: 20 } },
+  { id: 'ipad',         cat: 'mobile', name: 'iPad',                                spec: { conn: ['usbc'], chargeW: 30 } },
+  { id: 'magsafe-3in1', cat: 'mobile', name: '3-in-1 ワイヤレス充電スタンド',       spec: { conn: ['usbc'], chargeW: 30 } },
+];
+const catalogById = id => CATALOG.find(c => c.id === id);
+
+// カタログにない機材を追加するときの土台
+const TEMPLATE = {
+  computer: 'win-laptop', monitor: 'generic-4k60', dock: 'hub-4k60', charger: 'charger-65',
+};
+const DEFAULT_CONN = {
+  keyboard: ['bt', 'receiver', 'usbc'], mouse: ['bt', 'receiver', 'usbc'], audio: ['bt', 'usba', 'usbc'],
+  camera: ['usba', 'usbc'], lighting: ['usba', 'usbc'], mobile: ['usbc'],
+};
+
+// ---- 状態 ----
+const STORE_KEY = 'desk-setup:v1';
+let state = emptyState();
+let shared = false;
+let activeCat = '';
+
+function emptyState() { return { title: '', handle: '', items: [], seq: 0 }; }
+const byId = id => state.items.find(i => i.id === id);
+const clone = o => JSON.parse(JSON.stringify(o));
+
+function newItem(cat, name, spec, cid) {
+  return { id: (state.seq++).toString(36), cid: cid || null, cat, name, price: null, spec: clone(spec), link: null, power: 'auto', clam: false };
+}
+function addFromCatalog(cid) {
+  const c = catalogById(cid);
+  const it = newItem(c.cat, c.name, c.spec, cid);
+  state.items.push(it);
+  autoLink(it);
+  commit(true);
+  flashItem(it.id);
+}
+function addCustom(cat, name) {
+  const base = TEMPLATE[cat] ? catalogById(TEMPLATE[cat]).spec : { conn: DEFAULT_CONN[cat] || [] };
+  const it = newItem(cat, name || CAT_LABEL[cat], base, null);
+  state.items.push(it);
+  autoLink(it);
+  commit(true);
+  flashItem(it.id);
+}
+// 追加した直後にいちばん自然な接続先を選んでおく
+function autoLink(it) {
+  const opts = linkOptions(it);
+  if (!opts.length) return;
+  const pick =
+    opts.find(o => o.v === 'bt') ||
+    opts.find(o => o.v === 'tb' || o.v === 'usbc' && o.host.cat !== 'charger' && it.cat !== 'mobile' && it.cat !== 'lighting') ||
+    opts.find(o => (it.cat === 'mobile' || it.cat === 'lighting') && o.host.cat === 'charger') ||
+    opts[0];
+  it.link = { h: pick.h, p: pick.p, v: pick.v };
+}
+
+// ---- 接続グラフ ----
+function isHost(h) { return h.spec.ports && Object.values(h.spec.ports).some(n => n > 0); }
+function ancestors(it) {
+  const out = []; let cur = it;
+  while (cur && cur.link && out.length < 20) {
+    const h = byId(cur.link.h);
+    if (!h || out.includes(h)) break;
+    out.push(h); cur = h;
+  }
+  return out;
+}
+function rootOf(it) { const a = ancestors(it); return a.length ? a[a.length - 1] : it; }
+function hostCandidates(it) {
+  return state.items.filter(h => h !== it && isHost(h) && !ancestors(h).includes(it));
+}
+
+// ホストのポートに出ている映像信号（ドック経由なら上流で頭打ち）
+function hostOut(h, port, depth = 0) {
+  let sig = (h.spec.out || {})[port];
+  if (!sig) return null;
+  if (h.cat === 'dock' && h.link && depth < 10) {
+    const up = byId(h.link.h);
+    const upSig = up && hostOut(up, h.link.p, depth + 1);
+    sig = upSig ? minLink(sig, upSig) : sig;
+  }
+  return sig;
+}
+
+function linkOptions(it) {
+  const s = it.spec, opts = [];
+  if (it.cat === 'computer' || it.cat === 'charger') return opts;
+  for (const h of hostCandidates(it)) {
+    const P = h.spec.ports || {}, O = h.spec.out || {};
+    const add = (p, v, label) => opts.push({ h: h.id, p, v, label, host: h });
+    if (it.cat === 'monitor') {
+      if (h.cat === 'charger' || h.cat === 'monitor') continue;
+      for (const p of ['tb', 'usbc']) {
+        if (!P[p] || !O[p]) continue;
+        if (p === 'tb' && s.in.tb) add(p, 'tb', 'Thunderbolt ケーブル');
+        if (s.in.usbc) add(p, 'usbc', s.pdW ? `USB-C ケーブル（映像＋給電 ${s.pdW}W）` : 'USB-C ケーブル');
+        if (s.in.dp) add(p, 'c2dp', 'USB-C → DisplayPort ケーブル');
+        if (s.in.hdmi) add(p, 'c2hdmi', 'USB-C → HDMI 変換');
+      }
+      if (P.hdmi && O.hdmi && s.in.hdmi) add('hdmi', 'hdmi', 'HDMI ケーブル');
+      if (P.dp && O.dp && s.in.dp) add('dp', 'dp', 'DisplayPort ケーブル');
+    } else if (it.cat === 'dock') {
+      if (h.cat !== 'computer' && h.cat !== 'dock') continue;
+      if (P.tb) add('tb', 'tb', s.up === 'tb' ? 'Thunderbolt ケーブル' : 'USB-C ケーブル');
+      if (s.up === 'usbc' && P.usbc) add('usbc', 'usbc', 'USB-C ケーブル');
+    } else {
+      const conn = s.conn || [];
+      const toCharger = h.cat === 'charger';
+      if (conn.includes('bt') && h.cat === 'computer') add('bt', 'bt', 'Bluetooth（ワイヤレス）');
+      if (conn.includes('receiver') && P.usba && !toCharger) add('usba', 'receiver', 'USB レシーバー');
+      if (conn.includes('usbc')) {
+        if (P.usbc) add('usbc', 'usbc', toCharger ? 'USB-C（充電）' : 'USB-C ケーブル');
+        if (P.tb && !toCharger) add('tb', 'usbc', 'USB-C ケーブル');
+      }
+      if (conn.includes('usba') && P.usba) add('usba', 'usba', toCharger ? 'USB-A（充電）' : 'USB-A ケーブル');
+    }
+  }
+  return opts;
+}
+const linkKey = l => l ? `${l.h}|${l.p}|${l.v}` : '';
+
+// 消えたホストや選べなくなった接続を外す
+function normalize() {
+  for (const it of state.items) {
+    if (it.link && !linkOptions(it).some(o => linkKey(o) === linkKey(it.link))) it.link = null;
+  }
+}
+
+function monitorSignal(m) {
+  const l = m.link; if (!l) return null;
+  const h = byId(l.h); if (!h) return null;
+  const sig = hostOut(h, l.p); if (!sig) return null;
+  const i = m.spec.in;
+  const cable = { tb: i.tb, usbc: i.usbc, c2dp: minLink('dp1.4', i.dp), c2hdmi: minLink('hdmi2.0', i.hdmi), hdmi: i.hdmi, dp: i.dp }[l.v];
+  return minLink(sig, cable);
+}
+const needGbps = (s, hz = s.hz) => s.w * s.h * hz * 24 * 1.1 / 1e9;
+function signalCap(m, sig) {
+  const root = rootOf(m);
+  const dsc = m.spec.dsc && (root.cat !== 'computer' || root.spec.dsc !== false);
+  return { cap: LINK_CAP[sig] * (dsc ? 3 : 1), dsc };
+}
+// モニターがつながっている PC と、PC 側のポート（ドック経由ならドックが刺さっているポート）
+function pcPort(m) {
+  let cur = m;
+  for (let i = 0; i < 20 && cur && cur.link; i++) {
+    const h = byId(cur.link.h);
+    if (!h) return null;
+    if (h.cat === 'computer') return { pc: h, port: cur.link.p };
+    cur = h;
+  }
+  return null;
+}
+// 帯域とPC側の画素レート上限から、出せるリフレッシュレートを出す
+function reachHz(m) {
+  const sig = monitorSignal(m);
+  if (!sig) return null;
+  const s = m.spec, { cap, dsc } = signalCap(m, sig);
+  const bwHz = cap / needGbps(s, 1);
+  const pp = pcPort(m);
+  const lim = pp && pp.pc.spec.pxMax && pp.pc.spec.pxMax[pp.port];
+  const pxHz = lim ? lim / (s.w * s.h) : Infinity;
+  return { sig, cap, dsc, bwHz, pxHz, hz: Math.min(bwHz, pxHz), pc: pp && pp.pc, port: pp && pp.port };
+}
+function resName(s) { return RES_NAME[`${s.w}x${s.h}`] || `${s.w}×${s.h}`; }
+
+function pdSources(c) {
+  return state.items.filter(i => i.link && i.link.h === c.id && (i.link.v === 'usbc' || i.link.v === 'tb') && (i.cat === 'monitor' || i.cat === 'dock') && i.spec.pdW > 0);
+}
+function powerSource(c) {
+  const p = c.power || 'auto';
+  if (p === 'auto') { const s = pdSources(c)[0]; return s ? { kind: 'pd', item: s, W: s.spec.pdW } : { kind: 'adapter' }; }
+  if (p === 'adapter') return { kind: 'adapter' };
+  const it = byId(p);
+  if (it && it.cat === 'charger') return { kind: 'charger', item: it, W: Math.min(it.spec.portW, it.spec.totalW) };
+  if (it && pdSources(c).includes(it)) return { kind: 'pd', item: it, W: it.spec.pdW };
+  return { kind: 'adapter' };
+}
+
+// ---- 接続チェック ----
+function runChecks() {
+  const out = [];
+  const push = (sev, title, detail, ids = []) => out.push({ sev, title, detail, ids });
+  const comps = state.items.filter(i => i.cat === 'computer');
+  const monitors = state.items.filter(i => i.cat === 'monitor');
+
+  // ポートの使用数
+  const usage = new Map();
+  const use = (hid, port, who) => {
+    if (port === 'bt') return;
+    const k = hid + '|' + port;
+    if (!usage.has(k)) usage.set(k, []);
+    usage.get(k).push(who);
+  };
+  for (const it of state.items) if (it.link) use(it.link.h, it.link.p, it.id);
+  for (const c of comps) {
+    if (!c.spec.chargeW) continue;
+    const ps = powerSource(c);
+    if (ps.kind !== 'pd' && !c.spec.magsafe) use(c.id, c.spec.ports.tb ? 'tb' : 'usbc', c.id);
+    if (ps.kind === 'charger') use(ps.item.id, 'usbc', c.id);
+  }
+  for (const [k, whos] of usage) {
+    const [hid, p] = k.split('|');
+    const h = byId(hid); if (!h) continue;
+    const cap = (h.spec.ports || {})[p] || 0;
+    if (whos.length > cap) {
+      push('error', `${h.name} の ${PORT_LABEL[p]} ポートが足りません`,
+        `${whos.length}本使っていますが、ポートは${cap}つです。ハブ・ドックを足すか、別のポートに振り分けてください。`, [hid, ...whos]);
+    }
+  }
+
+  // 外部ディスプレイの台数
+  for (const c of comps) {
+    const mons = monitors.filter(m => m.link && rootOf(m) === c);
+    if (!mons.length) continue;
+    const lim = c.clam && c.spec.clamDisp ? c.spec.clamDisp : c.spec.maxDisp;
+    if (mons.length > lim) {
+      let d = `${mons.length}台つないでいますが、${lim + 1}台目以降は映りません。`;
+      if (c.spec.clamDisp && !c.clam) d += `蓋を閉じたクラムシェルモードなら${c.spec.clamDisp}台まで使えます。`;
+      d += 'DisplayLink 対応のドックなら台数を増やせます（専用ドライバが必要）。';
+      push('error', `${c.name} の外部ディスプレイは${lim}台まで`, d, [c.id, ...mons.map(m => m.id)]);
+    } else {
+      push('ok', `${c.name}: 外部ディスプレイ ${mons.length} / ${lim}台`, c.clam ? 'クラムシェルモード' : '', [c.id]);
+    }
+  }
+
+  // モニターごとの帯域と、PC側ポートの出力上限
+  for (const m of monitors) {
+    if (!m.link) { push('info', `${m.name}: 接続先が未設定です`, '', [m.id]); continue; }
+    const r = reachHz(m);
+    if (!r) continue;
+    const s = m.spec, need = needGbps(s);
+    const rn = `${resName(s)} ${s.hz}Hz`;
+    if (r.hz >= s.hz) {
+      push('ok', `${m.name}: ${rn} で表示できます`, `${LINK_LABEL[r.sig]}${r.dsc && need > LINK_CAP[r.sig] ? '（DSC圧縮）' : ''}`, [m.id]);
+      continue;
+    }
+    const shown = REFRESH.filter(x => x <= Math.floor(r.hz)).pop() || Math.floor(r.hz);
+    let d = '';
+    if (r.bwHz < s.hz) d += `${LINK_LABEL[r.sig]} では ${rn} の帯域が足りません（必要 約${need.toFixed(1)}Gbps / 上限 約${r.cap.toFixed(1)}Gbps）。`;
+    if (r.pxHz < s.hz) d += `${r.pc.name} の ${PORT_LABEL[r.port]} 出力は ${resName(s)} だと 約${Math.floor(r.pxHz)}Hz が上限です。`;
+    const better = linkOptions(m).find(o => {
+      const t = reachHz({ ...m, link: { h: o.h, p: o.p, v: o.v } });
+      return t && t.hz >= s.hz;
+    });
+    if (better) d += `「${better.host.name} の ${PORT_LABEL[better.p]} ← ${better.label}」なら ${s.hz}Hz で出せます。`;
+    push(shown >= 60 ? 'warn' : 'error', `${m.name}: 最大 約${shown}Hz になります`, d, [m.id]);
+  }
+
+  // モニターのUSBハブ
+  for (const m of monitors) {
+    const kids = state.items.filter(i => i.link && i.link.h === m.id);
+    if (kids.length && !(m.link && (m.link.v === 'usbc' || m.link.v === 'tb'))) {
+      push('warn', `${m.name} の USB ポートは今の接続だと使えません`,
+        'HDMI・DisplayPort だけの接続では USB ハブが動きません。USB-C（または USB-B）ケーブルでも PC につないでください。', [m.id, ...kids.map(k => k.id)]);
+    }
+  }
+
+  // ドックの接続
+  for (const d of state.items.filter(i => i.cat === 'dock')) {
+    const kids = state.items.filter(i => i.link && i.link.h === d.id);
+    if (!d.link && kids.length) push('warn', `${d.name} が PC につながっていません`, 'ドックの接続先を選んでください。', [d.id]);
+  }
+
+  // 給電
+  for (const c of comps) {
+    if (!c.spec.chargeW) continue;
+    const ps = powerSource(c), need = c.spec.chargeW;
+    if (ps.kind === 'adapter') {
+      push('info', `${c.name}: 電源アダプタで給電`, `推奨 ${need}W 以上のアダプタを使ってください。`, [c.id]);
+    } else if (ps.W >= need) {
+      push('ok', `${c.name}: ${ps.item.name} から ${ps.W}W 給電`, `推奨 ${need}W を満たしています。`, [c.id]);
+    } else if (ps.W >= need * 0.6) {
+      push('warn', `${c.name}: 給電がやや不足（${ps.W}W / 推奨 ${need}W）`, '普段使いは問題ありませんが、重い作業中はバッテリーが減ることがあります。', [c.id, ps.item.id]);
+    } else {
+      push('error', `${c.name}: 給電が足りません（${ps.W}W / 推奨 ${need}W）`, 'つないだままでもバッテリーが減っていきます。付属アダプタか、出力の大きい充電器を使ってください。', [c.id, ps.item.id]);
+    }
+  }
+
+  // 充電器の合計出力
+  for (const ch of state.items.filter(i => i.cat === 'charger')) {
+    const devs = state.items.filter(i => i.link && i.link.h === ch.id);
+    const comp = comps.filter(c => c.spec.chargeW && powerSource(c).item === ch);
+    const all = [...devs, ...comp];
+    if (!all.length) continue;
+    const draw = devs.reduce((s, d) => s + (d.spec.chargeW || 5), 0) + comp.reduce((s, c) => s + c.spec.chargeW, 0);
+    if (draw > ch.spec.totalW) {
+      push('warn', `${ch.name}: 同時に充電すると出力が足りません`, `合計 約${draw}W / 最大 ${ch.spec.totalW}W。同時に充電すると1台あたりの出力が下がります。`, [ch.id, ...all.map(a => a.id)]);
+    } else {
+      push('ok', `${ch.name}: 合計 約${draw}W / ${ch.spec.totalW}W`, `${all.length}台を充電`, [ch.id]);
+    }
+  }
+
+  // 未接続
+  const loose = state.items.filter(i => i.cat !== 'monitor' && !i.link && linkOptions(i).length);
+  if (loose.length) push('info', `接続先が未設定の機材が ${loose.length}点あります`, loose.map(i => i.name).join('、'), loose.map(i => i.id));
+  if (!comps.length && state.items.some(i => (i.spec.conn || []).length || i.cat === 'monitor' || i.cat === 'dock')) {
+    push('info', 'PC を追加すると接続チェックができます', 'カタログで「Mac」「Windows」などを検索してください。');
+  }
+
+  const order = { error: 0, warn: 1, info: 2, ok: 3 };
+  return out.sort((a, b) => order[a.sev] - order[b.sev]);
+}
+
+// ---- 表示 ----
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const yen = n => '¥' + Math.round(n).toLocaleString('ja-JP');
+
+function specText(it) {
+  const s = it.spec;
+  if (it.cat === 'computer') {
+    const ports = Object.entries(s.ports || {}).filter(([, n]) => n).map(([p, n]) => `${PORT_LABEL[p]}×${n}`).join(' / ');
+    return `${ports} · 外部ディスプレイ ${s.maxDisp}台${s.clamDisp ? `（蓋を閉じると${s.clamDisp}台）` : ''}${s.chargeW ? ` · 推奨給電 ${s.chargeW}W` : ''}`;
+  }
+  if (it.cat === 'monitor') {
+    const ins = [];
+    if (s.in.tb) ins.push('Thunderbolt');
+    if (s.in.usbc) ins.push(`USB-C${s.pdW ? `（${s.pdW}W給電）` : ''}`);
+    if (s.in.hdmi) ins.push(LINK_LABEL[s.in.hdmi]);
+    if (s.in.dp) ins.push(LINK_LABEL[s.in.dp]);
+    return `${resName(s)} ${s.hz}Hz · 入力: ${ins.join(' / ')}${s.dsc ? ' · DSC対応' : ''}`;
+  }
+  if (it.cat === 'dock') {
+    const ports = Object.entries(s.ports).filter(([, n]) => n).map(([p, n]) => `${PORT_LABEL[p]}×${n}`).join(' / ');
+    return `${s.up === 'tb' ? 'Thunderbolt' : 'USB-C'} 接続 · 給電 ${s.pdW}W · ${ports}`;
+  }
+  if (it.cat === 'charger') {
+    const ports = Object.entries(s.ports).filter(([, n]) => n).map(([p, n]) => `${PORT_LABEL[p]}×${n}`).join(' / ');
+    return `最大 ${s.totalW}W · ${ports}`;
+  }
+  const names = { bt: 'Bluetooth', receiver: 'USBレシーバー', usbc: 'USB-C', usba: 'USB-A' };
+  return (s.conn || []).map(c => names[c]).join(' / ');
+}
+
+function render() {
+  normalize();
+  renderList();
+  renderSide();
+}
+
+function renderChips() {
+  const all = [{ id: '', label: 'すべて' }, ...CATS.filter(c => CATALOG.some(x => x.cat === c.id))];
+  $('#chips').innerHTML = all.map(c => `<button class="chip" type="button" data-cat="${c.id}" aria-pressed="${activeCat === c.id}">${esc(c.label)}</button>`).join('');
+}
+function renderResults() {
+  const q = $('#q').value.trim().toLowerCase();
+  if (!q && !activeCat) { $('#results').innerHTML = ''; return; }
+  const words = q.split(/\s+/).filter(Boolean);
+  const hits = CATALOG.filter(c =>
+    (!activeCat || c.cat === activeCat) &&
+    words.every(w => (c.name + ' ' + CAT_LABEL[c.cat] + ' ' + c.id).toLowerCase().includes(w))
+  ).slice(0, 12);
+  $('#results').innerHTML = hits.length
+    ? hits.map(c => `<button class="result" type="button" data-add="${c.id}"><span style="min-width:0"><b>${esc(c.name)}</b><small>${esc(CAT_LABEL[c.cat])} · ${esc(specText(c))}</small></span><span class="plus" aria-hidden="true">＋</span><span class="sr">追加</span></button>`).join('')
+    : `<div class="hint">見つかりませんでした。下の「カタログにないとき」から追加できます。</div>`;
+}
+
+function sevOf(it, checks) {
+  const mine = checks.filter(c => c.ids.includes(it.id) && (c.sev === 'error' || c.sev === 'warn'));
+  return mine.find(c => c.sev === 'error') || mine[0] || null;
+}
+
+function itemHTML(it, checks) {
+  const worst = sevOf(it, checks);
+  const parts = [];
+  parts.push(`<div class="row1">
+    <input class="text name" data-f="name" value="${esc(it.name)}" aria-label="機材名" maxlength="60">
+    <div class="with-prefix"><span>¥</span><input class="text price" data-f="price" inputmode="numeric" placeholder="価格" value="${it.price != null ? it.price.toLocaleString('ja-JP') : ''}" aria-label="価格"></div>
+    <button class="x" type="button" data-remove="${it.id}" aria-label="${esc(it.name)} を削除">×</button>
+  </div>`);
+  const st = specText(it);
+  if (st) parts.push(`<div class="spec">${esc(st)}</div>`);
+
+  const fields = [];
+  const needsLink = it.cat === 'monitor' || it.cat === 'dock' || ((it.spec.conn || []).length && it.cat !== 'computer' && it.cat !== 'charger');
+  if (needsLink) {
+    const opts = linkOptions(it);
+    if (opts.length) {
+      const groups = new Map();
+      for (const o of opts) { if (!groups.has(o.h)) groups.set(o.h, []); groups.get(o.h).push(o); }
+      const cur = linkKey(it.link);
+      let html = `<option value="">未接続</option>`;
+      for (const [hid, os] of groups) {
+        html += `<optgroup label="${esc(byId(hid).name)}">` + os.map(o =>
+          `<option value="${esc(linkKey(o))}"${linkKey(o) === cur ? ' selected' : ''}>${esc(o.v === 'bt' ? o.label : `${PORT_LABEL[o.p]} ← ${o.label}`)}</option>`).join('') + `</optgroup>`;
+      }
+      fields.push(`<label class="fld"><span>接続先</span><select class="text" data-f="link">${html}</select></label>`);
+    } else {
+      fields.push(`<span class="hint">PC・ドック・充電器を追加すると接続先を選べます</span>`);
+    }
+  }
+  if (it.cat === 'computer' && it.spec.chargeW) {
+    const pds = pdSources(it);
+    const chargers = state.items.filter(i => i.cat === 'charger');
+    const autoName = pds[0] ? `自動（${pds[0].name} から給電）` : '自動';
+    let html = `<option value="auto"${it.power === 'auto' ? ' selected' : ''}>${esc(autoName)}</option>`;
+    html += `<option value="adapter"${it.power === 'adapter' ? ' selected' : ''}>電源アダプタ（付属など）</option>`;
+    for (const p of pds) html += `<option value="${p.id}"${it.power === p.id ? ' selected' : ''}>${esc(p.name)}（USB-C ${p.spec.pdW}W）</option>`;
+    for (const c of chargers) html += `<option value="${c.id}"${it.power === c.id ? ' selected' : ''}>${esc(c.name)}（最大 ${c.spec.portW}W）</option>`;
+    fields.push(`<label class="fld"><span>給電元</span><select class="text" data-f="power">${html}</select></label>`);
+  }
+  if (it.cat === 'computer' && it.spec.clamDisp) {
+    fields.push(`<label class="toggle"><input type="checkbox" data-f="clam"${it.clam ? ' checked' : ''}> 蓋を閉じて使う</label>`);
+  }
+  if (fields.length) parts.push(`<div class="fields">${fields.join('')}</div>`);
+
+  if (worst) parts.push(`<div class="item-msg ${worst.sev}">${esc(worst.title)}</div>`);
+
+  if (it.cat === 'monitor') {
+    const s = it.spec;
+    const resOpts = Object.entries(RES_NAME).map(([k, v]) => `<option value="${k}"${k === `${s.w}x${s.h}` ? ' selected' : ''}>${v}（${k.replace('x', '×')}）</option>`).join('')
+      + (RES_NAME[`${s.w}x${s.h}`] ? '' : `<option selected value="${s.w}x${s.h}">${s.w}×${s.h}</option>`);
+    const sel = (f, cur, list) => `<select class="text" data-f="${f}">${list.map(([v, l]) => `<option value="${v}"${(cur || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select>`;
+    parts.push(`<details class="more"${it._open ? ' open' : ''} data-open="${it.id}"><summary>スペックを編集</summary><div class="spec-grid">
+      <label>解像度<select class="text" data-f="res">${resOpts}</select></label>
+      <label>リフレッシュレート (Hz)<input class="text" data-f="hz" inputmode="numeric" value="${s.hz}"></label>
+      <label>HDMI${sel('in.hdmi', s.in.hdmi, [['', 'なし'], ['hdmi1.4', 'HDMI 1.4'], ['hdmi2.0', 'HDMI 2.0'], ['hdmi2.1', 'HDMI 2.1']])}</label>
+      <label>DisplayPort${sel('in.dp', s.in.dp, [['', 'なし'], ['dp1.2', 'DP 1.2'], ['dp1.4', 'DP 1.4'], ['dp2.1', 'DP 2.1']])}</label>
+      <label>USB-C 映像入力${sel('in.usbc', s.in.usbc, [['', 'なし'], ['dp1.4', 'あり']])}</label>
+      <label>USB-C 給電 (W)<input class="text" data-f="pdW" inputmode="numeric" value="${s.pdW || 0}"></label>
+      <label style="align-self:end"><span class="toggle"><input type="checkbox" data-f="dsc"${s.dsc ? ' checked' : ''}> DSC 対応</span></label>
+    </div></details>`);
+  }
+  return `<div class="item${worst ? ' sev-' + worst.sev : ''}" data-id="${it.id}">${parts.join('')}</div>`;
+}
+
+function renderList() {
+  const list = $('#list');
+  if (!state.items.length) {
+    list.innerHTML = `<div class="card empty"><p>まだ機材がありません。<br>上の検索から追加するか、サンプルを見てみてください。</p><button class="btn primary" type="button" data-sample>サンプルを読み込む</button></div>`;
+    return;
+  }
+  const checks = runChecks();
+  const html = [];
+  for (const c of CATS) {
+    const its = state.items.filter(i => i.cat === c.id);
+    if (!its.length) continue;
+    const sub = its.reduce((s, i) => s + (i.price || 0), 0);
+    html.push(`<section class="group"><div class="group-head"><h3>${esc(c.label)}</h3><span>${sub ? yen(sub) : ''}</span></div>${its.map(i => itemHTML(i, checks)).join('')}</section>`);
+  }
+  list.innerHTML = html.join('');
+}
+
+function renderSide() {
+  const total = state.items.reduce((s, i) => s + (i.price || 0), 0);
+  $('#totalNum').textContent = yen(total);
+  const priced = state.items.filter(i => i.price).length;
+  $('#totalSub').textContent = `${state.items.length}点` + (state.items.length && priced < state.items.length ? `（価格未入力 ${state.items.length - priced}点）` : '');
+  const byCat = CATS.map(c => ({ c, v: state.items.filter(i => i.cat === c.id).reduce((s, i) => s + (i.price || 0), 0) })).filter(x => x.v > 0).sort((a, b) => b.v - a.v);
+  const max = byCat[0] ? byCat[0].v : 1;
+  $('#bars').innerHTML = byCat.map(x => `<div class="bar-row"><span class="lbl">${esc(x.c.label)}</span><span class="track"><i style="width:${(x.v / max * 100).toFixed(1)}%"></i></span><span class="val">${yen(x.v)}</span></div>`).join('');
+
+  const checks = runChecks();
+  const cnt = s => checks.filter(c => c.sev === s).length;
+  const pills = [];
+  if (cnt('error')) pills.push(`<span class="pill error">問題 ${cnt('error')}</span>`);
+  if (cnt('warn')) pills.push(`<span class="pill warn">注意 ${cnt('warn')}</span>`);
+  if (cnt('ok')) pills.push(`<span class="pill ok">OK ${cnt('ok')}</span>`);
+  $('#summary').innerHTML = pills.join('');
+  const mark = { ok: '✓', warn: '!', error: '×', info: 'i' };
+  $('#checks').innerHTML = checks.length
+    ? checks.map(c => `<div class="check ${c.sev}"><span class="mark" aria-hidden="true">${mark[c.sev]}</span><span><b>${esc(c.title)}</b>${c.detail ? `<small>${esc(c.detail)}</small>` : ''}</span></div>`).join('')
+    : `<div class="hint">PC とモニターなどを追加すると、ここに結果が出ます。</div>`;
+}
+
+// ---- 保存・共有 ----
+function serialize() {
+  return {
+    v: 1, t: state.title || undefined, u: state.handle || undefined,
+    i: state.items.map(it => {
+      const base = it.cid && catalogById(it.cid);
+      const o = { id: it.id };
+      if (base) o.c = it.cid; else o.k = it.cat;
+      if (!base || base.name !== it.name) o.n = it.name;
+      if (it.price != null) o.p = it.price;
+      if (!base || JSON.stringify(base.spec) !== JSON.stringify(it.spec)) o.s = it.spec;
+      if (it.link) o.l = [it.link.h, it.link.p, it.link.v];
+      if (it.power && it.power !== 'auto') o.w = it.power;
+      if (it.clam) o.m = 1;
+      return o;
+    }),
+  };
+}
+function deserialize(o) {
+  const st = emptyState();
+  st.title = String(o.t || '').slice(0, 40);
+  st.handle = String(o.u || '').slice(0, 30);
+  let max = -1;
+  for (const x of Array.isArray(o.i) ? o.i : []) {
+    const base = x.c && catalogById(x.c);
+    const cat = base ? base.cat : x.k;
+    if (!CAT_LABEL[cat]) continue;
+    const spec = x.s && typeof x.s === 'object' ? x.s : base ? clone(base.spec) : { conn: [] };
+    if (cat === 'monitor' && !spec.in) continue;
+    const id = String(x.id);
+    max = Math.max(max, parseInt(id, 36) || 0);
+    st.items.push({
+      id, cid: base ? x.c : null, cat, name: String(x.n ?? (base ? base.name : CAT_LABEL[cat])).slice(0, 60),
+      price: Number.isFinite(x.p) ? x.p : null, spec,
+      link: Array.isArray(x.l) ? { h: String(x.l[0]), p: x.l[1], v: x.l[2] } : null,
+      power: x.w ? String(x.w) : 'auto', clam: !!x.m,
+    });
+  }
+  st.seq = max + 1;
+  return st;
+}
+function b64u(buf) { let s = ''; for (const b of buf) s += String.fromCharCode(b); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function unb64u(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), c => c.charCodeAt(0)); }
+async function encode(obj) {
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  if ('CompressionStream' in window) {
+    const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+    return 'z' + b64u(new Uint8Array(await new Response(stream).arrayBuffer()));
+  }
+  return 'j' + b64u(bytes);
+}
+async function decode(str) {
+  let bytes = unb64u(str.slice(1));
+  if (str[0] === 'z') {
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+  }
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+async function shareUrl() {
+  return location.origin + location.pathname + '#d=' + await encode(serialize());
+}
+
+function save() {
+  if (shared) return;
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(serialize())); } catch (e) {}
+}
+function loadLocal() {
+  try { const raw = localStorage.getItem(STORE_KEY); return raw ? deserialize(JSON.parse(raw)) : emptyState(); } catch (e) { return emptyState(); }
+}
+function commit(full) { save(); if (full) render(); else renderSide(); }
+
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+function flashItem(id) {
+  const el = document.querySelector(`.item[data-id="${id}"]`);
+  if (el) { el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); el.animate([{ outline: '2px solid var(--accent)' }, { outline: '2px solid transparent' }], { duration: 1200 }); }
+}
+function syncHead() { $('#title').value = state.title; $('#handle').value = state.handle; }
+
+// ---- 画像カード ----
+async function drawCard() {
+  try { await document.fonts.load('700 20px "Noto Sans JP"'); await document.fonts.ready; } catch (e) {}
+  const W = 1200, H = 675, S = 2;
+  const cv = document.createElement('canvas'); cv.width = W * S; cv.height = H * S;
+  const x = cv.getContext('2d'); x.scale(S, S);
+  const F = '"Noto Sans JP", "Hiragino Sans", system-ui, sans-serif';
+  const C = { page: '#efece4', card: '#ffffff', text: '#22262a', sub: '#59616b', muted: '#949ba4', line: '#e6e4de', accent: '#0f766e', warn: '#b45309', crit: '#dc2626', good: '#15803d' };
+  const rr = (X, Y, w, h, r) => { x.beginPath(); x.roundRect(X, Y, w, h, r); };
+  const fit = (t, w) => { if (x.measureText(t).width <= w) return t; while (t && x.measureText(t + '…').width > w) t = t.slice(0, -1); return t + '…'; };
+
+  x.fillStyle = C.page; x.fillRect(0, 0, W, H);
+  x.fillStyle = C.card; rr(32, 32, W - 64, H - 64, 24); x.fill();
+
+  x.textBaseline = 'alphabetic';
+  x.fillStyle = C.accent; x.font = `700 15px ${F}`; x.fillText('MY DESK SETUP', 72, 92);
+  x.fillStyle = C.text; x.font = `700 36px ${F}`; x.fillText(fit(state.title || '私のデスク', 700), 72, 140);
+  if (state.handle) { x.fillStyle = C.sub; x.font = `400 18px ${F}`; x.fillText('@' + state.handle.replace(/^@/, ''), 72, 172); }
+
+  const total = state.items.reduce((s, i) => s + (i.price || 0), 0);
+  x.textAlign = 'right';
+  x.fillStyle = C.muted; x.font = `500 15px ${F}`; x.fillText(`${state.items.length}点の合計`, W - 72, 92);
+  x.fillStyle = C.text; x.font = `700 44px ${F}`; x.fillText(total ? yen(total) : '—', W - 72, 142);
+  x.textAlign = 'left';
+
+  x.strokeStyle = C.line; x.lineWidth = 1; x.beginPath(); x.moveTo(72, 200); x.lineTo(W - 72, 200); x.stroke();
+
+  const rows = [];
+  for (const c of CATS) for (const it of state.items.filter(i => i.cat === c.id)) rows.push({ cat: c.label, name: it.name, price: it.price });
+  const perCol = 12, colW = (W - 144 - 48) / 2, top = 238, lh = 29;
+  const maxRows = perCol * 2;
+  const shown = rows.length > maxRows ? rows.slice(0, maxRows - 1) : rows;
+  shown.forEach((r, i) => {
+    const col = Math.floor(i / perCol), row = i % perCol;
+    const X = 72 + col * (colW + 48), Y = top + row * lh;
+    x.fillStyle = C.muted; x.font = `500 13px ${F}`; x.fillText(fit(r.cat, 110), X, Y);
+    const priceTxt = r.price ? yen(r.price) : '';
+    x.font = `400 15px ${F}`;
+    const pw = priceTxt ? x.measureText(priceTxt).width + 12 : 0;
+    x.fillStyle = C.text; x.fillText(fit(r.name, colW - 118 - pw), X + 118, Y);
+    if (priceTxt) { x.textAlign = 'right'; x.fillStyle = C.sub; x.fillText(priceTxt, X + colW, Y); x.textAlign = 'left'; }
+  });
+  if (rows.length > maxRows) {
+    const i = maxRows - 1, X = 72 + Math.floor(i / perCol) * (colW + 48), Y = top + (i % perCol) * lh;
+    x.fillStyle = C.muted; x.font = `500 15px ${F}`; x.fillText(`ほか ${rows.length - shown.length}点`, X + 118, Y);
+  }
+
+  const checks = runChecks();
+  const e = checks.filter(c => c.sev === 'error').length, w = checks.filter(c => c.sev === 'warn').length;
+  const label = e ? `接続チェック: 問題 ${e}件` : w ? `接続チェック: 注意 ${w}件` : '接続チェック: 問題なし';
+  const color = e ? C.crit : w ? C.warn : C.good;
+  x.font = `500 14px ${F}`;
+  const lw = x.measureText(label).width + 28;
+  x.fillStyle = color + '1a'; rr(72, H - 102, lw, 32, 16); x.fill();
+  x.fillStyle = color; x.fillText(label, 86, H - 81);
+  x.textAlign = 'right'; x.fillStyle = C.muted; x.font = `400 14px ${F}`;
+  x.fillText('デスク構成ビルダー', W - 72, H - 81);
+  x.textAlign = 'left';
+  return cv;
+}
+
+// ---- イベント ----
+function wire() {
+  const cs = $('#customCat');
+  cs.innerHTML = CATS.map(c => `<option value="${c.id}">${esc(c.label)}</option>`).join('');
+
+  $('#q').addEventListener('input', renderResults);
+  $('#chips').addEventListener('click', e => {
+    const b = e.target.closest('[data-cat]'); if (!b) return;
+    activeCat = activeCat === b.dataset.cat ? '' : b.dataset.cat;
+    renderChips(); renderResults();
+  });
+  $('#results').addEventListener('click', e => {
+    const b = e.target.closest('[data-add]'); if (b) addFromCatalog(b.dataset.add);
+  });
+  $('#customAdd').addEventListener('click', () => {
+    addCustom(cs.value, $('#customName').value.trim());
+    $('#customName').value = '';
+  });
+  $('#customName').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) $('#customAdd').click(); });
+
+  $('#title').addEventListener('input', e => { state.title = e.target.value; commit(false); });
+  $('#handle').addEventListener('input', e => { state.handle = e.target.value.replace(/^@/, ''); commit(false); });
+
+  const list = $('#list');
+  list.addEventListener('click', e => {
+    const r = e.target.closest('[data-remove]');
+    if (r) {
+      state.items = state.items.filter(i => i.id !== r.dataset.remove);
+      for (const i of state.items) if (i.power === r.dataset.remove) i.power = 'auto';
+      commit(true); return;
+    }
+    if (e.target.closest('[data-sample]')) loadSample();
+  });
+  list.addEventListener('toggle', e => {
+    const d = e.target.closest('details[data-open]'); if (!d) return;
+    const it = byId(d.dataset.open); if (it) it._open = d.open;
+  }, true);
+  list.addEventListener('input', e => {
+    const f = e.target.dataset.f, card = e.target.closest('.item'); if (!f || !card) return;
+    const it = byId(card.dataset.id); if (!it) return;
+    if (f === 'name') { it.name = e.target.value; commit(false); }
+    if (f === 'price') {
+      const digits = e.target.value.replace(/[^\d]/g, '');
+      it.price = digits ? Math.min(Number(digits), 1e9) : null;
+      commit(false);
+    }
+  });
+  list.addEventListener('change', e => {
+    const f = e.target.dataset.f, card = e.target.closest('.item'); if (!f || !card) return;
+    const it = byId(card.dataset.id); if (!it) return;
+    const v = e.target.value, s = it.spec;
+    if (f === 'price') { e.target.value = it.price != null ? it.price.toLocaleString('ja-JP') : ''; return; }
+    if (f === 'name') { if (!it.name.trim()) it.name = CAT_LABEL[it.cat]; commit(true); return; }
+    if (f === 'link') { it.link = v ? (([h, p, vv]) => ({ h, p, v: vv }))(v.split('|')) : null; }
+    if (f === 'power') it.power = v;
+    if (f === 'clam') it.clam = e.target.checked;
+    if (f === 'res') { const [w, h] = v.split('x').map(Number); s.w = w; s.h = h; }
+    if (f === 'hz') { const n = parseInt(v, 10); if (n > 0 && n <= 1000) s.hz = n; }
+    if (f === 'pdW') { const n = parseInt(v, 10); s.pdW = n > 0 && n <= 240 ? n : 0; }
+    if (f === 'dsc') s.dsc = e.target.checked;
+    if (f.startsWith('in.')) { const k = f.slice(3); if (v) s.in[k] = v; else delete s.in[k]; }
+    commit(true);
+  });
+
+  $('#sampleBtn').addEventListener('click', loadSample);
+  $('#resetBtn').addEventListener('click', () => {
+    if (state.items.length && !confirm('すべての機材を消しますか？')) return;
+    state = emptyState(); syncHead(); commit(true);
+  });
+
+  $('#copyBtn').addEventListener('click', async () => {
+    const url = await shareUrl();
+    try { await navigator.clipboard.writeText(url); toast('共有リンクをコピーしました'); }
+    catch (e) { prompt('このリンクをコピーしてください', url); }
+  });
+  $('#postBtn').addEventListener('click', async () => {
+    const url = await shareUrl();
+    const total = state.items.reduce((s, i) => s + (i.price || 0), 0);
+    const text = `${state.title || '私のデスク'}（${state.items.length}点${total ? '・合計' + yen(total) : ''}）\n#デスクツアー #デスク環境`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'noopener');
+  });
+  $('#imgBtn').addEventListener('click', async () => {
+    const cv = await drawCard();
+    cv.toBlob(b => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(b); a.download = 'desk-setup.png'; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }, 'image/png');
+  });
+
+  $('#backBtn').addEventListener('click', () => {
+    shared = false; history.replaceState(null, '', location.pathname);
+    state = loadLocal(); $('#sharedBanner').hidden = true; syncHead(); render();
+  });
+  $('#adoptBtn').addEventListener('click', () => {
+    if (loadLocal().items.length && !confirm('今の自分のデスクを、この構成で置き換えますか？')) return;
+    shared = false; history.replaceState(null, '', location.pathname);
+    $('#sharedBanner').hidden = true; save(); toast('自分のデスクとして保存しました');
+  });
+}
+
+function loadSample() {
+  if (state.items.length && !confirm('今の構成をサンプルで置き換えますか？')) return;
+  state = emptyState();
+  state.title = 'サンプルのデスク';
+  const add = (cid, price) => { const c = catalogById(cid); const it = newItem(c.cat, c.name, c.spec, cid); it.price = price; state.items.push(it); return it; };
+  const mbp = add('mbp14-m4pro', 328800);
+  const dell = add('u2723qe', 72000);
+  const lg = add('32gs95ue', 198000);
+  const kb = add('hhkb-hybrid', 36850);
+  const ms = add('mx-master-3s', 16500);
+  const cam = add('c920n', 9000);
+  const ch = add('charger-100', 12000);
+  const lamp = add('screenbar-halo', 25900);
+  const ph = add('phone', null);
+  add('ergotron-lx', 24000);
+  add('flexispot-e7', 60000);
+  add('aeron', 240000);
+  dell.link = { h: mbp.id, p: 'tb', v: 'usbc' };
+  lg.link = { h: mbp.id, p: 'hdmi', v: 'hdmi' };
+  kb.link = { h: mbp.id, p: 'bt', v: 'bt' };
+  ms.link = { h: dell.id, p: 'usba', v: 'receiver' };
+  cam.link = { h: dell.id, p: 'usba', v: 'usba' };
+  lamp.link = { h: ch.id, p: 'usbc', v: 'usbc' };
+  ph.link = { h: ch.id, p: 'usbc', v: 'usbc' };
+  if (shared) { shared = false; history.replaceState(null, '', location.pathname); $('#sharedBanner').hidden = true; }
+  syncHead(); commit(true);
+}
+
+async function init() {
+  wire();
+  renderChips();
+  const m = location.hash.match(/^#d=(.+)$/);
+  if (m) {
+    try { state = deserialize(await decode(m[1])); shared = true; $('#sharedBanner').hidden = false; }
+    catch (e) { state = loadLocal(); toast('共有リンクを読み込めませんでした'); }
+  } else {
+    state = loadLocal();
+  }
+  syncHead();
+  render();
+}
+init();
+</script>
+</body>
+</html>
