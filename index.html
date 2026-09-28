@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     color-scheme: light;
@@ -97,6 +97,61 @@
     display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;
   }
   .banner[hidden] { display: none; }
+  .layout[hidden], .photo-layout[hidden], .top-actions[hidden] { display: none; }
+
+  .tabs { display: flex; gap: 2px; background: var(--field); border-radius: 999px; padding: 4px; width: fit-content; margin-bottom: 16px; }
+  .tab { border: 0; background: transparent; border-radius: 999px; padding: 6px 16px; font-size: 13px; font-weight: 500; color: var(--text-2); }
+  .tab[aria-selected="true"] { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+  /* 写真に書き込む */
+  .photo-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; padding-bottom: 40px; }
+  .stage { position: sticky; top: 16px; min-width: 0; }
+  .photo-layout .side { position: static; }
+  @media (max-width: 900px) {
+    .photo-layout { grid-template-columns: minmax(0, 1fr); }
+    .stage { position: relative; top: auto; }
+  }
+  .stage canvas {
+    display: block; max-width: 100%; max-height: calc(100vh - 32px); width: auto; height: auto; margin: 0 auto;
+    border-radius: var(--radius-lg); touch-action: none; cursor: crosshair; background: var(--field);
+  }
+  .stage canvas[hidden] { display: none; }
+  .stage-hint {
+    position: absolute; left: 50%; top: 12px; transform: translateX(-50%); max-width: calc(100% - 24px);
+    background: rgba(20,20,20,.72); color: #fff; font-size: 12px; padding: 5px 12px; border-radius: 999px;
+    pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .stage-hint:empty { display: none; }
+  .drop {
+    display: grid; place-items: center; gap: 12px; text-align: center; padding: 96px 16px; color: var(--text-2);
+    border: 2px dashed var(--line); border-radius: var(--radius-lg); background: var(--card);
+  }
+  .drop[hidden] { display: none; }
+  .drop.over, .stage.over canvas { outline: 2px dashed var(--accent); outline-offset: 4px; }
+  .drop p { margin: 0; }
+  .file-btn { position: relative; overflow: hidden; display: inline-block; }
+  .file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .opt-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); }
+  .opt-row + .opt-row { margin-top: 10px; }
+  .opt-row input[type=range] { width: 150px; accent-color: var(--accent); }
+  .seg { display: inline-flex; background: var(--field); border-radius: 8px; padding: 3px; gap: 2px; }
+  .seg button { border: 0; background: transparent; border-radius: 6px; padding: 4px 12px; font-size: 12px; color: var(--text-2); }
+  .seg button[aria-pressed="true"] { background: var(--card); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .pick-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pick {
+    border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 4px 12px; font-size: 12px;
+    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pick:hover { border-color: var(--muted); }
+  .pick[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+  .pick.custom { border-style: dashed; }
+  .anns { display: grid; gap: 8px; }
+  .ann { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; display: grid; gap: 6px; }
+  .ann.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .ann-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
+  .ann .text { padding: 6px 10px; font-size: 13px; }
+  .ann .text.full { grid-column: 1 / -1; }
+  .ann-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 
   .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; padding-bottom: 40px; }
   .side { position: sticky; top: 16px; display: grid; gap: 16px; }
@@ -226,11 +281,16 @@
       <h1>デスク構成ビルダー</h1>
       <p>機材を並べると、合計金額と接続チェック（映り方・ポート数・給電）が出ます。</p>
     </div>
-    <div class="top-actions">
+    <div class="top-actions" id="listActions">
       <button class="btn ghost" id="sampleBtn" type="button">サンプルを見る</button>
       <button class="btn ghost" id="resetBtn" type="button">すべて消す</button>
     </div>
   </header>
+
+  <nav class="tabs" role="tablist" aria-label="表示の切り替え">
+    <button class="tab" role="tab" type="button" data-tab="list" aria-selected="true">構成リスト</button>
+    <button class="tab" role="tab" type="button" data-tab="photo" aria-selected="false">写真に書き込む</button>
+  </nav>
 
   <div class="banner" id="sharedBanner" hidden>
     <span>共有されたデスクを表示中です。編集しても自分のデスクには保存されません。</span>
@@ -240,7 +300,7 @@
     </span>
   </div>
 
-  <div class="layout">
+  <div class="layout" id="listView">
     <div class="main">
       <section class="card">
         <div class="head-fields">
@@ -290,6 +350,48 @@
           <button class="btn block" id="imgBtn" type="button">画像を保存（ポストに添付用）</button>
         </div>
         <p class="fine">構成はリンクの中に入っています。サーバーには何も送られません。</p>
+      </section>
+    </aside>
+  </div>
+
+  <div class="photo-layout" id="photoView" hidden>
+    <div class="stage" id="stage">
+      <div class="drop" id="drop">
+        <p><b>デスクの写真を選んでください</b><br>機材の名前と価格を、矢印つきで写真に書き込めます。</p>
+        <label class="btn primary file-btn">写真を選ぶ<input type="file" accept="image/*" data-photo-file></label>
+        <p class="hint">ここにドラッグ＆ドロップもできます</p>
+      </div>
+      <canvas id="photoCanvas" hidden aria-label="書き込み中の写真"></canvas>
+      <div class="stage-hint" id="stageHint" aria-live="polite"></div>
+    </div>
+
+    <aside class="side">
+      <section class="card" aria-labelledby="placeTitle">
+        <h2 id="placeTitle">ラベルを置く</h2>
+        <p class="hint" style="margin:0 0 10px">機材を選んでから、写真の上でその機材をタップします。ラベルと矢印の先はドラッグで動かせます。</p>
+        <div class="pick-list" id="pickList"></div>
+      </section>
+
+      <section class="card" aria-labelledby="annTitle">
+        <h2 id="annTitle">置いたラベル <small id="annCount"></small></h2>
+        <div class="anns" id="annList"></div>
+      </section>
+
+      <section class="card" aria-labelledby="lookTitle">
+        <h2 id="lookTitle">見た目</h2>
+        <div class="opt-row"><span>文字</span><span class="seg" data-opt="font"><button type="button" data-v="hand">手書き風</button><button type="button" data-v="sans">ゴシック</button></span></div>
+        <div class="opt-row"><span>色</span><span class="seg" data-opt="color"><button type="button" data-v="light">白</button><button type="button" data-v="dark">黒</button></span></div>
+        <div class="opt-row"><span>大きさ</span><input type="range" id="sizeRange" min="0.6" max="1.8" step="0.05" aria-label="文字の大きさ"></div>
+      </section>
+
+      <section class="card" aria-labelledby="exportTitle">
+        <h2 id="exportTitle">保存</h2>
+        <div class="share-btns">
+          <button class="btn primary block" id="photoSave" type="button">画像を保存</button>
+          <label class="btn block file-btn" style="text-align:center">写真を変える<input type="file" accept="image/*" data-photo-file></label>
+          <button class="btn ghost block" id="photoClear" type="button">写真とラベルを消す</button>
+        </div>
+        <p class="fine">写真はこのブラウザの中だけで扱い、どこにもアップロードされません。</p>
       </section>
     </aside>
   </div>
@@ -1149,6 +1251,385 @@ function loadSample() {
   syncHead(); commit(true);
 }
 
+// ---- 写真に書き込む ----
+const PHOTO_KEY = 'desk-setup:photo:v1';
+const PHOTO_IMG_KEY = 'desk-setup:photo-img:v1';
+const PHOTO_MAX = 2400;
+let photo = { anns: [], font: 'hand', color: 'light', size: 1, seq: 0 };
+let photoImg = null;
+let armed = null;       // { item: id } か { custom: true }
+let selAnn = null;
+let drag = null;
+let tab = 'list';
+
+const BRANDS = ['Apple', 'Dell', 'LG UltraGear', 'LG', 'ASUS ProArt', 'ASUS', 'Samsung', 'CalDigit', 'HHKB', 'REALFORCE', 'Keychron',
+  'Logicool', 'Sony', 'Creative', 'Elgato', 'Shure', 'BenQ', 'Philips Hue', 'Philips', 'Herman Miller', 'FlexiSpot', 'エルゴトロン', 'Amazonベーシック'];
+function splitBrand(name) {
+  if (/^(MacBook|Mac |iPad|iPhone)/.test(name)) return ['Apple', name];
+  for (const b of BRANDS) if (name.startsWith(b + ' ')) return [b, name.slice(b.length + 1)];
+  return ['', name];
+}
+const PFONT = { hand: '"Klee One", "Noto Sans JP", sans-serif', sans: '"Noto Sans JP", "Hiragino Sans", sans-serif' };
+const PWEIGHT = { hand: [600, 600], sans: [700, 500] };  // [名前, ブランド・価格]
+
+function loadPhoto() {
+  try {
+    const raw = localStorage.getItem(PHOTO_KEY);
+    if (raw) photo = Object.assign(photo, JSON.parse(raw));
+    return localStorage.getItem(PHOTO_IMG_KEY);
+  } catch (e) { return null; }
+}
+function savePhoto() {
+  try { localStorage.setItem(PHOTO_KEY, JSON.stringify(photo)); } catch (e) {}
+}
+function loadImage(src) {
+  return new Promise((ok, ng) => { const im = new Image(); im.onload = () => ok(im); im.onerror = ng; im.src = src; });
+}
+
+async function setPhotoFile(file) {
+  if (!file || !/^image\//.test(file.type)) { toast('画像ファイルを選んでください'); return; }
+  let img;
+  const url = URL.createObjectURL(file);
+  try { img = await loadImage(url); } catch (e) { toast('この画像は読み込めませんでした'); return; } finally { URL.revokeObjectURL(url); }
+  const k = Math.min(1, PHOTO_MAX / Math.max(img.naturalWidth, img.naturalHeight));
+  const cv = document.createElement('canvas');
+  cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+  cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+  const data = cv.toDataURL('image/jpeg', 0.88);
+  // 写真を差し替えたときは、ラベルを同じ割合の位置に移す
+  if (photoImg) {
+    const sx = cv.width / photoImg.naturalWidth, sy = cv.height / photoImg.naturalHeight;
+    for (const a of photo.anns) { a.tx *= sx; a.ty *= sy; a.lx *= sx; a.ly *= sy; }
+  }
+  photoImg = await loadImage(data);
+  try { localStorage.setItem(PHOTO_IMG_KEY, data); }
+  catch (e) { toast('写真が大きく、ブラウザに保存できませんでした。再読み込みすると消えます'); }
+  savePhoto();
+  renderPhoto();
+}
+
+// 長辺を基準にした文字の大きさ
+function pBase() { return Math.max(photoImg.naturalWidth, photoImg.naturalHeight) * 0.018 * photo.size; }
+
+function labelBox(ctx, a) {
+  const b = pBase(), f = PFONT[photo.font], [wName, wSub] = PWEIGHT[photo.font];
+  const lines = [];
+  if (a.brand) lines.push({ t: a.brand, s: b * 0.55, w: wSub });
+  lines.push({ t: a.name || ' ', s: b, w: wName });
+  if (a.price) lines.push({ t: a.price, s: b * 0.46, w: wSub });
+  let y = 0, w = 0;
+  for (const l of lines) {
+    ctx.font = `${l.w} ${l.s}px ${f}`;
+    l.y = y + l.s * 0.95;
+    y += l.s * 1.22;
+    w = Math.max(w, ctx.measureText(l.t).width);
+  }
+  return { x: a.lx, y: a.ly, w, h: y - lines[lines.length - 1].s * 0.22, lines, f };
+}
+
+// ラベルから矢印の先までの曲線（始点・制御点）
+function arrowGeom(box, a) {
+  const g = pBase() * 0.35, tx = a.tx, ty = a.ty;
+  const clampX = x => Math.min(box.x + box.w * 0.8, Math.max(box.x + box.w * 0.2, x));
+  let s, vert = true;
+  if (ty > box.y + box.h) s = { x: clampX(tx), y: box.y + box.h + g };
+  else if (ty < box.y) s = { x: clampX(tx), y: box.y - g };
+  else { vert = false; s = { x: tx < box.x + box.w / 2 ? box.x - g : box.x + box.w + g, y: box.y + box.h / 2 }; }
+  let c;
+  if (a.curve === 's') c = { x: (s.x + tx) / 2, y: (s.y + ty) / 2 };
+  else if ((a.curve === 'b') === vert) c = { x: tx, y: s.y };
+  else c = { x: s.x, y: ty };
+  return { s, c };
+}
+
+function drawPhoto(ctx, forExport) {
+  const W = photoImg.naturalWidth, H = photoImg.naturalHeight;
+  ctx.clearRect(0, 0, W, H);
+  ctx.drawImage(photoImg, 0, 0, W, H);
+  const b = pBase(), light = photo.color === 'light';
+  const ink = light ? '#ffffff' : '#1d1d1f';
+  const glow = light ? 'rgba(0,0,0,.5)' : 'rgba(255,255,255,.85)';
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+  const boxes = [];
+  for (const a of photo.anns) {
+    const box = labelBox(ctx, a);
+    boxes.push(box);
+    ctx.save();
+    ctx.shadowColor = glow; ctx.shadowBlur = b * 0.22; ctx.shadowOffsetY = b * 0.03;
+    ctx.fillStyle = ink; ctx.strokeStyle = ink;
+    for (const l of box.lines) { ctx.font = `${l.w} ${l.s}px ${box.f}`; ctx.fillText(l.t, box.x, box.y + l.y); }
+    const { s, c } = arrowGeom(box, a);
+    ctx.lineWidth = Math.max(2, b * 0.085);
+    ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.quadraticCurveTo(c.x, c.y, a.tx, a.ty); ctx.stroke();
+    const from = Math.hypot(a.tx - c.x, a.ty - c.y) > 1 ? c : s;
+    const ang = Math.atan2(a.ty - from.y, a.tx - from.x), L = b * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(a.tx - L * Math.cos(ang - 0.5), a.ty - L * Math.sin(ang - 0.5));
+    ctx.lineTo(a.tx, a.ty);
+    ctx.lineTo(a.tx - L * Math.cos(ang + 0.5), a.ty - L * Math.sin(ang + 0.5));
+    ctx.stroke();
+    ctx.restore();
+  }
+  if (forExport) return;
+  const k = stageScale();
+  photo.anns.forEach((a, i) => {
+    const sel = a.id === selAnn, box = boxes[i];
+    if (sel) {
+      ctx.save();
+      ctx.setLineDash([6 * k, 5 * k]); ctx.lineWidth = 1.5 * k; ctx.strokeStyle = '#2bb3a3';
+      const p = 8 * k;
+      ctx.strokeRect(box.x - p, box.y - p, box.w + p * 2, box.h + p * 2);
+      ctx.restore();
+    }
+    ctx.beginPath(); ctx.arc(a.tx, a.ty, (sel ? 9 : 6) * k, 0, Math.PI * 2);
+    ctx.fillStyle = sel ? '#2bb3a3' : 'rgba(43,179,163,.55)'; ctx.fill();
+    ctx.lineWidth = 2 * k; ctx.strokeStyle = '#fff'; ctx.stroke();
+  });
+}
+
+// 画面上の1pxが、写真の何pxにあたるか
+function stageScale() {
+  const cv = $('#photoCanvas'), r = cv.getBoundingClientRect();
+  return r.width ? cv.width / r.width : 1;
+}
+function toPhoto(e) {
+  const cv = $('#photoCanvas'), r = cv.getBoundingClientRect(), k = cv.width / r.width;
+  return { x: (e.clientX - r.left) * k, y: (e.clientY - r.top) * k };
+}
+
+let rafId = 0;
+function redraw() {
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(() => { if (photoImg) drawPhoto($('#photoCanvas').getContext('2d'), false); });
+}
+async function ensureFonts() {
+  const txt = photo.anns.map(a => a.brand + a.name + a.price).join('') + 'Aa¥0';
+  const f = photo.font === 'hand' ? '"Klee One"' : '"Noto Sans JP"';
+  try { await Promise.all(PWEIGHT[photo.font].map(w => document.fonts.load(`${w} 40px ${f}`, txt))); } catch (e) {}
+}
+let fontT = 0;
+function refreshText() { clearTimeout(fontT); redraw(); fontT = setTimeout(() => ensureFonts().then(redraw), 150); }
+
+function updateHint() {
+  let t = '';
+  if (photoImg && armed) t = `「${armed.custom ? '自由なラベル' : (byId(armed.item) || {}).name || ''}」の場所をタップ`;
+  else if (photoImg && !photo.anns.length) t = `${matchMedia('(max-width: 900px)').matches ? '下' : '右'}のリストから機材を選んでください`;
+  $('#stageHint').textContent = t;
+}
+
+function renderPhoto() {
+  const has = !!photoImg;
+  $('#drop').hidden = has;
+  const cv = $('#photoCanvas');
+  cv.hidden = !has;
+  if (has && (cv.width !== photoImg.naturalWidth || cv.height !== photoImg.naturalHeight)) {
+    cv.width = photoImg.naturalWidth; cv.height = photoImg.naturalHeight;
+  }
+  document.querySelectorAll('.seg[data-opt]').forEach(sg => {
+    sg.querySelectorAll('button').forEach(bt => bt.setAttribute('aria-pressed', String(photo[sg.dataset.opt] === bt.dataset.v)));
+  });
+  $('#sizeRange').value = photo.size;
+  renderPickList();
+  renderAnnList();
+  updateHint();
+  refreshText();
+}
+
+function renderPickList() {
+  const placed = new Set(photo.anns.map(a => a.item).filter(Boolean));
+  const items = state.items.filter(i => !placed.has(i.id));
+  const btn = (attrs, label, pressed, cls = '') => `<button type="button" class="pick ${cls}" ${attrs} aria-pressed="${pressed}" title="${esc(label)}">${esc(label)}</button>`;
+  let html = items.map(i => btn(`data-arm="${i.id}"`, i.name, !!(armed && armed.item === i.id))).join('');
+  html += btn('data-arm-custom', '＋ 自由なラベル', !!(armed && armed.custom), 'custom');
+  if (!state.items.length) html = `<span class="hint">「構成リスト」で機材を追加すると、ここから選べます。</span> ` + html;
+  else if (!items.length) html = `<span class="hint">すべての機材を置きました。</span> ` + html;
+  $('#pickList').innerHTML = html;
+}
+
+function renderAnnList() {
+  $('#annCount').textContent = photo.anns.length ? `${photo.anns.length}件` : '';
+  if (!photo.anns.length) { $('#annList').innerHTML = `<span class="hint">まだありません。</span>`; return; }
+  const curves = [['a', 'カーブ'], ['b', '逆カーブ'], ['s', 'まっすぐ']];
+  $('#annList').innerHTML = photo.anns.map(a => `<div class="ann${a.id === selAnn ? ' sel' : ''}" data-ann="${a.id}">
+    <div class="ann-grid">
+      <input class="text" data-af="brand" value="${esc(a.brand)}" placeholder="ブランド" aria-label="ブランド" maxlength="40">
+      <input class="text" data-af="price" value="${esc(a.price)}" placeholder="価格（例: ¥12,000）" aria-label="価格" maxlength="40">
+      <input class="text full" data-af="name" value="${esc(a.name)}" placeholder="機材名" aria-label="機材名" maxlength="60">
+    </div>
+    <div class="ann-foot">
+      <span class="seg" data-curve>${curves.map(([v, l]) => `<button type="button" data-v="${v}" aria-pressed="${(a.curve || 'a') === v}">${l}</button>`).join('')}</span>
+      <button class="x" type="button" data-ann-remove aria-label="${esc(a.name)} のラベルを消す">×</button>
+    </div>
+  </div>`).join('');
+}
+
+function placeAt(x, y) {
+  const it = armed.item ? byId(armed.item) : null;
+  const [brand, name] = it ? splitBrand(it.name) : ['', 'ラベル'];
+  const a = { id: (photo.seq++).toString(36), item: it ? it.id : null, brand, name, price: it && it.price ? yen(it.price) : '', tx: x, ty: y, lx: 0, ly: 0, curve: 'a' };
+  const W = photoImg.naturalWidth, H = photoImg.naturalHeight, b = pBase();
+  const box = labelBox($('#photoCanvas').getContext('2d'), a);
+  const off = b * 3, m = b * 0.6;
+  // 横にずらして置くと、矢印がきれいなカーブになる
+  a.lx = x < W * 0.5 ? x + b * 1.2 : x - box.w - b * 1.2;
+  a.lx = Math.min(W - box.w - m, Math.max(m, a.lx));
+  a.ly = y > H * 0.35 ? y - off - box.h : y + off;
+  a.ly = Math.min(H - box.h - m, Math.max(m, a.ly));
+  photo.anns.push(a);
+  selAnn = a.id; armed = null;
+  savePhoto();
+  renderPhoto();
+}
+
+function hitTest(p) {
+  const k = stageScale(), ctx = $('#photoCanvas').getContext('2d');
+  for (let i = photo.anns.length - 1; i >= 0; i--) {
+    const a = photo.anns[i];
+    if (Math.hypot(p.x - a.tx, p.y - a.ty) < 16 * k) return { a, part: 'tip' };
+  }
+  for (let i = photo.anns.length - 1; i >= 0; i--) {
+    const a = photo.anns[i], box = labelBox(ctx, a), pad = 8 * k;
+    if (p.x >= box.x - pad && p.x <= box.x + box.w + pad && p.y >= box.y - pad && p.y <= box.y + box.h + pad) return { a, part: 'label' };
+  }
+  return null;
+}
+
+function selectAnn(id) {
+  selAnn = id;
+  document.querySelectorAll('.ann').forEach(el => el.classList.toggle('sel', el.dataset.ann === id));
+  redraw();
+}
+
+function exportPhoto() {
+  if (!photoImg) { toast('先に写真を選んでください'); return; }
+  ensureFonts().then(() => {
+    const cv = document.createElement('canvas');
+    cv.width = photoImg.naturalWidth; cv.height = photoImg.naturalHeight;
+    drawPhoto(cv.getContext('2d'), true);
+    cv.toBlob(bl => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(bl); a.download = 'desk-photo.jpg'; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }, 'image/jpeg', 0.92);
+  });
+}
+
+function setTab(t) {
+  tab = t;
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+  $('#listView').hidden = t !== 'list';
+  $('#listActions').hidden = t !== 'list';
+  $('#photoView').hidden = t !== 'photo';
+  try { localStorage.setItem('desk-setup:tab', t); } catch (e) {}
+  if (t === 'photo') renderPhoto();
+}
+
+function wirePhoto() {
+  document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+  document.querySelectorAll('[data-photo-file]').forEach(inp => inp.addEventListener('change', e => {
+    setPhotoFile(e.target.files[0]); e.target.value = '';
+  }));
+  const stage = $('#stage');
+  stage.addEventListener('dragover', e => { e.preventDefault(); stage.classList.add('over'); $('#drop').classList.add('over'); });
+  stage.addEventListener('dragleave', () => { stage.classList.remove('over'); $('#drop').classList.remove('over'); });
+  stage.addEventListener('drop', e => {
+    e.preventDefault(); stage.classList.remove('over'); $('#drop').classList.remove('over');
+    setPhotoFile(e.dataTransfer.files[0]);
+  });
+
+  const cv = $('#photoCanvas');
+  cv.addEventListener('pointerdown', e => {
+    if (!photoImg) return;
+    const p = toPhoto(e), hit = hitTest(p);
+    if (hit) {
+      drag = { a: hit.a, part: hit.part, dx: p.x - (hit.part === 'tip' ? hit.a.tx : hit.a.lx), dy: p.y - (hit.part === 'tip' ? hit.a.ty : hit.a.ly) };
+      cv.setPointerCapture(e.pointerId);
+      if (selAnn !== hit.a.id) selectAnn(hit.a.id);
+      return;
+    }
+    if (armed) { placeAt(p.x, p.y); return; }
+    if (selAnn) { selectAnn(null); return; }
+    toast(state.items.length ? 'ラベルにする機材を、先にリストから選んでください' : '「構成リスト」で機材を追加するか、「自由なラベル」を選んでください');
+  });
+  cv.addEventListener('pointermove', e => {
+    if (!drag) {
+      if (photoImg && e.pointerType === 'mouse') { const h = hitTest(toPhoto(e)); cv.style.cursor = h ? (h.part === 'tip' ? 'grab' : 'move') : armed ? 'crosshair' : 'default'; }
+      return;
+    }
+    const p = toPhoto(e), W = photoImg.naturalWidth, H = photoImg.naturalHeight;
+    const x = Math.min(W, Math.max(0, p.x - drag.dx)), y = Math.min(H, Math.max(0, p.y - drag.dy));
+    if (drag.part === 'tip') { drag.a.tx = x; drag.a.ty = y; } else { drag.a.lx = x; drag.a.ly = y; }
+    redraw();
+  });
+  const end = () => { if (drag) { drag = null; savePhoto(); } };
+  cv.addEventListener('pointerup', end);
+  cv.addEventListener('pointercancel', end);
+
+  $('#pickList').addEventListener('click', e => {
+    const b = e.target.closest('.pick'); if (!b) return;
+    if (b.hasAttribute('data-arm-custom')) armed = armed && armed.custom ? null : { custom: true };
+    else armed = armed && armed.item === b.dataset.arm ? null : { item: b.dataset.arm };
+    if (!photoImg && armed) toast('先に写真を選んでください');
+    renderPickList(); updateHint();
+  });
+
+  const list = $('#annList');
+  list.addEventListener('input', e => {
+    const f = e.target.dataset.af, el = e.target.closest('.ann'); if (!f || !el) return;
+    const a = photo.anns.find(x => x.id === el.dataset.ann); if (!a) return;
+    a[f] = e.target.value;
+    savePhoto(); refreshText();
+  });
+  list.addEventListener('focusin', e => { const el = e.target.closest('.ann'); if (el && el.dataset.ann !== selAnn) selectAnn(el.dataset.ann); });
+  list.addEventListener('click', e => {
+    const el = e.target.closest('.ann'); if (!el) return;
+    const a = photo.anns.find(x => x.id === el.dataset.ann); if (!a) return;
+    if (e.target.closest('[data-ann-remove]')) {
+      photo.anns = photo.anns.filter(x => x !== a);
+      if (selAnn === a.id) selAnn = null;
+      savePhoto(); renderPhoto(); return;
+    }
+    const cb = e.target.closest('[data-curve] button');
+    if (cb) { a.curve = cb.dataset.v; savePhoto(); renderAnnList(); selectAnn(a.id); }
+  });
+
+  document.querySelectorAll('.seg[data-opt]').forEach(sg => sg.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    photo[sg.dataset.opt] = b.dataset.v; savePhoto(); renderPhoto();
+  }));
+  $('#sizeRange').addEventListener('input', e => { photo.size = Number(e.target.value); redraw(); });
+  $('#sizeRange').addEventListener('change', savePhoto);
+
+  $('#photoSave').addEventListener('click', exportPhoto);
+  $('#photoClear').addEventListener('click', () => {
+    if (!photoImg && !photo.anns.length) return;
+    if (!confirm('写真と、置いたラベルをすべて消しますか？')) return;
+    photoImg = null; photo.anns = []; selAnn = null; armed = null;
+    try { localStorage.removeItem(PHOTO_IMG_KEY); } catch (e) {}
+    savePhoto(); renderPhoto();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (tab !== 'photo' || !selAnn || e.target.closest('input, textarea, select')) return;
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      photo.anns = photo.anns.filter(a => a.id !== selAnn); selAnn = null; savePhoto(); renderPhoto();
+    }
+    if (e.key === 'Escape') { armed = null; selectAnn(null); renderPickList(); updateHint(); }
+  });
+  window.addEventListener('resize', redraw);
+  if (document.fonts) document.fonts.addEventListener('loadingdone', redraw);
+}
+
+async function initPhoto() {
+  wirePhoto();
+  const img = loadPhoto();
+  if (img) { try { photoImg = await loadImage(img); } catch (e) { photoImg = null; } }
+  let t = 'list';
+  try { t = localStorage.getItem('desk-setup:tab') || 'list'; } catch (e) {}
+  setTab(t === 'photo' ? 'photo' : 'list');
+}
+
 async function init() {
   wire();
   renderChips();
@@ -1161,6 +1642,7 @@ async function init() {
   }
   syncHead();
   render();
+  await initPhoto();
 }
 init();
 </script>
