@@ -1,0 +1,3169 @@
+[
+ {
+  "id": "mba-m2",
+  "cat": "computer",
+  "name": "MacBook Air 13\" (M2)",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "tb": 2
+   },
+   "out": {
+    "tb": "dp1.4"
+   },
+   "maxDisp": 1,
+   "chargeW": 30,
+   "magsafe": true
+  },
+  "dim": [
+   30.41,
+   21.5,
+   1.13
+  ],
+  "currentDim": [
+   30.4,
+   21.5,
+   1.1
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://support.apple.com/ja-jp/111867"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "chargeW: 8コアGPUモデルの付属は30W（10コアGPU+512GBは35Wデュアル）。カタログは35W"
+  ],
+  "notes": "販売終了モデルのため価格なし。Thunderbolt / USB 4 ×2、外部ディスプレイ1台（6K60）。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mba-m3",
+  "cat": "computer",
+  "name": "MacBook Air (M3)",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "tb": 2
+   },
+   "out": {
+    "tb": "dp1.4"
+   },
+   "maxDisp": 1,
+   "clamDisp": 2,
+   "chargeW": 30,
+   "magsafe": true
+  },
+  "dim": [
+   30.41,
+   21.5,
+   1.13
+  ],
+  "currentDim": [
+   30.4,
+   21.5,
+   1.1
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://support.apple.com/ja-jp/118551"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "chargeW: 8コアGPUモデルは30W付属（35Wは上位構成）。カタログは35W"
+  ],
+  "notes": "13インチの寸法。15インチ(M3)は別モデル。蓋を閉じると2台目（5K60）に対応。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mba-m4",
+  "cat": "computer",
+  "name": "MacBook Air (M4)",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "tb": 2
+   },
+   "out": {
+    "tb": "dp1.4"
+   },
+   "maxDisp": 2,
+   "chargeW": 30,
+   "magsafe": true
+  },
+  "dim": [
+   30.41,
+   21.5,
+   1.13
+  ],
+  "currentDim": [
+   30.4,
+   21.5,
+   1.1
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://support.apple.com/ja-jp/122209"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "chargeW: 8コアGPUは30W、10コアGPUは35Wデュアル付属。カタログは35W（許容範囲）"
+  ],
+  "notes": "13インチの寸法。Apple Storeの現行品はM5に置き換わっている（下記 mba13-m5）。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mbp14-m4",
+  "cat": "computer",
+  "name": "MacBook Pro 14\" (M4)",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp1.4",
+    "hdmi": "hdmi2.1"
+   },
+   "maxDisp": 2,
+   "chargeW": 70,
+   "magsafe": true
+  },
+  "dim": [
+   31.26,
+   22.12,
+   1.55
+  ],
+  "currentDim": [
+   31.3,
+   22.1,
+   1.6
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://support.apple.com/ja-jp/121552"
+  ],
+  "confidence": "high",
+  "notes": "Thunderbolt 4 ×3・HDMI（8K60 / 4K240）。DP 1.4。70W付属（96Wで高速充電）。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mbp14-m4pro",
+  "cat": "computer",
+  "name": "MacBook Pro 14\" (M4 Pro)",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp2.1",
+    "hdmi": "hdmi2.1"
+   },
+   "maxDisp": 2,
+   "chargeW": 96,
+   "magsafe": true
+  },
+  "dim": [
+   31.26,
+   22.12,
+   1.55
+  ],
+  "currentDim": [
+   31.3,
+   22.1,
+   1.6
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://support.apple.com/ja-jp/121553"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "out.tb: Thunderbolt 5 で「USB-C経由でDisplayPort 2.1出力」。MAC() の既定値 dp1.4 は誤り → dp2.1",
+   "chargeW: 12コアCPUは70W、14コアCPUは96W付属"
+  ],
+  "notes": "Thunderbolt 5 ×3。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mbp16-m4pro",
+  "cat": "computer",
+  "name": "MacBook Pro 16\" (M4 Pro)",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp2.1",
+    "hdmi": "hdmi2.1"
+   },
+   "maxDisp": 2,
+   "chargeW": 140,
+   "magsafe": true
+  },
+  "dim": [
+   35.57,
+   24.81,
+   1.68
+  ],
+  "currentDim": [
+   35.6,
+   24.8,
+   1.7
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://support.apple.com/ja-jp/121554"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "out.tb: dp1.4 → dp2.1（Thunderbolt 5）"
+  ],
+  "notes": "140W付属。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mbp16-m4max",
+  "cat": "computer",
+  "name": "MacBook Pro 16\" (M4 Max)",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp2.1",
+    "hdmi": "hdmi2.1"
+   },
+   "maxDisp": 4,
+   "chargeW": 140,
+   "magsafe": true
+  },
+  "dim": [
+   35.57,
+   24.81,
+   1.68
+  ],
+  "currentDim": [
+   35.6,
+   24.8,
+   1.7
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://support.apple.com/ja-jp/121554"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "out.tb: dp1.4 → dp2.1（Thunderbolt 5）"
+  ],
+  "notes": "最大4台（Thunderbolt 3台 + HDMI 1台）。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "macmini-m4",
+  "cat": "computer",
+  "name": "Mac mini (M4)",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "usbc": 2,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp1.4"
+   },
+   "maxDisp": 3,
+   "chargeW": 0,
+   "magsafe": false
+  },
+  "dim": [
+   12.7,
+   12.7,
+   5.0
+  ],
+  "currentDim": [
+   12.7,
+   12.7,
+   5
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://support.apple.com/ja-jp/121555"
+  ],
+  "confidence": "high",
+  "notes": "前面USB-C（10Gb/s）×2、背面Thunderbolt 4 ×3・HDMI。現行はM6（下記）。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "macmini-m4pro",
+  "cat": "computer",
+  "name": "Mac mini (M4 Pro)",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "usbc": 2,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp2.1"
+   },
+   "maxDisp": 3,
+   "chargeW": 0,
+   "magsafe": false
+  },
+  "dim": [
+   12.7,
+   12.7,
+   5.0
+  ],
+  "currentDim": [
+   12.7,
+   12.7,
+   5
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://support.apple.com/ja-jp/121555"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "out.tb: dp1.4 → dp2.1（M4 Pro は Thunderbolt 5）"
+  ],
+  "notes": "",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "macstudio-m4max",
+  "cat": "computer",
+  "name": "Mac Studio (M4 Max)",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "tb": 4,
+    "usbc": 2,
+    "usba": 2,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp2.1",
+    "hdmi": "hdmi2.1"
+   },
+   "maxDisp": 5,
+   "chargeW": 0,
+   "magsafe": false
+  },
+  "dim": [
+   19.7,
+   19.7,
+   9.5
+  ],
+  "currentDim": [
+   19.7,
+   19.7,
+   9.5
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://support.apple.com/ja-jp/122211"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "out.tb: dp1.4 → dp2.1（Thunderbolt 5）"
+  ],
+  "notes": "背面 Thunderbolt 5 ×4・USB-A(5Gb/s) ×2・HDMI 2.1、前面 USB-C ×2（M3 Ultra は前面も Thunderbolt 5）。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "studio-display",
+  "cat": "monitor",
+  "name": "Apple Studio Display",
+  "existing": true,
+  "spec": {
+   "w": 5120,
+   "h": 2880,
+   "hz": 60,
+   "in": {
+    "tb": "dp1.4"
+   },
+   "pdW": 96,
+   "dsc": true,
+   "ports": {
+    "usbc": 3
+   }
+  },
+  "dim": [
+   62.3,
+   16.8,
+   47.8
+  ],
+  "dimHeightAdjust": [
+   62.3,
+   20.7,
+   47.9
+  ],
+  "dimMax": 58.3,
+  "panelDim": [
+   62.3,
+   3.1,
+   36.2
+  ],
+  "currentDim": [
+   62.3,
+   16.8,
+   47.8
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://www.apple.com/jp/studio-display/specs/"
+  ],
+  "confidence": "high",
+  "notes": "寸法は現行（2026年版）の仕様ページ。傾き調整スタンド 62.3×16.8×47.8、傾きと高さ調整スタンド 奥行20.7・高さ47.9〜58.3、VESA 3.1×36.2。Appleの現行品は Thunderbolt 5 版（下記 studio-display-tb5）に変わっていて、カタログの spec（TB上流＋USB-C×3）は旧モデルのもの。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "u2723qe",
+  "cat": "monitor",
+  "name": "Dell U2723QE",
+  "existing": true,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 60,
+   "in": {
+    "usbc": "dp1.4",
+    "hdmi": "hdmi2.0",
+    "dp": "dp1.4"
+   },
+   "pdW": 90,
+   "dsc": true,
+   "ports": {
+    "usba": 5,
+    "usbc": 1
+   }
+  },
+  "dim": [
+   61.14,
+   18.5,
+   38.52
+  ],
+  "dimMax": 53.52,
+  "panelDim": [
+   61.14,
+   5.43,
+   35.3
+  ],
+  "currentDim": [
+   61.1,
+   18.5,
+   38.5
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://dl.dell.com/content/manual12109242-dell-u2723qe-monitor-user-s-guide.pdf?language=en-us"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "dsc: 取扱説明書では USB-C・DP入力とも「DP1.4 with DSC support」→ true",
+   "ports.usba: 背面4＋前面クイックアクセス1＝5（カタログは4）"
+  ],
+  "notes": "Dell日本・米国ストアとも販売ページなし（販売終了とみられる）。DP出力（デイジーチェーン）・RJ45あり。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "u2724de",
+  "cat": "monitor",
+  "name": "Dell U2724DE",
+  "existing": true,
+  "spec": {
+   "w": 2560,
+   "h": 1440,
+   "hz": 120,
+   "in": {
+    "tb": "dp1.4",
+    "hdmi": "hdmi2.0",
+    "dp": "dp1.4"
+   },
+   "pdW": 90,
+   "dsc": null,
+   "ports": {
+    "usba": 4,
+    "usbc": 1,
+    "tb": 1
+   }
+  },
+  "dim": [
+   61.22,
+   19.23,
+   38.56
+  ],
+  "dimMax": 53.56,
+  "panelDim": [
+   61.22,
+   5.01,
+   35.25
+  ],
+  "currentDim": null,
+  "dimStatus": "missing",
+  "price": null,
+  "sources": [
+   "https://dl.dell.com/content/manual17050394-dell-ultrasharp-27-thunderbolt-hub-monitor-u2724de-user-s-guide.pdf?language=en-us"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "in.usbc → in.tb: 上流ポートは Thunderbolt 4（DP1.4 Alt・PD 90W）",
+   "HDMI は「HDMI 2.1 規定の VRR、QHD 120Hz TMDS」＝帯域は HDMI 2.0 相当なので hdmi2.0 のままで可",
+   "dsc: マニュアルに記載なし → null",
+   "ports: USB-A 背面3＋前面1＝4、USB-C 前面1（15W）、TB4 下流1（デイジーチェーン用）"
+  ],
+  "notes": "Dell日本ストアに販売ページなし。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "27up850n",
+  "cat": "monitor",
+  "name": "LG 27UP850N-W",
+  "existing": true,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 60,
+   "in": {
+    "usbc": "dp1.4",
+    "hdmi": null,
+    "dp": "dp1.4"
+   },
+   "pdW": 90,
+   "dsc": null,
+   "ports": {
+    "usba": 2
+   }
+  },
+  "dim": [
+   61.4,
+   29.3,
+   45.9
+  ],
+  "dimMax": 56.9,
+  "panelDim": [
+   61.4,
+   4.5,
+   36.4
+  ],
+  "currentDim": null,
+  "dimStatus": "missing",
+  "price": null,
+  "sources": [
+   "https://www.lg.com/jp/monitors/4k-5k-monitors/27up850n-w/"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "pdW: 公式は USB PD 最大 90W（カタログは96）",
+   "in.hdmi: HDMI入力×2だがバージョン記載なし（4K 40–60Hz）",
+   "in.usbc: DP Alt Mode 対応とだけ記載（バージョン記載なし）"
+  ],
+  "notes": "後継 27UP850K-W（下記）が現行。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "pa279crv",
+  "cat": "monitor",
+  "name": "ASUS ProArt PA279CRV",
+  "existing": true,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 60,
+   "in": {
+    "usbc": null,
+    "hdmi": "hdmi2.0",
+    "dp": "dp1.4"
+   },
+   "pdW": 96,
+   "dsc": null,
+   "ports": {
+    "usba": 3,
+    "usbc": 1
+   }
+  },
+  "dim": [
+   61.22,
+   21.5,
+   40.81
+  ],
+  "dimAsListed": [
+   61.22,
+   21.5,
+   53.81
+  ],
+  "panelDim": [
+   61.22,
+   4.41,
+   36.29
+  ],
+  "currentDim": null,
+  "dimStatus": "missing",
+  "price": 68800,
+  "sources": [
+   "https://www.asus.com/jp/displays-desktops/monitors/proart/proart-display-pa279crv/techspec/",
+   "https://search.kakaku.com/ASUS%20PA279CRV/"
+  ],
+  "confidence": "medium",
+  "specIssues": [
+   "ports: USBハブは USB-C ×1 ＋ USB-A ×3（USB 3.2 Gen1）。カタログは usba:2",
+   "DP 1.4 ×2 はデイジーチェーン用（入力1・出力1）"
+  ],
+  "notes": "公式の「スタンド含む」高さは 53.81cm の1値のみ（高さ調整 0〜130mm）。最低位置は 53.81−13.0＝40.81cm と計算（推定）。価格は価格.com最安。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "32gs95ue",
+  "cat": "monitor",
+  "name": "LG UltraGear 32GS95UE",
+  "existing": true,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 240,
+   "in": {
+    "hdmi": null,
+    "dp": "dp1.4"
+   },
+   "pdW": 0,
+   "dsc": true,
+   "ports": {
+    "usba": 2
+   }
+  },
+  "dim": [
+   71.4,
+   27.9,
+   50.7
+  ],
+  "dimMax": 62.7,
+  "panelDim": [
+   71.4,
+   6.5,
+   41.2
+  ],
+  "currentDim": null,
+  "dimStatus": "missing",
+  "price": null,
+  "sources": [
+   "https://www.lg.com/jp/monitors/gaming-monitors/32gs95ue-b/"
+  ],
+  "confidence": "high",
+  "notes": "Dual-Mode 4K 240Hz / FHD 480Hz。VESA DSC 対応。HDMI×2 のバージョンは日本語仕様表に記載なし。USB-C なし。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "odyssey-g9",
+  "cat": "monitor",
+  "name": "Samsung Odyssey OLED G9 49\"",
+  "existing": true,
+  "spec": {
+   "w": 5120,
+   "h": 1440,
+   "hz": 240,
+   "in": {
+    "hdmi": "hdmi2.1",
+    "dp": "dp1.4"
+   },
+   "pdW": 0,
+   "dsc": null,
+   "ports": {
+    "usba": 3
+   }
+  },
+  "dim": [
+   119.47,
+   23.69,
+   52.93
+  ],
+  "panelDim": [
+   119.47,
+   18.08,
+   36.5
+  ],
+  "currentDim": null,
+  "dimStatus": "missing",
+  "price": null,
+  "sources": [
+   "https://www.samsung.com/ca/monitors/gaming/odyssey-oled-g9-g95sc-49-inch-240hz-curved-dual-qhd-ls49cg954snxza/"
+  ],
+  "confidence": "low",
+  "notes": "G95SC（LS49CG954）の海外公式仕様。スタンド込み高さは52.93cmの1値のみで、最低位置か最高位置か不明（高さ調整120mm）。micro HDMI 2.1 も1つあり。日本では正規販売されておらず（samsung.com/jp はモニター扱いなし）、G95SD等の並行輸入のみ。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "caldigit-ts4",
+  "cat": "dock",
+  "name": "CalDigit TS4",
+  "existing": true,
+  "spec": {
+   "up": "tb",
+   "ports": {
+    "tb": 2,
+    "usbc": 3,
+    "usba": 5,
+    "dp": 1
+   },
+   "out": {
+    "tb": "dp1.4",
+    "dp": "dp1.4"
+   },
+   "pdW": 98
+  },
+  "dim": [
+   14.1,
+   11.3,
+   4.2
+  ],
+  "dimVertical": [
+   4.2,
+   11.3,
+   14.1
+  ],
+  "currentDim": [
+   14,
+   11.3,
+   4.2
+  ],
+  "dimStatus": "ok",
+  "price": null,
+  "sources": [
+   "https://www.caldigit.com/thunderbolt-station-4/"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "ports.tb: 「3 x Thunderbolt 4」はホスト用1つを含む。下流は2つ（各15W）→ tb:2"
+  ],
+  "notes": "公式寸法 高さ14.1×幅4.2×長さ11.3cm（縦置き）。横置きなら 14.1×11.3×4.2。前面USB-C 1つは20W。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "hhkb-hybrid",
+  "cat": "keyboard",
+  "name": "HHKB Professional HYBRID Type-S",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "bt",
+    "usbc"
+   ]
+  },
+  "dim": [
+   29.4,
+   12.0,
+   4.0
+  ],
+  "currentDim": [
+   29.4,
+   12,
+   4
+  ],
+  "dimStatus": "ok",
+  "price": 36750,
+  "sources": [
+   "https://happyhackingkb.com/jp/products/hybrid_types/",
+   "https://search.kakaku.com/HHKB%20Professional%20HYBRID%20Type-S/"
+  ],
+  "confidence": "high",
+  "notes": "Bluetooth 4.2 LE（4台）＋USB Type-C（ケーブル別売）。単3×2またはUSB給電。高さはキートップ上面まで。価格は価格.com最安。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "realforce-r3",
+  "cat": "keyboard",
+  "name": "REALFORCE R3",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "bt",
+    "usbc"
+   ]
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "currentDim": null,
+  "dimStatus": "unverified",
+  "price": null,
+  "sources": [
+   "https://pc.watch.impress.co.jp/docs/news/1360965.html",
+   "https://kakaku.com/item/K0001456965/spec/"
+  ],
+  "confidence": "low",
+  "notes": "realforce.co.jp は Cloudflare で取得不可。フルサイズのハイブリッド（R3HA11）の寸法は検索結果で 456×163×39mm と 465×163×30mm が食い違い、開けたページでは確認できず。テンキーレス（R3HC11）はレビューで 約379×163×30mm（下記 realforce-r3-tkl）。Bluetooth 5.0（4台）＋USB Type-C、単3×2 または USB給電。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "keychron-q1max",
+  "cat": "keyboard",
+  "name": "Keychron Q1 Max",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver",
+    "usbc"
+   ]
+  },
+  "dim": [
+   32.75,
+   14.5,
+   3.18
+  ],
+  "currentDim": null,
+  "dimStatus": "missing",
+  "price": 43890,
+  "sources": [
+   "https://www.keychron.com/products/keychron-q1-max-qmk-via-wireless-custom-mechanical-keyboard",
+   "https://keychron.jp/products/keychron-q1-max-qmk-via-jis"
+  ],
+  "confidence": "high",
+  "notes": "高さはキーキャップなしの後端 3.18cm（前端 2.07cm）。キーキャップ込みの値は非公開。価格は Keychron Japan の JIS 版。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mx-keys-s",
+  "cat": "keyboard",
+  "name": "Logicool MX Keys S",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver"
+   ]
+  },
+  "dim": [
+   43.02,
+   13.16,
+   2.05
+  ],
+  "currentDim": [
+   43,
+   13.2,
+   2.1
+  ],
+  "dimStatus": "ok",
+  "price": 21780,
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/mx-keys-s"
+  ],
+  "confidence": "high",
+  "notes": "Logi Bolt レシーバー同梱。USB-C 充電。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mx-mech-mini",
+  "cat": "keyboard",
+  "name": "Logicool MX Mechanical Mini",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver"
+   ]
+  },
+  "dim": [
+   31.26,
+   13.16,
+   2.61
+  ],
+  "currentDim": [
+   31.3,
+   13.2,
+   2.6
+  ],
+  "dimStatus": "ok",
+  "price": 22220,
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/mx-mechanical-mini"
+  ],
+  "confidence": "high",
+  "notes": "",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "magic-kb",
+  "cat": "keyboard",
+  "name": "Apple Magic Keyboard（Touch ID）",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "bt",
+    "usbc"
+   ]
+  },
+  "dim": [
+   27.89,
+   11.49,
+   1.09
+  ],
+  "currentDim": [
+   27.9,
+   11.5,
+   1.1
+  ],
+  "dimStatus": "ok",
+  "price": 21800,
+  "sources": [
+   "https://www.apple.com/jp/shop/product/MXCK3J/A"
+  ],
+  "confidence": "high",
+  "notes": "JIS・テンキーなし。高さ 0.41〜1.09cm。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mx-master-3s",
+  "cat": "mouse",
+  "name": "Logicool MX Master 3S",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver"
+   ]
+  },
+  "dim": [
+   8.43,
+   12.49,
+   5.1
+  ],
+  "currentDim": [
+   8.4,
+   12.5,
+   5.1
+  ],
+  "dimStatus": "ok",
+  "price": 17820,
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/mx-master-3s"
+  ],
+  "confidence": "high",
+  "notes": "Bolt レシーバーは標準エディションのみ付属。セール価格 16,200円。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mx-ergo-s",
+  "cat": "mouse",
+  "name": "Logicool MX ERGO S",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver"
+   ]
+  },
+  "dim": [
+   9.98,
+   13.25,
+   5.14
+  ],
+  "currentDim": [
+   10,
+   13.3,
+   5.1
+  ],
+  "dimStatus": "ok",
+  "price": 19580,
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/mx-ergo-s-wireless-trackball-mouse"
+  ],
+  "confidence": "high",
+  "notes": "同梱物に Logi Bolt レシーバー。Bluetooth 対応は今回開いたページの抽出範囲では未確認（カタログ値を維持）。セール 17,800円。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "gpx-sl2",
+  "cat": "mouse",
+  "name": "Logicool G PRO X SUPERLIGHT 2",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "receiver",
+    "usbc"
+   ]
+  },
+  "dim": [
+   6.35,
+   12.5,
+   4.0
+  ],
+  "currentDim": [
+   6.4,
+   12.5,
+   4
+  ],
+  "dimStatus": "ok",
+  "price": 26950,
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/pro-x2-superlight-wireless-mouse"
+  ],
+  "confidence": "high",
+  "notes": "LIGHTSPEED USB レシーバー＋USB A-C ケーブル同梱。セール 24,500円。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "magic-trackpad",
+  "cat": "mouse",
+  "name": "Apple Magic Trackpad",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "bt",
+    "usbc"
+   ]
+  },
+  "dim": [
+   16.0,
+   11.49,
+   1.09
+  ],
+  "currentDim": [
+   16,
+   11.5,
+   1.1
+  ],
+  "dimStatus": "ok",
+  "price": 18800,
+  "sources": [
+   "https://www.apple.com/jp/shop/product/MXK93ZA/A"
+  ],
+  "confidence": "high",
+  "notes": "USB-C 版。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "magic-mouse",
+  "cat": "mouse",
+  "name": "Apple Magic Mouse",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "bt",
+    "usbc"
+   ]
+  },
+  "dim": [
+   5.71,
+   11.35,
+   2.16
+  ],
+  "currentDim": [
+   5.7,
+   11.4,
+   2.2
+  ],
+  "dimStatus": "ok",
+  "price": 10800,
+  "sources": [
+   "https://www.apple.com/jp/shop/product/MXK53ZA/A"
+  ],
+  "confidence": "high",
+  "notes": "USB-C 版（ホワイト）。充電端子は底面。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "pebble",
+  "cat": "audio",
+  "name": "Creative Pebble V3",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "usbc",
+    "bt"
+   ],
+   "chargeW": 10
+  },
+  "dim": [
+   12.3,
+   12.0,
+   11.8
+  ],
+  "currentDim": null,
+  "dimStatus": "missing",
+  "price": 4384,
+  "sources": [
+   "https://jp.creative.com/p/speakers/creative-pebble-v3"
+  ],
+  "confidence": "high",
+  "notes": "寸法は「各サテライトスピーカー 約123×120×118mm」（縦横の順は記載なし）。2台1組。高ゲインモードは 10W（5V/2A）の USB-C 給電が必要。USB オーディオ・Bluetooth 5.0・3.5mm 入力。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "wh1000xm6",
+  "cat": "audio",
+  "name": "Sony WH-1000XM6",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "bt"
+   ]
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "currentDim": null,
+  "dimStatus": "unverified",
+  "price": 51200,
+  "sources": [
+   "https://kakaku.com/item/K0001689794/spec/"
+  ],
+  "confidence": "medium",
+  "notes": "Bluetooth 5.3、USB Type-C 充電、254g。寸法は価格.com仕様に記載なし、ソニー公式は未取得。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "c920n",
+  "cat": "camera",
+  "name": "Logicool C920n",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "usba"
+   ]
+  },
+  "dim": [
+   9.4,
+   7.1,
+   4.33
+  ],
+  "currentDim": [
+   9.4,
+   7.1,
+   4.3
+  ],
+  "dimStatus": "ok",
+  "price": 9680,
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/hd-pro-webcam-c920n"
+  ],
+  "confidence": "high",
+  "notes": "クリップ込み。USB-A ケーブル 1.5m 一体。セール 8,800円。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "facecam-mk2",
+  "cat": "camera",
+  "name": "Elgato Facecam MK.2",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "usbc"
+   ]
+  },
+  "dim": [
+   8.4,
+   6.1,
+   3.8
+  ],
+  "currentDim": null,
+  "dimStatus": "missing",
+  "price": 19615,
+  "sources": [
+   "https://www.elgato.com/jp/ja/p/facecam-mk2",
+   "https://kakaku.com/item/K0001616520/spec/"
+  ],
+  "confidence": "high",
+  "notes": "公式 幅84×高さ38×奥行61mm（マウント含まず）。USB Type-C（USB 3.0）、USB-C to C ケーブル同梱。価格は価格.com最安。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mv7plus",
+  "cat": "camera",
+  "name": "Shure MV7+",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "usbc"
+   ]
+  },
+  "dim": [
+   9.0,
+   20.7,
+   16.4
+  ],
+  "currentDim": null,
+  "dimStatus": "missing",
+  "price": 46530,
+  "sources": [
+   "https://www.shure.com/ja-JP/products/microphones/mv7",
+   "https://kanjitsu.com/product/mv7/",
+   "https://kakaku.com/item/K0001619951/spec/"
+  ],
+  "confidence": "medium",
+  "notes": "国内代理店の仕様「ヨーク付きのマイクロホン H164×L207×D90mm」。デスクスタンドは含まない寸法。USB-C と XLR、USB バスパワー。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "wave3",
+  "cat": "camera",
+  "name": "Elgato Wave:3",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "usbc"
+   ]
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "currentDim": null,
+  "dimStatus": "unverified",
+  "price": 28980,
+  "sources": [
+   "https://www.elgato.com/jp/ja/p/wave-3-black"
+  ],
+  "confidence": "low",
+  "notes": "公式ページは現在「Wave:3 MK.2」（28,980円）。仕様表に 46×85×167mm と 40×66×153mm（いずれもスタンドなし）の2列があり、どちらが旧Wave:3かテキストからは判別できず。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "screenbar-halo",
+  "cat": "lighting",
+  "name": "BenQ ScreenBar Halo",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "usbc",
+    "usba"
+   ],
+   "chargeW": 6.5
+  },
+  "dim": [
+   50,
+   9.5,
+   9.7
+  ],
+  "currentDim": [
+   50,
+   null,
+   null
+  ],
+  "dimStatus": "incomplete",
+  "price": null,
+  "sources": [
+   "https://www.benq.com/ja-jp/lighting/monitor-light/screenbar-halo/spec.html"
+  ],
+  "confidence": "high",
+  "specIssues": [
+   "chargeW: 電源入力 5V / 最大1.3A、消費電力 最大6.5W（カタログは5）"
+  ],
+  "notes": "ライト本体 50×9.5×9.7cm、リモコン 7.4×7.4×3.8cm。後継は Halo 2。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "key-light-air",
+  "cat": "lighting",
+  "name": "Elgato Key Light Air",
+  "existing": true,
+  "spec": {
+   "conn": [
+    "usbc"
+   ],
+   "chargeW": 30
+  },
+  "dim": [
+   31.9,
+   3.3,
+   20.7
+  ],
+  "currentDim": null,
+  "dimStatus": "missing",
+  "price": 26160,
+  "sources": [
+   "https://www.elgato.com/jp/ja/p/key-light-air",
+   "https://search.kakaku.com/Key%20Light%20Air%20MK.2/"
+  ],
+  "confidence": "medium",
+  "notes": "公式ページは現在「Key Light Air MK.2」。パネル 幅319×高さ207×奥行33mm（寸法は W×H×D の順）、デスククランプで取り付け高さ 60〜88cm。電源は USB-C／電源アダプター／モバイルバッテリー、最大30W。旧 Key Light Air（AC アダプター）とは電源仕様が違う。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "hue-bar",
+  "cat": "lighting",
+  "name": "Philips Hue ライトバー",
+  "existing": true,
+  "spec": {
+   "conn": []
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "currentDim": null,
+  "dimStatus": "unverified",
+  "price": null,
+  "sources": [],
+  "confidence": "low",
+  "notes": "今回は公式ページを確認できず。未検証。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "apple-96w",
+  "cat": "charger",
+  "name": "Apple 96W USB-C電源アダプタ",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "usbc": 1
+   },
+   "totalW": 96,
+   "portW": 96
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "currentDim": [
+   8,
+   8,
+   2.9
+  ],
+  "dimStatus": "unverified",
+  "price": 10800,
+  "sources": [
+   "https://www.apple.com/jp/shop/product/MW2L3AM/A"
+  ],
+  "confidence": "medium",
+  "notes": "Apple の製品ページに寸法の記載なし。カタログの [8, 8, 2.9] は公式では確認できない。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "apple-140w",
+  "cat": "charger",
+  "name": "Apple 140W USB-C電源アダプタ",
+  "existing": true,
+  "spec": {
+   "ports": {
+    "usbc": 1
+   },
+   "totalW": 140,
+   "portW": 140
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "currentDim": null,
+  "dimStatus": "unverified",
+  "price": 13800,
+  "sources": [
+   "https://www.apple.com/jp/shop/product/MW2M3AM/A"
+  ],
+  "confidence": "medium",
+  "notes": "寸法の記載なし。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mba13-m5",
+  "cat": "computer",
+  "name": "MacBook Air 13\" (M5)",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "tb": 2
+   },
+   "out": {
+    "tb": "dp1.4"
+   },
+   "maxDisp": 2,
+   "chargeW": 40,
+   "dsc": true,
+   "magsafe": true
+  },
+  "dim": [
+   30.41,
+   21.5,
+   1.13
+  ],
+  "price": 224800,
+  "sources": [
+   "https://www.apple.com/jp/macbook-air/specs/",
+   "https://www.apple.com/jp/shop/buy-mac/macbook-air"
+  ],
+  "confidence": "high",
+  "notes": "Apple の現行は M5（M4 は置き換え済み）。Thunderbolt 4 ×2、DP 1.4（HBR3）＋DSC。付属は 40W ダイナミック電源アダプタ（最大60W）、35W デュアル／70W も選択可。10コアCPU・8コアGPU の最小構成価格。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mba15-m5",
+  "cat": "computer",
+  "name": "MacBook Air 15\" (M5)",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "tb": 2
+   },
+   "out": {
+    "tb": "dp1.4"
+   },
+   "maxDisp": 2,
+   "chargeW": 40,
+   "dsc": true,
+   "magsafe": true
+  },
+  "dim": [
+   34.04,
+   23.76,
+   1.15
+  ],
+  "price": 264800,
+  "sources": [
+   "https://www.apple.com/jp/macbook-air/specs/",
+   "https://www.apple.com/jp/shop/buy-mac/macbook-air"
+  ],
+  "confidence": "high",
+  "notes": "",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mbp14-m5",
+  "cat": "computer",
+  "name": "MacBook Pro 14\" (M5)",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp1.4",
+    "hdmi": null
+   },
+   "maxDisp": 2,
+   "chargeW": 70,
+   "magsafe": true
+  },
+  "dim": [
+   31.26,
+   22.12,
+   1.55
+  ],
+  "price": 339800,
+  "sources": [
+   "https://www.apple.com/jp/macbook-pro/specs/",
+   "https://www.apple.com/jp/shop/buy-mac/macbook-pro"
+  ],
+  "confidence": "high",
+  "notes": "Thunderbolt 4 ×3・HDMI。8K60/4K240 は1台まで（ポート種別の内訳記載なし）。HDMI のバージョンは仕様ページに記載なし。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mbp14-m5pro",
+  "cat": "computer",
+  "name": "MacBook Pro 14\" (M5 Pro)",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp2.1",
+    "hdmi": null
+   },
+   "maxDisp": 3,
+   "chargeW": 70,
+   "magsafe": true
+  },
+  "dim": [
+   31.26,
+   22.12,
+   1.55
+  ],
+  "price": 429800,
+  "sources": [
+   "https://www.apple.com/jp/macbook-pro/specs/",
+   "https://www.apple.com/jp/shop/buy-mac/macbook-pro"
+  ],
+  "confidence": "high",
+  "notes": "Thunderbolt 5 ×3（DP 2.1）。15コアCPUは70W、18コアCPUは96W付属。M5 Max は最大4台。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mbp16-m5pro",
+  "cat": "computer",
+  "name": "MacBook Pro 16\" (M5 Pro)",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp2.1",
+    "hdmi": null
+   },
+   "maxDisp": 3,
+   "chargeW": 140,
+   "magsafe": true
+  },
+  "dim": [
+   35.57,
+   24.81,
+   1.68
+  ],
+  "price": 519800,
+  "sources": [
+   "https://www.apple.com/jp/macbook-pro/specs/",
+   "https://www.apple.com/jp/shop/buy-mac/macbook-pro"
+  ],
+  "confidence": "high",
+  "notes": "16インチは M5 Pro(18コア) から。M5 Max 構成は最大4台・749,800円〜。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "macmini-m6",
+  "cat": "computer",
+  "name": "Mac mini (M6)",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "usbc": 2,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp1.4",
+    "hdmi": null
+   },
+   "maxDisp": 3,
+   "chargeW": 0,
+   "magsafe": false
+  },
+  "dim": [
+   12.7,
+   12.7,
+   5.0
+  ],
+  "price": 149800,
+  "sources": [
+   "https://www.apple.com/jp/mac-mini/specs/",
+   "https://www.apple.com/jp/shop/buy-mac/mac-mini"
+  ],
+  "confidence": "high",
+  "notes": "背面 Thunderbolt 4 ×3・HDMI・Ethernet、前面 USB-C(10Gb/s) ×2。3台時は HDMI 経由 4K60。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "macmini-m5pro",
+  "cat": "computer",
+  "name": "Mac mini (M5 Pro)",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "usbc": 2,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp2.1",
+    "hdmi": null
+   },
+   "maxDisp": 3,
+   "chargeW": 0,
+   "magsafe": false
+  },
+  "dim": [
+   12.7,
+   12.7,
+   5.0
+  ],
+  "price": 299800,
+  "sources": [
+   "https://www.apple.com/jp/mac-mini/specs/",
+   "https://www.apple.com/jp/shop/buy-mac/mac-mini"
+  ],
+  "confidence": "high",
+  "notes": "背面 Thunderbolt 5 ×3（DP 2.1）。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "macstudio-m5max",
+  "cat": "computer",
+  "name": "Mac Studio (M5 Max)",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "tb": 4,
+    "usbc": 2,
+    "usba": 2,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp2.1",
+    "hdmi": "hdmi2.1"
+   },
+   "maxDisp": 5,
+   "chargeW": 0,
+   "magsafe": false
+  },
+  "dim": [
+   19.7,
+   19.7,
+   9.5
+  ],
+  "price": 419800,
+  "sources": [
+   "https://www.apple.com/jp/mac-studio/specs/",
+   "https://www.apple.com/jp/shop/buy-mac/mac-studio"
+  ],
+  "confidence": "high",
+  "notes": "M5 Ultra は前面も Thunderbolt 5 ×2、最大8台、949,800円〜。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "thinkpad-x1c13",
+  "cat": "computer",
+  "name": "Lenovo ThinkPad X1 Carbon Gen 13",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "tb": 2,
+    "usba": 2,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": null,
+    "hdmi": "hdmi2.0"
+   },
+   "maxDisp": 3,
+   "chargeW": 65,
+   "magsafe": false
+  },
+  "dim": [
+   31.28,
+   21.475,
+   1.795
+  ],
+  "price": 327067,
+  "sources": [
+   "https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_X1_Carbon_Gen_13/ThinkPad_X1_Carbon_Gen_13_Spec.pdf",
+   "https://search.kakaku.com/ThinkPad%20X1%20Carbon%20Gen%2013/"
+  ],
+  "confidence": "high",
+  "notes": "PSREF: Thunderbolt 4 ×2、USB-A 5Gbps ×2、HDMI 2.1（最大4K60 → 帯域は hdmi2.0 として記録）。U/H シリーズは外部3台、V シリーズは2台。TB は最大8K60（DP版は記載なし）。65W USB-C。厚さは WUXGA 最大17.95mm（OLED 16.95mm）。価格は価格.com最安。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "u2725qe",
+  "cat": "monitor",
+  "name": "Dell U2725QE",
+  "existing": false,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 120,
+   "in": {
+    "tb": "dp1.4",
+    "hdmi": "hdmi2.1",
+    "dp": "dp1.4"
+   },
+   "pdW": 140,
+   "dsc": true,
+   "ports": {
+    "tb": 1,
+    "usbc": 2,
+    "usba": 5
+   }
+  },
+  "dim": [
+   61.24,
+   18.9,
+   38.57
+  ],
+  "dimMax": 53.57,
+  "panelDim": [
+   61.24,
+   5.56,
+   35.35
+  ],
+  "price": 102886,
+  "sources": [
+   "https://www.dell.com/ja-jp/shop/monitors/apd/x/u2725qe_monitor/-",
+   "https://www.dell.com/en-us/shop/dell-ultrasharp-27-4k-thunderbolt-hub-monitor-u2725qe/apd/210-bqhr/monitors-monitor-accessories"
+  ],
+  "confidence": "high",
+  "notes": "Thunderbolt 4 上流（DP1.4＋DSC、PD 最大140W EPR）。HDMI は 4K120 FRL。DP 出力・RJ45(2.5GbE)・KVM。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "u3225qe",
+  "cat": "monitor",
+  "name": "Dell U3225QE",
+  "existing": false,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 120,
+   "in": {
+    "tb": "dp1.4",
+    "hdmi": "hdmi2.1",
+    "dp": "dp1.4"
+   },
+   "pdW": 140,
+   "dsc": true,
+   "ports": {
+    "tb": 1,
+    "usbc": 2,
+    "usba": 5
+   }
+  },
+  "dim": [
+   71.32,
+   21.5,
+   46.89
+  ],
+  "dimMax": 61.89,
+  "panelDim": [
+   71.32,
+   5.75,
+   41.03
+  ],
+  "price": 138969,
+  "sources": [
+   "https://www.dell.com/ja-jp/shop/monitors/apd/x/u3225qe_monitor/-"
+  ],
+  "confidence": "high",
+  "notes": "31.5インチ。I/O は U2725QE と同じ。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "u3425we",
+  "cat": "monitor",
+  "name": "Dell U3425WE",
+  "existing": false,
+  "spec": {
+   "w": 3440,
+   "h": 1440,
+   "hz": 120,
+   "in": {
+    "tb": "dp1.4",
+    "hdmi": "hdmi2.0",
+    "dp": "dp1.4"
+   },
+   "pdW": 90,
+   "dsc": null,
+   "ports": {
+    "tb": 1,
+    "usbc": 2,
+    "usba": 5
+   }
+  },
+  "dim": [
+   81.35,
+   24.04,
+   39.28
+  ],
+  "dimMax": 54.28,
+  "panelDim": [
+   81.35,
+   10.51,
+   35.92
+  ],
+  "price": 138969,
+  "sources": [
+   "https://www.dell.com/ja-jp/shop/monitors/apd/x/u3425we_monitor/-"
+  ],
+  "confidence": "high",
+  "notes": "34インチ曲面。HDMI は「HDMI 2.1 規定、WQHD 100Hz TMDS」なので帯域は hdmi2.0 相当で記録。DP 1.4 は 120Hz。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "27up850k",
+  "cat": "monitor",
+  "name": "LG 27UP850K-W",
+  "existing": false,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 60,
+   "in": {
+    "usbc": null,
+    "hdmi": null,
+    "dp": "dp1.4"
+   },
+   "pdW": 90,
+   "dsc": null,
+   "ports": {
+    "usba": 2
+   }
+  },
+  "dim": [
+   61.4,
+   23.9,
+   45.9
+  ],
+  "dimMax": 56.9,
+  "panelDim": [
+   61.4,
+   4.5,
+   36.4
+  ],
+  "price": 43610,
+  "sources": [
+   "https://www.lg.com/jp/monitors/4k-5k-monitors/27up850k-w/"
+  ],
+  "confidence": "high",
+  "notes": "HDMI×2（バージョン記載なし）、USB-C DP Alt Mode（バージョン記載なし）。価格は LG 公式ストア。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "32un880k",
+  "cat": "monitor",
+  "name": "LG 32UN880K-B（Ergo）",
+  "existing": false,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 60,
+   "in": {
+    "usbc": null,
+    "hdmi": null,
+    "dp": "dp1.4"
+   },
+   "pdW": 60,
+   "dsc": null,
+   "ports": {
+    "usba": 2
+   }
+  },
+  "dim": [
+   71.4,
+   22.7,
+   51.1
+  ],
+  "dimMax": 64.1,
+  "panelDim": [
+   71.4,
+   4.6,
+   42.0
+  ],
+  "price": 94800,
+  "sources": [
+   "https://www.lg.com/jp/monitors/4k-5k-monitors/32un880k-b/"
+  ],
+  "confidence": "high",
+  "notes": "クランプ式アームスタンド。奥行は 22.7〜40.7cm（伸縮180mm）。USB PD は 60W。価格は LG 公式ストア。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "27gr93u",
+  "cat": "monitor",
+  "name": "LG UltraGear 27GR93U-B",
+  "existing": false,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 144,
+   "in": {
+    "hdmi": null,
+    "dp": "dp1.4"
+   },
+   "pdW": 0,
+   "dsc": true,
+   "ports": {
+    "usba": 2
+   }
+  },
+  "dim": [
+   61.4,
+   25.4,
+   46.8
+  ],
+  "dimMax": 57.8,
+  "panelDim": [
+   61.4,
+   5.1,
+   37.2
+  ],
+  "price": null,
+  "sources": [
+   "https://www.lg.com/jp/monitors/gaming-monitors/27gr93u-b/"
+  ],
+  "confidence": "high",
+  "notes": "HDMI×2（バージョン記載なし、48–144Hz）。VESA DSC 対応。USB-C なし。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "pd2706u",
+  "cat": "monitor",
+  "name": "BenQ PD2706U",
+  "existing": false,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 60,
+   "in": {
+    "usbc": null,
+    "hdmi": "hdmi2.0",
+    "dp": "dp1.4"
+   },
+   "pdW": 90,
+   "dsc": null,
+   "ports": {
+    "usba": 3,
+    "usbc": 1
+   }
+  },
+  "dim": [
+   61.38,
+   23.83,
+   45.09
+  ],
+  "dimMax": 56.09,
+  "panelDim": [
+   61.38,
+   8.77,
+   36.76
+  ],
+  "price": 72400,
+  "sources": [
+   "https://www.benq.com/ja-jp/monitor/professional/pd2706u/spec.html",
+   "https://search.kakaku.com/BenQ%20PD2706U/"
+  ],
+  "confidence": "high",
+  "notes": "USB-C は 90W 給電・DP Alt Mode（バージョン記載なし）。KVM。価格は価格.com最安。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "ex271uz",
+  "cat": "monitor",
+  "name": "BenQ MOBIUZ EX271UZ",
+  "existing": false,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 240,
+   "in": {
+    "usbc": null,
+    "hdmi": "hdmi2.1",
+    "dp": "dp1.4"
+   },
+   "pdW": 90,
+   "dsc": null,
+   "ports": {
+    "usba": 2,
+    "usbc": 1
+   }
+  },
+  "dim": [
+   61.09,
+   22.35,
+   43.73
+  ],
+  "dimAsListed": [
+   61.09,
+   22.35,
+   53.73
+  ],
+  "panelDim": [
+   61.09,
+   8.29,
+   35.73
+  ],
+  "price": 154800,
+  "sources": [
+   "https://www.benq.com/ja-jp/monitor/gaming/ex271uz/spec.html",
+   "https://search.kakaku.com/BenQ%20EX271UZ/"
+  ],
+  "confidence": "medium",
+  "notes": "26.5インチ QD-OLED。HDMI 2.1 ×2（1つは eARC）。スタンド込み高さは 53.73cm の1値のみ（高さ調整100mm）→ 最低位置 43.73cm は計算値。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "pg27ucdm",
+  "cat": "monitor",
+  "name": "ASUS ROG Swift OLED PG27UCDM",
+  "existing": false,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 240,
+   "in": {
+    "usbc": null,
+    "hdmi": "hdmi2.1",
+    "dp": "dp2.1"
+   },
+   "pdW": 90,
+   "dsc": null,
+   "ports": {
+    "usba": 3
+   }
+  },
+  "dim": [
+   61.03,
+   21.88,
+   43.95
+  ],
+  "dimAsListed": [
+   61.03,
+   21.88,
+   54.95
+  ],
+  "panelDim": [
+   61.03,
+   7.05,
+   36.92
+  ],
+  "price": 179818,
+  "sources": [
+   "https://rog.asus.com/jp/monitors/27-to-31-5-inches/rog-swift-oled-pg27ucdm/spec/",
+   "https://search.kakaku.com/PG27UCDM/"
+  ],
+  "confidence": "medium",
+  "notes": "日本語公式仕様は「DisplayPort 2.1 ×1」と記載（DP1.4 とする資料もあるため要確認）。HDMI 2.1 FRL ×2、USB-C DP Alt・90W。スタンド込み高さは1値のみ（調整110mm）→ 最低位置は計算値。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "ev2785",
+  "cat": "monitor",
+  "name": "EIZO FlexScan EV2785",
+  "existing": false,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 60,
+   "in": {
+    "usbc": null,
+    "hdmi": null,
+    "dp": null
+   },
+   "pdW": 60,
+   "dsc": null,
+   "ports": {
+    "usba": 2
+   }
+  },
+  "dim": [
+   61.14,
+   23.0,
+   36.73
+  ],
+  "dimMax": 54.52,
+  "panelDim": [
+   61.14,
+   5.0,
+   35.63
+  ],
+  "price": 129800,
+  "sources": [
+   "https://www.eizo.com/products/flexscan/ev2785/",
+   "https://search.kakaku.com/EIZO%20EV2785/"
+  ],
+  "confidence": "high",
+  "notes": "eizo.co.jp は接続できず、EIZO グローバルの公式仕様を使用。全入力が 4K60 対応だがバージョンの記載なし（価格.comの商品説明は HDMI2.0）。USB-C は PD 60W。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "ev3240x",
+  "cat": "monitor",
+  "name": "EIZO FlexScan EV3240X",
+  "existing": false,
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 60,
+   "in": {
+    "usbc": null,
+    "hdmi": null,
+    "dp": null
+   },
+   "pdW": 94,
+   "dsc": null,
+   "ports": {
+    "usba": 3,
+    "usbc": 1
+   }
+  },
+  "dim": [
+   71.22,
+   24.24,
+   42.73
+  ],
+  "dimMax": 62.22,
+  "panelDim": [
+   71.22,
+   5.9,
+   41.53
+  ],
+  "price": 116964,
+  "sources": [
+   "https://www.eizo.com/products/flexscan/ev3240x/",
+   "https://search.kakaku.com/EIZO%20EV3240X/"
+  ],
+  "confidence": "high",
+  "notes": "USB-C PD 94W、LAN 内蔵、USB-C 下流 15W。奥行は 24.24〜25.07cm。価格は価格.com最安。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "studio-display-tb5",
+  "cat": "monitor",
+  "name": "Apple Studio Display（Thunderbolt 5）",
+  "existing": false,
+  "spec": {
+   "w": 5120,
+   "h": 2880,
+   "hz": 60,
+   "in": {
+    "tb": null
+   },
+   "pdW": 96,
+   "dsc": null,
+   "ports": {
+    "tb": 1,
+    "usbc": 2
+   }
+  },
+  "dim": [
+   62.3,
+   16.8,
+   47.8
+  ],
+  "dimHeightAdjust": [
+   62.3,
+   20.7,
+   47.9
+  ],
+  "dimMax": 58.3,
+  "panelDim": [
+   62.3,
+   3.1,
+   36.2
+  ],
+  "price": 269800,
+  "sources": [
+   "https://www.apple.com/jp/studio-display/specs/",
+   "https://www.apple.com/jp/shop/buy-mac/studio-display"
+  ],
+  "confidence": "high",
+  "notes": "現行モデル。上流 Thunderbolt 5（96W）、下流 Thunderbolt 5 ×1（デイジーチェーン可）、USB-C(10Gb/s) ×2。DP のバージョンは記載なし。価格は傾き調整スタンドの最小構成、最大 389,800円。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "studio-display-xdr",
+  "cat": "monitor",
+  "name": "Apple Studio Display XDR",
+  "existing": false,
+  "spec": {
+   "w": 5120,
+   "h": 2880,
+   "hz": 120,
+   "in": {
+    "tb": null
+   },
+   "pdW": 140,
+   "dsc": null,
+   "ports": {
+    "tb": 1,
+    "usbc": 2
+   }
+  },
+  "dim": [
+   62.3,
+   21.4,
+   47.8
+  ],
+  "dimMax": 58.3,
+  "panelDim": [
+   62.3,
+   3.3,
+   36.2
+  ],
+  "price": 479800,
+  "sources": [
+   "https://www.apple.com/jp/pro-display-xdr/specs/",
+   "https://www.apple.com/jp/shop/buy-mac/studio-display-xdr"
+  ],
+  "confidence": "high",
+  "notes": "指定の「Pro Display XDR」は Apple 日本サイトで Studio Display XDR（27インチ 5K 120Hz、ミニLED）に置き換わっている（/pro-display-xdr/ がこの製品ページ）。上流 TB5 で 140W 給電。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mb16acv",
+  "cat": "monitor",
+  "name": "ASUS ZenScreen MB16ACV",
+  "existing": false,
+  "spec": {
+   "w": 1920,
+   "h": 1080,
+   "hz": 60,
+   "in": {
+    "usbc": null
+   },
+   "pdW": 0,
+   "dsc": null
+  },
+  "dim": [
+   35.79,
+   22.48,
+   1.05
+  ],
+  "price": 28500,
+  "sources": [
+   "https://www.asus.com/jp/displays-desktops/monitors/zenscreen/zenscreen-mb16acv/techspec/",
+   "https://www.asus.com/displays-desktops/monitors/zenscreen/zenscreen-mb16acv/techspec/",
+   "https://search.kakaku.com/MB16ACV/"
+  ],
+  "confidence": "medium",
+  "notes": "15.6インチ モバイルモニター。入力は USB-C（DP Alt Mode）のみ。寸法はスタンド（カバー）込みで寝かせた状態 357.9×224.8×10.5mm。立てた時の値は非公開。リフレッシュレートは英語版仕様で 60Hz。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "caldigit-ts5plus",
+  "cat": "dock",
+  "name": "CalDigit TS5 Plus",
+  "existing": false,
+  "spec": {
+   "up": "tb",
+   "ports": {
+    "tb": 2,
+    "usbc": 5,
+    "usba": 5,
+    "dp": 1
+   },
+   "out": {
+    "tb": null,
+    "dp": "dp2.1"
+   },
+   "pdW": 140
+  },
+  "dim": [
+   12.79,
+   4.7,
+   15.5
+  ],
+  "price": null,
+  "sources": [
+   "https://www.caldigit.com/thunderbolt-5-dock-ts5-plus/",
+   "https://downloads.caldigit.com/TS5Plus/CalDigit_TS5Plus_Datasheet.pdf"
+  ],
+  "confidence": "high",
+  "notes": "Thunderbolt 5 ホスト(140W)＋下流 TB5 ×2（36W）、USB-C 10G ×5（前面1つ36W）、USB-A 10G ×5、DP 2.1、10GbE。縦置き W×D×H。日本での価格は未確認。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "caldigit-element-hub",
+  "cat": "dock",
+  "name": "CalDigit Element Hub",
+  "existing": false,
+  "spec": {
+   "up": "tb",
+   "ports": {
+    "tb": 3,
+    "usba": 4
+   },
+   "out": {
+    "tb": "dp1.4"
+   },
+   "pdW": 60
+  },
+  "dim": [
+   11.4,
+   7.0,
+   1.8
+  ],
+  "price": null,
+  "sources": [
+   "https://www.caldigit.com/thunderbolt-4-element-hub/"
+  ],
+  "confidence": "medium",
+  "notes": "TB4 ホスト(60W)＋下流 TB4 ×3（各15W）、USB-A 10G ×4。映像は TB ポート経由でデュアル4K60 / 8K。DP のバージョンは記載なし（TB4 の一般仕様から dp1.4 とした）。価格未確認。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "belkin-inc006",
+  "cat": "dock",
+  "name": "Belkin Connect Pro Thunderbolt 4 Dock（INC006）",
+  "existing": false,
+  "spec": {
+   "up": "tb",
+   "ports": {
+    "tb": 1,
+    "usbc": 1,
+    "usba": 4,
+    "hdmi": 2
+   },
+   "out": {
+    "hdmi": "hdmi2.0",
+    "tb": null
+   },
+   "pdW": 90
+  },
+  "dim": [
+   20.0,
+   7.32,
+   3.39
+  ],
+  "price": null,
+  "sources": [
+   "https://www.belkin.com/jp/p/pro-thunderbolt-4%E3%83%89%E3%83%83%E3%82%AF/INC006qcSGY.html"
+  ],
+  "confidence": "medium",
+  "notes": "12ポート: TB4 ×2（うち1つはホスト用と判断）、HDMI 2.0 ×2、USB-C 3.1 Gen2（PD3.0）×1、USB-A 3.1 ×2＋USB-A 2.0 ×2、GbE、SD、オーディオ。PD 最大90W、120W 電源付属。M1/M2/M3 無印は拡張1画面。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "anker-nano-dock-13in1",
+  "cat": "dock",
+  "name": "Anker Nano ドッキングステーション (13-in-1)",
+  "existing": false,
+  "spec": {
+   "up": "usbc",
+   "ports": {
+    "usbc": 3,
+    "usba": 3,
+    "hdmi": 3,
+    "dp": 1
+   },
+   "out": {
+    "hdmi": null,
+    "dp": null
+   },
+   "pdW": 85
+  },
+  "dim": [
+   14.0,
+   9.5,
+   4.0
+  ],
+  "price": 16990,
+  "sources": [
+   "https://www.ankerjapan.com/products/a83c3111"
+  ],
+  "confidence": "high",
+  "notes": "HDMI(4K) ×2＋DP(4K) ×1（本体）＋着脱式ハブの HDMI(4K) ×1。最大3画面。USB-C: 100W出力10G ×1・10G ×1・ハブ側5G ×1、USB-A: 480M ×2・ハブ側5G ×1。PC への給電は着脱式ハブの USB-C コネクタ経由で最大85W。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "anker-prime-tb5-dock",
+  "cat": "dock",
+  "name": "Anker Prime ドッキングステーション (14-in-1, 8K, Thunderbolt 5)",
+  "existing": false,
+  "spec": {
+   "up": "tb",
+   "ports": {
+    "tb": 2,
+    "usbc": 2,
+    "usba": 3,
+    "hdmi": 1,
+    "dp": 1
+   },
+   "out": {
+    "hdmi": "hdmi2.1",
+    "dp": "dp2.1",
+    "tb": null
+   },
+   "pdW": 140
+  },
+  "dim": [
+   11.6,
+   11.6,
+   7.5
+  ],
+  "price": 49990,
+  "sources": [
+   "https://www.ankerjapan.com/products/a83b5"
+  ],
+  "confidence": "high",
+  "notes": "HDMI 2.1 と DP 2.1 は同時使用不可。USB-C 10G ×2（合計45W）、USB-A 10G ×3。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "anker-nano-hub-8in1",
+  "cat": "dock",
+  "name": "Anker Nano USB-C ハブ (8-in-1, Dual Display)",
+  "existing": false,
+  "spec": {
+   "up": "usbc",
+   "ports": {
+    "usbc": 1,
+    "usba": 2,
+    "hdmi": 2
+   },
+   "out": {
+    "hdmi": "hdmi2.0"
+   },
+   "pdW": 85
+  },
+  "dim": [
+   14.0,
+   4.8,
+   1.5
+  ],
+  "price": 5990,
+  "sources": [
+   "https://www.ankerjapan.com/products/a210b"
+  ],
+  "confidence": "high",
+  "notes": "HDMI 4K@60Hz ×2（4K60 対応のため hdmi2.0 として記録）。USB-C 10G ×1（データのみ）、USB-A 10G ×2、PD 入力100W（PCへは最大85W）、SD/microSD。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "ugreen-revodok-pro-10in1",
+  "cat": "dock",
+  "name": "UGREEN Revodok Pro 10-in-1 USB-C ハブ",
+  "existing": false,
+  "spec": {
+   "up": "usbc",
+   "ports": null,
+   "out": null,
+   "pdW": null
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "price": 9990,
+  "sources": [
+   "https://jp.ugreen.com/products/revodok-pro-10-in-1-usb-c-hub"
+  ],
+  "confidence": "low",
+  "notes": "公式日本ストアの本文は「8K@30Hz で1台 / 4K@60Hz で2台」のみ。ポート内訳・寸法は画像のみでテキスト未確認。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "hhkb-studio",
+  "cat": "keyboard",
+  "name": "HHKB Studio",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "bt",
+    "usbc"
+   ]
+  },
+  "dim": [
+   30.8,
+   13.2,
+   4.1
+  ],
+  "price": 44000,
+  "sources": [
+   "https://happyhackingkb.com/jp/products/studio/",
+   "https://happyhackingkb.com/manual/studio/ug-jis/jp/ug/topic/specification.html",
+   "https://search.kakaku.com/HHKB%20Studio/"
+  ],
+  "confidence": "high",
+  "notes": "Bluetooth 5.0 LE（4台）＋USB 2.0 Type-C。単3×4 または USB給電。ポインティングスティック・ジェスチャーパッド。価格は価格.com最安。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "realforce-r3s-tkl",
+  "cat": "keyboard",
+  "name": "REALFORCE R3S テンキーレス（R3SC11）",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "usbc"
+   ]
+  },
+  "dim": [
+   36.9,
+   14.2,
+   3.8
+  ],
+  "price": 25740,
+  "sources": [
+   "https://kakaku.com/item/K0001490000/spec/"
+  ],
+  "confidence": "medium",
+  "notes": "USB 有線専用。寸法は価格.comの「369x38x142mm（幅x高さx奥行）」。公式サイト（realforce.co.jp）は Cloudflare で取得不可。ケーブルの端子形状（本体側）は未確認。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "realforce-r3s",
+  "cat": "keyboard",
+  "name": "REALFORCE R3S フルサイズ（R3SA11）",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "usbc"
+   ]
+  },
+  "dim": [
+   45.5,
+   14.2,
+   3.8
+  ],
+  "price": 26620,
+  "sources": [
+   "https://kakaku.com/item/K0001489994/spec/"
+  ],
+  "confidence": "medium",
+  "notes": "USB 有線専用。価格.comの寸法。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "realforce-r3-tkl",
+  "cat": "keyboard",
+  "name": "REALFORCE R3 テンキーレス（R3HC11）",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "bt",
+    "usbc"
+   ]
+  },
+  "dim": [
+   37.9,
+   16.3,
+   3.0
+  ],
+  "price": 36520,
+  "sources": [
+   "https://www.rentio.jp/matome/2021/12/realforce-r3hc11-review/",
+   "https://kakaku.com/item/K0001456971/spec/",
+   "https://pc.watch.impress.co.jp/docs/news/1360965.html"
+  ],
+  "confidence": "medium",
+  "notes": "寸法はレビュー記事の「約379×163×30mm」。Bluetooth 5.0（4台）＋USB Type-C、単3×2 または USB バスパワー。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mx-keys-mini",
+  "cat": "keyboard",
+  "name": "Logicool MX Keys Mini",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "bt"
+   ]
+  },
+  "dim": [
+   29.6,
+   13.2,
+   2.1
+  ],
+  "price": 18370,
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/mx-keys-mini"
+  ],
+  "confidence": "high",
+  "notes": "Bluetooth のみ（同梱物にレシーバーなし）。USB-C 充電。セール 16,700円。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mx-mechanical",
+  "cat": "keyboard",
+  "name": "Logicool MX Mechanical",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver"
+   ]
+  },
+  "dim": [
+   43.39,
+   13.16,
+   2.61
+  ],
+  "price": 24640,
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/mx-mechanical"
+  ],
+  "confidence": "high",
+  "notes": "Bluetooth または Logi Bolt。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "keychron-v1-max",
+  "cat": "keyboard",
+  "name": "Keychron V1 Max",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver",
+    "usbc"
+   ]
+  },
+  "dim": [
+   32.85,
+   14.87,
+   2.94
+  ],
+  "price": 19360,
+  "sources": [
+   "https://www.keychron.com/products/keychron-v1-max-qmk-via-wireless-custom-mechanical-keyboard",
+   "https://keychron.jp/products/keychron-v1-max-qmk-via-jis"
+  ],
+  "confidence": "high",
+  "notes": "2.4GHz・Bluetooth 5.1・有線。高さはキーキャップなし後端 2.94cm（前端 2.15cm）。価格は Keychron Japan の JIS 版。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "keychron-k2-he",
+  "cat": "keyboard",
+  "name": "Keychron K2 HE",
+  "existing": false,
+  "spec": {
+   "conn": null
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "price": 27940,
+  "sources": [
+   "https://keychron.jp/products/keychron-k2-he-jis"
+  ],
+  "confidence": "low",
+  "notes": "価格のみ確認（Keychron Japan JIS 版）。keychron.com の製品ページは 404／アクセス制限で寸法・接続を未確認。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "nuphy-air75-v2",
+  "cat": "keyboard",
+  "name": "NuPhy Air75 V2",
+  "existing": false,
+  "spec": {
+   "conn": null
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "price": 23800,
+  "sources": [
+   "https://search.kakaku.com/NuPhy%20Air75%20V2/"
+  ],
+  "confidence": "low",
+  "notes": "nuphy.com は Vercel のボット確認（429）で取得不可。価格.comの販売店情報で「有線・ワイヤレス / Bluetooth・USB」と表記。寸法未確認。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "nuphy-halo75-v2",
+  "cat": "keyboard",
+  "name": "NuPhy Halo75 V2",
+  "existing": false,
+  "spec": {
+   "conn": null
+  },
+  "dim": [
+   32.0,
+   13.5,
+   3.29
+  ],
+  "price": 36660,
+  "sources": [
+   "https://search.kakaku.com/NuPhy%20Halo75%20V2/"
+  ],
+  "confidence": "medium",
+  "notes": "販売店の商品説明「サイズ(H×W×D)mm：32.9x320x135mm」。公式ページは取得不可。接続方式は未確認。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "lofree-flow2",
+  "cat": "keyboard",
+  "name": "Lofree Flow 2 (84)",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver",
+    "usbc"
+   ]
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "price": 23760,
+  "sources": [
+   "https://www.lofree.co/products/flow-2-84-low-profile-mechanical-keyboard",
+   "https://search.kakaku.com/Lofree%20Flow%202/"
+  ],
+  "confidence": "medium",
+  "notes": "公式: 2.4GHz / Bluetooth / 有線 USB-C の3モード。寸法はページに記載なし。価格は価格.com最安（初代 Flow は現行ラインナップに見当たらず Flow 2 を採用）。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mx-master-4",
+  "cat": "mouse",
+  "name": "Logicool MX Master 4",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver"
+   ]
+  },
+  "dim": [
+   8.84,
+   12.82,
+   5.08
+  ],
+  "price": 21890,
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/mx-master-4"
+  ],
+  "confidence": "high",
+  "notes": "Bluetooth LE ＋ USB-C 形状の Bolt レシーバー同梱。充電式 650mAh。セール 18,905円。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mx-anywhere-3s",
+  "cat": "mouse",
+  "name": "Logicool MX Anywhere 3S",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "bt"
+   ]
+  },
+  "dim": [
+   6.5,
+   10.05,
+   3.44
+  ],
+  "price": 15950,
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/mx-anywhere-3s"
+  ],
+  "confidence": "high",
+  "notes": "同梱物はマウスと USB-C 充電ケーブルのみ（レシーバーなし）。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "razer-viper-v3-pro",
+  "cat": "mouse",
+  "name": "Razer Viper V3 Pro",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "receiver",
+    "usbc"
+   ]
+  },
+  "dim": [
+   6.39,
+   12.71,
+   3.99
+  ],
+  "price": 25980,
+  "sources": [
+   "https://www.razer.com/jp-jp/gaming-mice/razer-viper-v3-pro"
+  ],
+  "confidence": "high",
+  "notes": "HyperSpeed Wireless（HyperPolling ドングルで最大8000Hz）＋有線（USB A-C ケーブル）。セール 19,870円。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "mx-brio",
+  "cat": "camera",
+  "name": "Logicool MX Brio",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "usbc"
+   ]
+  },
+  "dim": [
+   9.8,
+   5.2,
+   6.2
+  ],
+  "price": 33000,
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/mx-brio-4k-webcam"
+  ],
+  "confidence": "high",
+  "notes": "マウント付き閉じた状態 幅98×奥行52×高さ62mm（本体のみ 98×36×44）。USB-C to C（USB 3.0）ケーブル同梱。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "insta360-link2",
+  "cat": "camera",
+  "name": "Insta360 Link 2",
+  "existing": false,
+  "spec": {
+   "conn": null
+  },
+  "dim": [
+   7.13,
+   3.8,
+   5.89
+  ],
+  "price": 27500,
+  "sources": [
+   "https://kakaku.com/item/K0001655260/spec/"
+  ],
+  "confidence": "medium",
+  "notes": "公式サイトは Cloudflare で取得不可。価格.com仕様 71.3×58.9×38mm（幅x高さx奥行）、インターフェースは「USB」とだけ記載。Link 2C は 62.7×30.2×26mm・22,300円。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "obsbot-tiny2",
+  "cat": "camera",
+  "name": "OBSBOT Tiny 2",
+  "existing": false,
+  "spec": {
+   "conn": null
+  },
+  "dim": [
+   4.7,
+   4.4,
+   6.2
+  ],
+  "price": 51800,
+  "sources": [
+   "https://kakaku.com/item/K0001596597/spec/"
+  ],
+  "confidence": "medium",
+  "notes": "公式サイトは接続不可。価格.com仕様 47×62.02×44mm（幅x高さx奥行）、「USB」。Tiny 2 Lite は 48.37×64.2×46.46mm・26,000円。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "screenbar-halo2",
+  "cat": "lighting",
+  "name": "BenQ ScreenBar Halo 2",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "usbc"
+   ],
+   "chargeW": 15
+  },
+  "dim": [
+   50,
+   14.3,
+   10.9
+  ],
+  "price": 27800,
+  "sources": [
+   "https://www.benq.com/ja-jp/lighting/monitor-light/screenbar-halo-2/spec.html",
+   "https://search.kakaku.com/ScreenBar%20Halo%202/"
+  ],
+  "confidence": "high",
+  "notes": "電源入力 5V / 最大3A USB Type-C、最大15W。リモコン 7.4×7.4×3.95cm。価格は価格.com。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "screenbar-pro",
+  "cat": "lighting",
+  "name": "BenQ ScreenBar Pro",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "usbc"
+   ],
+   "chargeW": 8.5
+  },
+  "dim": [
+   50,
+   13.5,
+   9.2
+  ],
+  "price": 23400,
+  "sources": [
+   "https://www.benq.com/ja-jp/lighting/monitor-light/screenbar-pro/spec.html",
+   "https://search.kakaku.com/ScreenBar%20Pro/"
+  ],
+  "confidence": "high",
+  "notes": "5V / 最大1.7A USB Type-C、最大8.5W。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "screenbar-plus",
+  "cat": "lighting",
+  "name": "BenQ ScreenBar Plus",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "usba"
+   ],
+   "chargeW": 5
+  },
+  "dim": [
+   45,
+   9,
+   9.2
+  ],
+  "price": null,
+  "sources": [
+   "https://www.benq.com/ja-jp/lighting/monitor-light/screenbar-plus/spec.html"
+  ],
+  "confidence": "high",
+  "notes": "5V 1A USB、最大5W。有線コントローラー 7.4×7.4×3.2cm。電源側のコネクタ形状は「USB Port」とだけ記載（USB-A と判断）。価格未確認。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "xiaomi-lightbar",
+  "cat": "lighting",
+  "name": "Xiaomi Mi モニター掛け式ライト",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "usbc"
+   ],
+   "chargeW": 5
+  },
+  "dim": [
+   44.8,
+   2.3,
+   2.3
+  ],
+  "price": 6280,
+  "sources": [
+   "https://www.mi.com/jp/product/mi-computer-monitor-light-bar/specs",
+   "https://search.kakaku.com/Mi%20%E3%83%A2%E3%83%8B%E3%82%BF%E3%83%BC%E6%8E%9B%E3%81%91%E5%BC%8F%E3%83%A9%E3%82%A4%E3%83%88/"
+  ],
+  "confidence": "high",
+  "notes": "本体 φ23×448mm、5W（5V=1A）、USB Type-C。モデル MJGJD01YL。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "edifier-mr4",
+  "cat": "audio",
+  "name": "Edifier MR4",
+  "existing": false,
+  "spec": {
+   "conn": []
+  },
+  "dim": [
+   14.0,
+   17.0,
+   22.8
+  ],
+  "price": 16977,
+  "sources": [
+   "https://kakaku.com/item/K0001501745/spec/"
+  ],
+  "confidence": "medium",
+  "notes": "1台あたり 140×228×170mm（幅x高さx奥行）。AC 電源、RCA・ミニプラグ入力。公式ページは仕様が動的読み込みで取得できず。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "edifier-r1280db",
+  "cat": "audio",
+  "name": "Edifier R1280DB",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "bt"
+   ]
+  },
+  "dim": [
+   14.6,
+   19.6,
+   23.4
+  ],
+  "price": 13981,
+  "sources": [
+   "https://kakaku.com/item/K0001519200/spec/",
+   "https://www.edifier.com/global/p/bookshelf-speakers/r1280db"
+  ],
+  "confidence": "medium",
+  "notes": "1台あたり 146×234×196mm。AC 電源、Bluetooth・光・同軸・RCA ×2。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "audioengine-a2plus",
+  "cat": "audio",
+  "name": "Audioengine A2+ Next Gen",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "bt"
+   ]
+  },
+  "dim": [
+   10.6,
+   13.8,
+   15.6
+  ],
+  "price": 44990,
+  "sources": [
+   "https://kakaku.com/item/K0001723627/spec/"
+  ],
+  "confidence": "medium",
+  "notes": "1台あたり 106×156×138mm。AC 電源、Bluetooth 5.3、ミニ・RCA 入力、USB 音声入力あり（端子形状未確認）。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "presonus-eris35bt",
+  "cat": "audio",
+  "name": "PreSonus Eris 3.5BT 2nd Gen",
+  "existing": false,
+  "spec": {
+   "conn": [
+    "bt"
+   ]
+  },
+  "dim": [
+   14.1,
+   16.4,
+   21.0
+  ],
+  "price": 20978,
+  "sources": [
+   "https://kakaku.com/item/K0001666448/spec/"
+  ],
+  "confidence": "medium",
+  "notes": "1台あたり 141×210×164mm。AC 電源、Bluetooth 5.0。無印 Eris 3.5 2nd Gen（BTなし）もある。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "anker-prime-100w",
+  "cat": "charger",
+  "name": "Anker Prime Charger (100W, 3 Ports, GaN)",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "usbc": 2,
+    "usba": 1
+   },
+   "totalW": 100,
+   "portW": 100
+  },
+  "dim": [
+   6.8,
+   4.5,
+   2.9
+  ],
+  "price": 8990,
+  "sources": [
+   "https://www.ankerjapan.com/products/a2688"
+  ],
+  "confidence": "high",
+  "notes": "単ポート最大100W（上側 USB-C）。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "anker-nano-70w",
+  "cat": "charger",
+  "name": "Anker Nano Charger (70W, 3 Ports)",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "usbc": 2,
+    "usba": 1
+   },
+   "totalW": 70,
+   "portW": 70
+  },
+  "dim": [
+   5.3,
+   4.3,
+   3.2
+  ],
+  "price": 5990,
+  "sources": [
+   "https://www.ankerjapan.com/products/a121a"
+  ],
+  "confidence": "high",
+  "notes": "3ポート時 45W＋7.5W＋7.5W。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "anker-prime-base-150w",
+  "cat": "charger",
+  "name": "Anker Prime Charging Base (150W, 3 Ports)",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "usbc": 2,
+    "usba": 1
+   },
+   "totalW": 150,
+   "portW": 140
+  },
+  "dim": [
+   10.3,
+   10.3,
+   2.3
+  ],
+  "price": 12990,
+  "sources": [
+   "https://www.ankerjapan.com/products/a1903"
+  ],
+  "confidence": "high",
+  "notes": "USB-C1 最大140W、USB-C2 最大100W、USB-A 最大22.5W。卓上型。ポゴピンで Prime モバイルバッテリーも充電。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "ugreen-nexode-pro-100w",
+  "cat": "charger",
+  "name": "UGREEN Nexode Pro 100W 4ポート充電器",
+  "existing": false,
+  "spec": {
+   "ports": null,
+   "totalW": 100,
+   "portW": null
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "price": 9980,
+  "sources": [
+   "https://jp.ugreen.com/products/ugreen-100w-4-port-gan-charger"
+  ],
+  "confidence": "low",
+  "notes": "公式日本ストアは価格と「100W・4ポート」のみテキスト。ポート内訳・寸法は画像のみで未確認。",
+  "priceDate": "2026-09"
+ },
+ {
+  "id": "apple-70w",
+  "cat": "charger",
+  "name": "Apple 70W USB-C電源アダプタ",
+  "existing": false,
+  "spec": {
+   "ports": {
+    "usbc": 1
+   },
+   "totalW": 70,
+   "portW": 70
+  },
+  "dim": [
+   null,
+   null,
+   null
+  ],
+  "price": 8800,
+  "sources": [
+   "https://www.apple.com/jp/shop/product/MXN53AM/A"
+  ],
+  "confidence": "medium",
+  "notes": "寸法の記載なし。",
+  "priceDate": "2026-09"
+ }
+]
