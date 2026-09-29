@@ -306,6 +306,33 @@
   .dlg-head h2 { margin: 0; font-size: 16px; }
   .checks-row { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; }
   .checks-row label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  dialog.dlg-wide { width: min(1100px, calc(100vw - 24px)); }
+  .wire-wrap { overflow: auto; max-height: calc(100vh - 220px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--page); }
+  .wire-wrap canvas { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .wire-empty { padding: 40px 16px; text-align: center; color: var(--text-2); }
+  .snaps { display: grid; gap: 6px; margin-top: 12px; }
+  .snaps:empty { display: none; }
+  .snap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 10px; }
+  .snap b { display: block; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .snap small { display: block; font: 400 11px var(--font-mono); color: var(--muted); }
+  .snap-acts { display: flex; gap: 2px; align-items: center; }
+  .snap-acts .link-btn { padding: 4px 6px; }
+  .snap-file { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+  .snap-file .file-btn { cursor: pointer; }
+  .diff-pick { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; }
+  .diff-pick label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); flex: 1 1 200px; }
+  .diff-pick .text { color: var(--text); }
+  .diff-out { display: grid; gap: 12px; max-height: calc(100vh - 300px); overflow: auto; }
+  .diff-sum { font: 400 13px var(--font-mono); color: var(--text-2); }
+  .diff-sum b { font: 400 30px/1 var(--font-display); color: var(--text); letter-spacing: .02em; margin-right: 6px; }
+  .diff-sec h3 { margin: 0 0 6px; font-size: 13px; display: flex; gap: 8px; align-items: center; }
+  .diff-sec h3 .tagc { font: 700 11px var(--font-mono); padding: 1px 8px; border-radius: 4px; }
+  .diff-sec.add .tagc { background: var(--good-soft); color: var(--good); }
+  .diff-sec.swap .tagc { background: var(--warn-soft); color: var(--warn); }
+  .diff-sec.del .tagc { background: var(--crit-soft); color: var(--crit); }
+  .diff-sec.keep .tagc { background: var(--info-soft); color: var(--info); }
+  .diff-sec ul { margin: 0; padding-left: 18px; display: grid; gap: 2px; font-size: 13px; }
+  .diff-sec li small { color: var(--muted); }
   .ex-out { width: 100%; min-height: 240px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.6; resize: vertical; }
   .ex-warn { background: var(--warn-soft); color: var(--warn); border-radius: 10px; padding: 8px 12px; font-size: 12px; }
   .ex-warn:empty { display: none; }
@@ -422,6 +449,7 @@
         <h2 id="checkTitle">接続チェック</h2>
         <div class="summary" id="summary"></div>
         <div class="checks" id="checks"></div>
+        <button class="btn block" id="wireBtn" type="button" style="margin-top:12px">配線図を見る</button>
         <p class="fine">スペックは代表的な値からの目安です。購入前にメーカーの公式情報を確認してください。</p>
       </section>
 
@@ -434,6 +462,20 @@
           <button class="btn block" id="exportBtn" type="button">記事用に書き出す（ブログ・note・概要欄）</button>
         </div>
         <p class="fine">構成はリンクの中に入っています。サーバーには何も送られません。購入先のリンクは共有リンクには入らず、書き出しでだけ使います。</p>
+      </section>
+
+      <section class="card" aria-labelledby="snapTitle">
+        <h2 id="snapTitle">記録と比較 <small id="snapCount"></small></h2>
+        <div class="share-btns">
+          <button class="btn block" id="snapSave" type="button">今の構成を記録する</button>
+          <button class="btn block" id="snapDiff" type="button">前の構成と比べる</button>
+        </div>
+        <div class="snaps" id="snapList"></div>
+        <div class="snap-file">
+          <button class="link-btn" id="backupBtn" type="button">ファイルに保存</button>
+          <label class="link-btn file-btn">ファイルから読み込む<input type="file" accept="application/json,.json" id="restoreFile"></label>
+        </div>
+        <p class="fine">記録はこのブラウザの中に保存されます。ブラウザのデータを消すと記録も消えるので、ときどきファイルに保存しておくと安心です（写真は入りません）。</p>
       </section>
     </aside>
   </div>
@@ -500,6 +542,26 @@
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <datalist id="shopList"><option value="Amazon"><option value="楽天市場"><option value="Yahoo!ショッピング"><option value="公式ストア"><option value="メルカリ"></datalist>
+<dialog class="dlg dlg-wide" id="wireDlg" aria-labelledby="wireTitle">
+  <div class="dlg-body">
+    <div class="dlg-head"><h2 id="wireTitle">配線図</h2><button class="x" type="button" data-close aria-label="閉じる">×</button></div>
+    <div class="wire-wrap" id="wireWrap"></div>
+    <div class="ex-foot"><button class="btn primary" type="button" id="wireSave">画像を保存</button></div>
+    <p class="fine" style="margin:0">各機材の「接続先」から作っています。つながり方を変えたいときは、構成リストで接続先を選び直してください。</p>
+  </div>
+</dialog>
+<dialog class="dlg" id="diffDlg" aria-labelledby="diffTitle">
+  <div class="dlg-body">
+    <div class="dlg-head"><h2 id="diffTitle">構成を比べる</h2><button class="x" type="button" data-close aria-label="閉じる">×</button></div>
+    <div class="diff-pick">
+      <label>前<select class="text" id="diffA"></select></label>
+      <span aria-hidden="true">→</span>
+      <label>後<select class="text" id="diffB"></select></label>
+    </div>
+    <div class="diff-out" id="diffOut"></div>
+    <div class="ex-foot"><button class="btn primary" type="button" id="diffCopy">記事用にコピー（マークダウン）</button></div>
+  </div>
+</dialog>
 <dialog class="dlg" id="exportDlg" aria-labelledby="exTitle">
   <div class="dlg-body">
     <div class="dlg-head"><h2 id="exTitle">記事用に書き出す</h2><button class="x" type="button" id="exClose" aria-label="閉じる">×</button></div>
@@ -2245,6 +2307,281 @@ function renderExport() {
   $('#exOut').value = state.items.length ? buildExport() : '';
 }
 
+// ---- 配線図 ----
+const PORT_SHORT = { tb: 'TB/USB4', usbc: 'USB-C', usba: 'USB-A', hdmi: 'HDMI', dp: 'DP', bt: 'BT' };
+const CABLE_SHORT = { tb: 'Thunderbolt', usbc: 'USB-C', c2dp: 'USB-C→DP', c2hdmi: 'USB-C→HDMI', hdmi: 'HDMI', dp: 'DP', receiver: 'レシーバー', usba: 'USB-A', bt: 'Bluetooth' };
+const CABLE_KIND = { tb: 'Thunderbolt', usbc: 'USB-C', c2dp: 'USB-C→DP', c2hdmi: 'USB-C→HDMI', hdmi: 'HDMI', dp: 'DisplayPort', usba: 'USB-A' };
+
+function wiringModel() {
+  const kids = new Map(), linked = new Set();
+  for (const it of state.items) {
+    const h = it.link && byId(it.link.h);
+    if (!h) continue;
+    if (!kids.has(h.id)) kids.set(h.id, []);
+    kids.get(h.id).push(it);
+    linked.add(it.id); linked.add(h.id);
+  }
+  const order = { computer: 0, dock: 1, monitor: 2, charger: 3 };
+  const roots = state.items.filter(i => (linked.has(i.id) || i.cat === 'computer') && !(i.link && byId(i.link.h)))
+    .sort((a, b) => (order[a.cat] ?? 5) - (order[b.cat] ?? 5));
+  const checks = runChecks();
+  const nodes = [], edges = [], seen = new Set();
+  let row = 0, maxDepth = 0;
+  const place = (it, depth, parent) => {
+    if (seen.has(it.id)) return null;
+    seen.add(it.id);
+    const n = { it, depth, row: 0 };
+    nodes.push(n);
+    maxDepth = Math.max(maxDepth, depth);
+    const ch = (kids.get(it.id) || []).map(c => place(c, depth + 1, n)).filter(Boolean);
+    n.row = ch.length ? (ch[0].row + ch[ch.length - 1].row) / 2 : row++;
+    if (parent) edges.push({ from: parent, to: n });
+    return n;
+  };
+  roots.forEach((r, i) => { if (i) row += 0.4; place(r, 0, null); });
+  // ケーブルの数
+  const cables = {}; let wireless = 0, pcCables = 0;
+  for (const e of edges) {
+    const v = e.to.it.link.v;
+    if (CABLE_KIND[v]) { cables[CABLE_KIND[v]] = (cables[CABLE_KIND[v]] || 0) + 1; if (e.from.it.cat === 'computer') pcCables++; }
+    else wireless++;
+  }
+  for (const c of state.items.filter(i => i.cat === 'computer' && i.spec.chargeW)) {
+    const ps = powerSource(c);
+    if (ps.kind === 'adapter') { cables['電源'] = (cables['電源'] || 0) + 1; pcCables++; }
+    if (ps.kind === 'charger') { cables['USB-C'] = (cables['USB-C'] || 0) + 1; pcCables++; }
+  }
+  return { nodes, edges, rows: row, maxDepth, cables, wireless, pcCables, checks };
+}
+
+function edgeLabel(e) {
+  const l = e.to.it.link, it = e.to.it;
+  if (l.v === 'bt') return 'Bluetooth';
+  let t = `${PORT_SHORT[l.p] || l.p} ← ${CABLE_SHORT[l.v] || l.v}`;
+  if ((l.v === 'usbc' || l.v === 'tb') && it.spec.pdW && e.from.it.cat === 'computer') {
+    const ps = powerSource(e.from.it);
+    if (ps.kind === 'pd' && ps.item === it) t += ` · 給電${ps.W}W`;
+  }
+  return t;
+}
+
+function themeColors() {
+  const cs = getComputedStyle(document.documentElement), v = n => cs.getPropertyValue(n).trim();
+  return { page: v('--page'), card: v('--card'), text: v('--text'), sub: v('--text-2'), muted: v('--muted'), line: v('--line'),
+    accent: v('--accent'), fg: v('--accent-fg'), ink: v('--accent-ink'), warn: v('--warn'), crit: v('--crit'), good: v('--good'),
+    grid: document.documentElement.dataset.theme === 'light' ? 'rgba(0,0,0,.04)' : 'rgba(255,255,255,.035)' };
+}
+
+async function drawWiring() {
+  try { await Promise.all(['500 15px "Noto Sans JP"', '400 11px "JetBrains Mono"', '400 30px "Bebas Neue"'].map(f => document.fonts.load(f))); } catch (e) {}
+  const m = wiringModel();
+  if (!m.edges.length) return null;
+  const NW = 250, NH = 60, GAP = 200, VG = 18, PX = 56, TOP = 132, BOT = 96;
+  const W = Math.max(960, PX * 2 + (m.maxDepth + 1) * NW + m.maxDepth * GAP);
+  const H = TOP + Math.ceil(m.rows) * (NH + VG) + BOT;
+  const S = 2, cv = document.createElement('canvas'); cv.width = W * S; cv.height = H * S;
+  const x = cv.getContext('2d'); x.scale(S, S);
+  const C = themeColors();
+  const F = '"Noto Sans JP", "Hiragino Sans", sans-serif', M = '"JetBrains Mono", ui-monospace, monospace', D = '"Bebas Neue", "Noto Sans JP", sans-serif';
+  const fit = (t, w) => { if (x.measureText(t).width <= w) return t; while (t && x.measureText(t + '…').width > w) t = t.slice(0, -1); return t + '…'; };
+  x.fillStyle = C.page; x.fillRect(0, 0, W, H);
+  x.strokeStyle = C.grid; x.lineWidth = 1;
+  for (let g = 32; g < W; g += 32) { x.beginPath(); x.moveTo(g + .5, 0); x.lineTo(g + .5, H); x.stroke(); }
+  for (let g = 32; g < H; g += 32) { x.beginPath(); x.moveTo(0, g + .5); x.lineTo(W, g + .5); x.stroke(); }
+
+  x.textBaseline = 'alphabetic';
+  x.fillStyle = C.fg; x.font = `400 13px ${M}`; x.fillText('// wiring_diagram', PX, 52);
+  x.fillStyle = C.text; x.font = `700 28px ${F}`; x.fillText(fit(state.title || '私のデスク', W - PX * 2) + ' の配線', PX, 90);
+  const cab = Object.entries(m.cables).map(([k, n]) => `${k} ×${n}`).join('  ');
+  x.fillStyle = C.sub; x.font = `400 12px ${M}`;
+  x.fillText(fit(`CABLES  ${cab || '—'}${m.wireless ? `   WIRELESS ×${m.wireless}` : ''}   PC に直接つながるケーブル ${m.pcCables}本`, W - PX * 2), PX, 114);
+
+  const pos = n => ({ x: PX + n.depth * (NW + GAP), y: TOP + n.row * (NH + VG) });
+  const worst = it => { const w = sevOf(it, m.checks); return w ? (w.sev === 'error' ? C.crit : C.warn) : null; };
+  // 線
+  for (const e of m.edges) {
+    const a = pos(e.from), b = pos(e.to);
+    const x1 = a.x + NW, y1 = a.y + NH / 2, x2 = b.x, y2 = b.y + NH / 2;
+    const bad = worst(e.to.it);
+    x.strokeStyle = bad || (e.to.it.link.v === 'bt' || e.to.it.link.v === 'receiver' ? C.muted : C.fg);
+    x.lineWidth = 2; x.setLineDash(e.to.it.link.v === 'bt' ? [5, 5] : []);
+    x.beginPath(); x.moveTo(x1, y1); x.bezierCurveTo(x1 + GAP * .5, y1, x2 - GAP * .5, y2, x2, y2); x.stroke();
+    x.setLineDash([]);
+    x.fillStyle = x.strokeStyle; x.beginPath(); x.arc(x2, y2, 3.5, 0, Math.PI * 2); x.fill();
+  }
+  // ラベルは線をすべて描いてから、上に重ねる
+  for (const e of m.edges) {
+    const b = pos(e.to), x2 = b.x, y2 = b.y + NH / 2, bad = worst(e.to.it);
+    const t = edgeLabel(e);
+    x.font = `400 11px ${M}`;
+    const tw = Math.min(x.measureText(t).width, GAP - 24);
+    x.fillStyle = C.page; x.fillRect(x2 - 12 - tw - 6, y2 - 22, tw + 12, 16);
+    x.fillStyle = bad || C.sub; x.textAlign = 'right'; x.fillText(fit(t, GAP - 24), x2 - 12, y2 - 10); x.textAlign = 'left';
+  }
+  // 箱
+  for (const n of m.nodes) {
+    const { x: X, y: Y } = pos(n), it = n.it, bad = worst(it);
+    x.fillStyle = C.card; x.strokeStyle = bad || C.line; x.lineWidth = bad ? 1.5 : 1;
+    x.beginPath(); x.roundRect(X, Y, NW, NH, 8); x.fill(); x.stroke();
+    if (it.cat === 'computer') { x.fillStyle = C.accent; x.fillRect(X, Y + 10, 3, NH - 20); }
+    x.fillStyle = C.muted; x.font = `400 11px ${M}`; x.fillText(fit(CAT_LABEL[it.cat], 120), X + 14, Y + 21);
+    if (it.cat === 'monitor') {
+      const r = reachHz(it), s = it.spec;
+      const hz = r ? Math.min(s.hz, Math.floor(r.hz)) : null;
+      if (hz) { x.textAlign = 'right'; x.fillStyle = bad || C.fg; x.fillText(`${resName(s)} ${hz}Hz`, X + NW - 12, Y + 21); x.textAlign = 'left'; }
+    }
+    x.fillStyle = C.text; x.font = `500 14px ${F}`; x.fillText(fit(it.name, NW - 28), X + 14, Y + 44);
+  }
+  // 未接続
+  const loose = state.items.filter(i => !m.nodes.some(n => n.it === i) && ((i.spec.conn || []).length || i.cat === 'monitor' || i.cat === 'dock'));
+  x.fillStyle = C.muted; x.font = `400 12px ${F}`;
+  if (loose.length) x.fillText(fit('未接続: ' + loose.map(i => i.name).join('、'), W - PX * 2 - 260), PX, H - 44);
+  // ロゴ
+  x.font = `400 26px ${D}`;
+  const p1 = 'DESK ', p2 = '/', p3 = ' RECIPE', w1 = x.measureText(p1).width, w2 = x.measureText(p2).width, w3 = x.measureText(p3).width;
+  let lx = W - PX - (w1 + w2 + w3), ly = H - 40;
+  x.fillStyle = C.text; x.fillText(p1, lx, ly); lx += w1; x.fillStyle = C.fg; x.fillText(p2, lx, ly); lx += w2; x.fillStyle = C.text; x.fillText(p3, lx, ly);
+  return cv;
+}
+
+async function openWiring() {
+  const wrap = $('#wireWrap');
+  const cv = await drawWiring();
+  wrap.innerHTML = '';
+  if (cv) { cv.style.width = cv.width / 2 + 'px'; wrap.appendChild(cv); }
+  else wrap.innerHTML = '<div class="wire-empty">まだ接続がありません。構成リストで、モニターや周辺機器の「接続先」を選ぶと配線図になります。</div>';
+  $('#wireSave').disabled = !cv;
+  const d = $('#wireDlg'); if (!d.open) d.showModal();
+}
+
+// ---- 記録と比較 ----
+const SNAP_KEY = 'desk-setup:snaps:v1';
+let snaps = [];
+function loadSnaps() { try { snaps = JSON.parse(localStorage.getItem(SNAP_KEY) || '[]').filter(x => x && x.d && x.at); } catch (e) { snaps = []; } }
+function saveSnaps() { try { localStorage.setItem(SNAP_KEY, JSON.stringify(snaps)); return true; } catch (e) { toast('保存できませんでした（ブラウザの保存容量がいっぱいです）'); return false; } }
+const snapState = sn => deserialize(sn.d);
+const fmtDate = iso => { const d = new Date(iso); return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`; };
+
+function renderSnaps() {
+  $('#snapCount').textContent = snaps.length ? `${snaps.length}件` : '';
+  $('#snapList').innerHTML = snaps.slice().reverse().map(sn => {
+    const st = snapState(sn);
+    return `<div class="snap" data-snap="${esc(sn.id)}"><span style="min-width:0"><b>${esc(sn.name)}</b><small>${fmtDate(sn.at)} · ${st.items.length}点 · ${yen(sumPrice(st.items))}</small></span>
+      <span class="snap-acts"><button class="link-btn" type="button" data-snap-diff>比べる</button><button class="link-btn" type="button" data-snap-load>戻す</button><button class="x" type="button" data-snap-del aria-label="${esc(sn.name)} を消す">×</button></span></div>`;
+  }).join('');
+  $('#snapDiff').disabled = !snaps.length;
+}
+
+function diffItems(A, B) {
+  const key = it => it.cid || it.name.toLowerCase().replace(/\s+/g, '');
+  const rest = B.slice(), keep = [], del = [];
+  for (const a of A) {
+    const i = rest.findIndex(b => key(b) === key(a));
+    if (i >= 0) keep.push([a, rest.splice(i, 1)[0]]); else del.push(a);
+  }
+  const add = rest, swap = [];
+  for (const r of del.slice()) {
+    const j = add.findIndex(x => x.cat === r.cat);
+    if (j >= 0) { swap.push([r, add.splice(j, 1)[0]]); del.splice(del.indexOf(r), 1); }
+  }
+  return { add, swap, del, keep };
+}
+function diffSource(v) {
+  if (v === 'now') return { name: '今の構成', items: state.items };
+  const sn = snaps.find(x => x.id === v);
+  return sn ? { name: sn.name, items: snapState(sn).items } : null;
+}
+let lastDiffMd = '';
+function renderDiff() {
+  const A = diffSource($('#diffA').value), B = diffSource($('#diffB').value);
+  if (!A || !B) { $('#diffOut').innerHTML = ''; return; }
+  const d = diffItems(A.items, B.items), ta = sumPrice(A.items), tb = sumPrice(B.items), dt = tb - ta;
+  const sign = dt > 0 ? '+' : dt < 0 ? '−' : '±';
+  const price = it => it.price != null ? ` <small>${yen(it.price)}</small>` : '';
+  const sec = (cls, title, list, fmt) => list.length ? `<section class="diff-sec ${cls}"><h3><span class="tagc">${title}</span>${list.length}点</h3><ul>${list.map(fmt).join('')}</ul></section>` : '';
+  $('#diffOut').innerHTML = `<div class="diff-sum"><b>${yen(ta)} → ${yen(tb)}</b>（${sign}${yen(Math.abs(dt))}） ／ ${A.items.length}点 → ${B.items.length}点</div>`
+    + sec('add', '追加', d.add, it => `<li>${esc(it.name)}${price(it)} <small>${esc(CAT_LABEL[it.cat])}</small></li>`)
+    + sec('swap', '入れ替え', d.swap, ([a, b]) => `<li><small>${esc(CAT_LABEL[a.cat])}:</small> ${esc(a.name)} → ${esc(b.name)}</li>`)
+    + sec('del', '手放した', d.del, it => `<li>${esc(it.name)} <small>${esc(CAT_LABEL[it.cat])}</small></li>`)
+    + sec('keep', '継続', d.keep, ([, b]) => `<li>${esc(b.name)}</li>`)
+    + (!d.add.length && !d.swap.length && !d.del.length ? '<div class="hint">変わったところはありません。</div>' : '');
+  const md = [`## ${A.name} → ${B.name}`, '', `合計 ${yen(ta)} → ${yen(tb)}（${sign}${yen(Math.abs(dt))}）／ ${A.items.length}点 → ${B.items.length}点`, ''];
+  const mdSec = (title, list, fmt) => { if (list.length) md.push(`### ${title}（${list.length}）`, ...list.map(fmt), ''); };
+  mdSec('追加', d.add, it => `- ${it.name}`);
+  mdSec('入れ替え', d.swap, ([a, b]) => `- ${CAT_LABEL[a.cat]}: ${a.name} → ${b.name}`);
+  mdSec('手放した', d.del, it => `- ${it.name}`);
+  mdSec('継続', d.keep, ([, b]) => `- ${b.name}`);
+  lastDiffMd = md.join('\n').trim() + '\n';
+}
+function openDiff(fromId) {
+  if (!snaps.length) { toast('先に「今の構成を記録する」で記録を作ってください'); return; }
+  const opts = snaps.slice().reverse().map(sn => `<option value="${esc(sn.id)}">${esc(sn.name)}（${fmtDate(sn.at)}）</option>`).join('');
+  $('#diffA').innerHTML = opts;
+  $('#diffB').innerHTML = `<option value="now">今の構成</option>` + opts;
+  $('#diffA').value = fromId || snaps[snaps.length - 1].id;
+  $('#diffB').value = 'now';
+  renderDiff();
+  const d = $('#diffDlg'); if (!d.open) d.showModal();
+}
+
+function wireSnaps() {
+  loadSnaps(); renderSnaps();
+  document.querySelectorAll('dialog [data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
+  document.querySelectorAll('#wireDlg, #diffDlg').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
+  $('#wireBtn').addEventListener('click', openWiring);
+  $('#wireSave').addEventListener('click', async () => {
+    const cv = await drawWiring(); if (!cv) return;
+    cv.toBlob(bl => { const a = document.createElement('a'); a.href = URL.createObjectURL(bl); a.download = 'desk-wiring.png'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }, 'image/png');
+  });
+  $('#snapSave').addEventListener('click', () => {
+    if (!state.items.length) { toast('記録する機材がありません'); return; }
+    const d = new Date(), def = `${d.getFullYear()}年${d.getMonth() + 1}月`;
+    const name = prompt('記録の名前（例: 2026年春、引っ越し前）', def);
+    if (name === null) return;
+    snaps.push({ id: 's' + Date.now().toString(36), name: (name.trim() || def).slice(0, 30), at: d.toISOString(), d: serialize(false) });
+    if (snaps.length > 30) snaps.shift();
+    if (saveSnaps()) { renderSnaps(); toast('今の構成を記録しました'); }
+  });
+  $('#snapDiff').addEventListener('click', () => openDiff());
+  $('#snapList').addEventListener('click', e => {
+    const row = e.target.closest('[data-snap]'); if (!row) return;
+    const sn = snaps.find(x => x.id === row.dataset.snap); if (!sn) return;
+    if (e.target.closest('[data-snap-diff]')) openDiff(sn.id);
+    if (e.target.closest('[data-snap-load]')) {
+      if (!confirm(`今の構成を「${sn.name}」の内容に戻しますか？今の構成は上書きされます（必要なら先に記録してください）。`)) return;
+      state = snapState(sn); if (shared) { shared = false; history.replaceState(null, '', location.pathname); $('#sharedBanner').hidden = true; }
+      syncHead(); commit(true); toast(`「${sn.name}」に戻しました`);
+    }
+    if (e.target.closest('[data-snap-del]')) {
+      if (!confirm(`記録「${sn.name}」を消しますか？`)) return;
+      snaps = snaps.filter(x => x !== sn); saveSnaps(); renderSnaps();
+    }
+  });
+  $('#diffA').addEventListener('change', renderDiff);
+  $('#diffB').addEventListener('change', renderDiff);
+  $('#diffCopy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(lastDiffMd); toast('コピーしました'); } catch (e) { prompt('この内容をコピーしてください', lastDiffMd); }
+  });
+  $('#backupBtn').addEventListener('click', () => {
+    const data = { app: 'desk-recipe-maker', v: 1, savedAt: new Date().toISOString(), current: serialize(false), snaps };
+    const d = new Date(), stamp = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }));
+    a.download = `desk-recipe-${stamp}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+  $('#restoreFile').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    let data;
+    try { data = JSON.parse(await f.text()); } catch (err) { toast('ファイルを読み込めませんでした'); return; }
+    if (!data || data.app !== 'desk-recipe-maker' || !data.current) { toast('デスクレシピメーカーで保存したファイルではないようです'); return; }
+    if (!confirm('今の構成と記録を、ファイルの内容で置き換えますか？')) return;
+    state = deserialize(data.current);
+    snaps = Array.isArray(data.snaps) ? data.snaps.filter(x => x && x.d && x.at).slice(-30) : [];
+    if (shared) { shared = false; history.replaceState(null, '', location.pathname); $('#sharedBanner').hidden = true; }
+    saveSnaps(); syncHead(); commit(true); renderSnaps(); toast('ファイルから読み込みました');
+  });
+}
+
 function applyTheme(t, remember) {
   document.documentElement.dataset.theme = t;
   if (remember) { try { localStorage.setItem('desk-setup:theme', t); } catch (e) {} }
@@ -2293,6 +2630,7 @@ async function init() {
   wire();
   wireTheme();
   wireExport();
+  wireSnaps();
   renderChips();
   const m = location.hash.match(/^#d=(.+)$/);
   if (m) {
