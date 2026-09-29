@@ -368,7 +368,37 @@
   .three-wrap canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
   .three-wrap canvas:active { cursor: grabbing; }
   @media (max-width: 560px) { .three-wrap { height: 48vh; min-height: 280px; } }
-  .three-hint { position: absolute; left: 12px; bottom: 10px; font: 400 11px var(--font-mono); color: var(--muted); pointer-events: none; }
+  .three-hint { position: absolute; left: 12px; right: 12px; bottom: 10px; font: 400 11px var(--font-mono); color: var(--muted); pointer-events: none; }
+  .three-hint[hidden] { display: none; }
+  .three-tools { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; pointer-events: none; }
+  .three-tools > * { pointer-events: auto; }
+  .three-tools .seg { box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+  .three-tools .seg button { padding: 7px 12px; }
+  .t3-full { margin-left: auto; }
+  .t3-group { display: inline-flex; gap: 4px; }
+  .t3-btn {
+    min-width: 38px; height: 38px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--card); color: var(--text); font: 500 16px var(--font-sans); line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,.18);
+    display: inline-grid; place-items: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  }
+  .t3-btn:hover { border-color: var(--muted); }
+  .t3-btn:active { background: var(--field); }
+  .t3-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .t3-full[aria-pressed="true"] .i-in, .t3-full[aria-pressed="false"] .i-out { display: none; }
+  .sel-bar {
+    position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); max-width: calc(100% - 20px);
+    display: flex; gap: 8px; align-items: center; padding: 6px 6px 6px 12px;
+    background: var(--card); border: 1px solid var(--accent); border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.28);
+  }
+  .sel-bar[hidden] { display: none; }
+  .sel-name { font-size: 13px; font-weight: 600; min-width: 0; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sel-bar .t3-btn { box-shadow: none; }
+  @media (max-width: 560px) { .sel-name { max-width: 88px; } .sel-bar .t3-btn { min-width: 40px; height: 40px; padding: 0; } }
+  dialog.dlg.full { width: 100vw; max-width: 100vw; height: 100vh; height: 100dvh; max-height: none; margin: 0; border: 0; border-radius: 0; overflow: hidden; }
+  dialog.dlg.full .dlg-body { height: 100%; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 8px; padding: 10px 12px max(10px, env(safe-area-inset-bottom)); }
+  dialog.dlg.full .wire-wrap { max-height: none; min-height: 0; }
+  dialog.dlg.full .three-wrap { height: 100%; min-height: 0; }
+  dialog.dlg.full #wireHint { display: none; }
   .three-load { position: absolute; inset: 0; display: grid; place-items: center; color: var(--text-2); font-size: 13px; }
   .wire-empty { padding: 40px 16px; text-align: center; color: var(--text-2); }
   .snaps { display: grid; gap: 6px; margin-top: 12px; }
@@ -3019,15 +3049,41 @@ async function open3D(wrap) {
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  holder.innerHTML = '<div class="three-hint">機材をドラッグで移動 ・ 何もない所をドラッグで回転 ・ ホイール / ピンチで拡大</div>';
+  const coarse = matchMedia('(pointer: coarse)').matches;
+  holder.innerHTML = `<div class="three-tools">
+      <span class="seg" id="t3View" role="group" aria-label="視点"><button type="button" data-view="persp" aria-pressed="true">斜め</button><button type="button" data-view="front" aria-pressed="false">正面</button><button type="button" data-view="top" aria-pressed="false">真上</button></span>
+      <span class="t3-group"><button type="button" class="t3-btn" data-zoom="1" aria-label="縮小">−</button><button type="button" class="t3-btn" data-zoom="-1" aria-label="拡大">＋</button></span>
+      <button type="button" class="t3-btn t3-full" id="t3Full" aria-pressed="false" aria-label="全画面で表示"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="i-in" d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/><path class="i-out" d="M6 2v4H2M14 6h-4V2M10 14v-4h4M2 10h4v4"/></svg></button>
+    </div>
+    <div class="sel-bar" id="t3Sel" hidden>
+      <span class="sel-name" id="t3SelName"></span>
+      <span class="t3-group" role="group" aria-label="少しずつ動かす"><button type="button" class="t3-btn" data-nudge="l" aria-label="左へ">←</button><button type="button" class="t3-btn" data-nudge="u" aria-label="奥へ">↑</button><button type="button" class="t3-btn" data-nudge="d" aria-label="手前へ">↓</button><button type="button" class="t3-btn" data-nudge="r" aria-label="右へ">→</button></span>
+      <button type="button" class="t3-btn" id="t3SelX" aria-label="選択を外す">✕</button>
+    </div>
+    <div class="three-hint" id="t3Hint">${coarse ? 'タップで機材を選ぶ ・ 選んだらなぞって移動 ・ 2本指で回転 / 拡大' : 'クリックで選択 ・ 機材をドラッグで移動 ・ 空いた所をドラッグで回転 ・ ホイールで拡大'}</div>`;
   holder.prepend(renderer.domElement);
-  const makeWorld = () => { const w = build3d(C, light); w.labels.forEach(l => { l.visible = $('#deskLabels').checked; }); return w; };
+  // 選んだ機材の足元に出す枠
+  const ringMat = () => new THREE.MeshBasicMaterial({ color: light ? C.fg : C.accent, transparent: true, opacity: .9, depthWrite: false, side: THREE.DoubleSide });
+  const makeWorld = () => {
+    const w = build3d(C, light); w.labels.forEach(l => { l.visible = $('#deskLabels').checked; });
+    w.ring = new THREE.Mesh(new THREE.BufferGeometry(), ringMat()); w.ring.rotation.x = -Math.PI / 2; w.ring.renderOrder = 5; w.ring.visible = false; w.ringFor = null;
+    w.scene.add(w.ring); return w;
+  };
   const cam = new THREE.PerspectiveCamera(38, 1, 1, 3000);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  three = { renderer, ro: null, raf: 0, world: makeWorld(), cam };
+  three = { renderer, ro: null, raf: 0, world: makeWorld(), cam, cleanup: [] };
   const W0 = three.world;
-  const orbit = { theta: -.55, phi: 1.02, r: Math.max(W0.W, W0.D) * 1.9 + 60, target: W0.center, touched: false };
+  const VIEWS = { persp: [-.55, 1.02], front: [0, 1.3], top: [0, .02] };
+  const orbit = { theta: -.55, phi: 1.02, r: Math.max(W0.W, W0.D) * 1.9 + 60, target: W0.center, touched: false, goal: null };
+  const R_MIN = 110, R_MAX = 900;
   let rTarget = orbit.r; if (!reduce) orbit.r *= 1.6;       // 開いたときに寄っていく
+  const zoomBy = f => { orbit.touched = true; rTarget = Math.max(R_MIN, Math.min(R_MAX, rTarget * f)); };
+  const setView = v => { holder.querySelectorAll('#t3View button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === v))); };
+  const turn = (dx, dy) => {
+    orbit.touched = true; orbit.goal = null; setView(null);
+    orbit.theta -= dx * .006;
+    orbit.phi = Math.max(.02, Math.min(1.45, orbit.phi - dy * .006));
+  };
   const place = () => {
     const { theta, phi, r, target } = orbit;
     cam.position.set(target.x + r * Math.sin(phi) * Math.sin(theta), target.y + r * Math.cos(phi), target.z + r * Math.sin(phi) * Math.cos(theta));
@@ -3040,98 +3096,198 @@ async function open3D(wrap) {
   resize();
   three.ro = new ResizeObserver(resize); three.ro.observe(holder);
 
-  // 指した先の機材と、机の上（外なら床）の位置
-  const el = renderer.domElement, ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), hitPt = new THREE.Vector3();
-  const aim = e => { const r = el.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(ndc, cam); };
-  const itemAt = e => {
-    aim(e);
-    const hits = ray.intersectObjects([...three.world.groups.values()].map(x => x.g), true);
+  // 指した先の機材（指の近くにあれば拾う）と、天板の高さの面の上の位置
+  const el = renderer.domElement, ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), hitPt = new THREE.Vector3(), v3 = new THREE.Vector3(), box = new THREE.Box3();
+  const deskPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  const aim = (x, y) => { const r = el.getBoundingClientRect(); ndc.set((x - r.left) / r.width * 2 - 1, -(y - r.top) / r.height * 2 + 1); ray.setFromCamera(ndc, cam); return r; };
+  const pickItem = (x, y, tol) => {
+    const r = aim(x, y);
+    const hits = ray.intersectObjects([...three.world.groups.values()].map(o => o.g), true);
     for (const h of hits) { let o = h.object; while (o && !o.userData.itemId) o = o.parent; if (o) return o.userData.itemId; }
-    return null;
-  };
-  const groundAt = e => {
-    aim(e);
-    const { W, D, DH } = three.world;
-    if (ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -DH), hitPt)) {
-      const x = hitPt.x + W / 2, y = hitPt.z + D / 2;
-      if (x >= 0 && x <= W && y >= 0 && y <= D) return { x, y, desk: true };
+    let best = null, bestD = tol;
+    for (const [id, o] of three.world.groups) {
+      box.setFromObject(o.g).getCenter(v3).project(cam);
+      if (v3.z > 1) continue;
+      const d = Math.hypot(r.left + (v3.x + 1) / 2 * r.width - x, r.top + (1 - v3.y) / 2 * r.height - y);
+      if (d < bestD) { bestD = d; best = id; }
     }
-    if (ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hitPt)) return { x: hitPt.x + W / 2, y: hitPt.z + D / 2, desk: false };
-    return null;
+    return best;
+  };
+  const deskAt = (x, y) => { aim(x, y); deskPlane.constant = -three.world.DH; return ray.ray.intersectPlane(deskPlane, hitPt) ? { x: hitPt.x, z: hitPt.z } : null; };
+
+  // 選択
+  let selId = null;
+  const selBar = holder.querySelector('#t3Sel'), hint = holder.querySelector('#t3Hint');
+  const select = id => {
+    selId = id && byId(id) ? id : null;
+    selBar.hidden = !selId; hint.hidden = !!selId;
+    if (selId) holder.querySelector('#t3SelName').textContent = byId(selId).name;
+  };
+  // 位置を変えて、その場で見た目も動かす（ケーブルは離したあとにつくり直す）
+  const freezeAll = () => { const all = deskPositions(); for (const i of deskItems()) if (!i.pos && all.get(i.id)) i.pos = { ...all.get(i.id) }; };
+  const setPos = (it, x, y) => {
+    const { W, D, DH, groups } = three.world;
+    x = Math.max(-30, Math.min(W + 30, Math.round(x * 2) / 2));
+    y = Math.max(-18, Math.min(D + 24, Math.round(y * 2) / 2));
+    it.pos = { x, y };
+    const gr = groups.get(it.id); if (!gr) return;
+    const [fw, fd] = footprint(it);
+    const onDesk = x - fw / 2 >= -2 && x + fw / 2 <= W + 2 && y - fd / 2 >= -2 && y + fd / 2 <= D + 2;
+    gr.g.position.x = x - W / 2; gr.g.position.z = y - D / 2;
+    if (gr.plain) gr.g.position.y = onDesk ? DH : 0;
+    gr.label.position.set(gr.g.position.x, gr.g.position.y + gr.dy, gr.g.position.z);
+  };
+  let rebuildT = 0;
+  const commit = () => {
+    clearTimeout(rebuildT); save();
+    if (three && three.renderer === renderer) { const old = three.world; three.world = makeWorld(); orbit.target = three.world.center; disposeScene(old.scene); }
+  };
+  three.cleanup.push(() => { if (rebuildT) { clearTimeout(rebuildT); save(); } });
+  // 画面で見た向きの前後左右を、机の縦横どちらかに合わせて 2cm ずつ
+  const nudge = dir => {
+    const it = selId && byId(selId); if (!it) return;
+    freezeAll();
+    const fx = -Math.sin(orbit.theta), fz = -Math.cos(orbit.theta);
+    let [ax, az] = { u: [fx, fz], d: [-fx, -fz], r: [-fz, fx], l: [fz, -fx] }[dir];
+    if (Math.abs(ax) >= Math.abs(az)) { ax = Math.sign(ax); az = 0; } else { az = Math.sign(az); ax = 0; }
+    setPos(it, it.pos.x + ax * 2, it.pos.y + az * 2);
+    clearTimeout(rebuildT); rebuildT = setTimeout(() => { rebuildT = 0; commit(); }, 450);
   };
 
-  const ptrs = new Map(); let pinch = 0, drag3 = null;
+  // 1本指: タップで選ぶ／機材（または選んだ機材）をなぞって動かす／空いた所で回転
+  // 2本指: 回転と拡大
+  const ptrs = new Map(); let gest = null;
+  const centroid = () => { const a = [...ptrs.values()]; return [a.reduce((s, p) => s + p[0], 0) / a.length, a.reduce((s, p) => s + p[1], 0) / a.length]; };
+  const spread = () => { const [a, b] = [...ptrs.values()]; return Math.hypot(a[0] - b[0], a[1] - b[1]); };
+  const endMove = () => { if (gest && gest.mode === 'move') { const moved = gest.moved; gest = null; if (moved) commit(); } };
   el.addEventListener('pointerdown', e => {
-    el.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); orbit.touched = true;
-    if (ptrs.size !== 1) { drag3 = null; return; }
-    const id = itemAt(e), it = id && byId(id), p0 = it && groundAt(e);
-    if (!it || !p0) return;
-    // 最初に動かしたときに、全部の位置を固定する
-    const all = deskPositions();
-    for (const i of deskItems()) if (!i.pos && all.get(i.id)) i.pos = { ...all.get(i.id) };
-    drag3 = { it, dx: it.pos.x - p0.x, dy: it.pos.y - p0.y, moved: false };
-    el.style.cursor = 'grabbing';
+    el.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+    orbit.touched = true; orbit.goal = null;
+    if (ptrs.size === 2) { endMove(); gest = { mode: 'two', c: centroid(), d: spread() }; return; }
+    if (ptrs.size > 2) return;
+    const mouse = e.pointerType === 'mouse';
+    const hit = pickItem(e.clientX, e.clientY, mouse ? 14 : 44);
+    // タッチでは、選んだ機材があれば画面のどこをなぞってもそれが動く
+    const target = hit || (!mouse && selId) || null;
+    gest = { mode: 'pending', x0: e.clientX, y0: e.clientY, hit, target, slop: mouse ? 3 : 8 };
   });
   el.addEventListener('pointermove', e => {
-    if (!ptrs.has(e.pointerId)) { el.style.cursor = itemAt(e) ? 'move' : 'grab'; return; }
+    if (!ptrs.has(e.pointerId)) { if (e.pointerType === 'mouse') el.style.cursor = pickItem(e.clientX, e.clientY, 14) ? 'move' : 'grab'; return; }
     const [px, py] = ptrs.get(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]);
-    if (ptrs.size === 2) {
-      const [a, b] = [...ptrs.values()], dist = Math.hypot(a[0] - b[0], a[1] - b[1]);
-      if (pinch) rTarget = Math.max(110, Math.min(900, rTarget * Math.pow(pinch / dist, .6)));   // 指の動きより少し穏やかに
-      pinch = dist; return;
+    if (!gest) return;
+    if (gest.mode === 'two') {
+      if (ptrs.size !== 2) return;
+      const c = centroid(), d = spread();
+      turn(c[0] - gest.c[0], c[1] - gest.c[1]);
+      if (gest.d > 0 && d > 0) zoomBy(Math.pow(gest.d / d, .6));   // 指の動きより少し穏やかに
+      gest.c = c; gest.d = d; return;
     }
-    if (drag3) {
-      const p = groundAt(e); if (!p) return;
-      const { W, D, DH, groups } = three.world;
-      const x = Math.max(-30, Math.min(W + 30, Math.round((p.x + drag3.dx) * 2) / 2));
-      const y = Math.max(-18, Math.min(D + 24, Math.round((p.y + drag3.dy) * 2) / 2));
-      drag3.it.pos = { x, y }; drag3.moved = true;
-      const gr = groups.get(drag3.it.id);
-      if (gr) {
-        const [fw, fd] = footprint(drag3.it);
-        const onDesk = x - fw / 2 >= -2 && x + fw / 2 <= W + 2 && y - fd / 2 >= -2 && y + fd / 2 <= D + 2;
-        gr.g.position.x = x - W / 2; gr.g.position.z = y - D / 2;
-        if (gr.plain) gr.g.position.y = onDesk ? DH : 0;
-        gr.label.position.set(gr.g.position.x, gr.g.position.y + gr.dy, gr.g.position.z);
-      }
+    if (gest.mode === 'pending') {
+      if (Math.hypot(e.clientX - gest.x0, e.clientY - gest.y0) < gest.slop) return;
+      const it = gest.target && byId(gest.target), p0 = it && deskAt(gest.x0, gest.y0);
+      if (it && p0) {
+        freezeAll(); select(it.id);
+        gest = { mode: 'move', it, p0, sx: it.pos.x, sy: it.pos.y, moved: false };
+        el.style.cursor = 'grabbing';
+      } else gest = { mode: 'orbit' };
+    }
+    if (gest.mode === 'move') {
+      const p = deskAt(e.clientX, e.clientY); if (!p) return;
+      setPos(gest.it, gest.sx + p.x - gest.p0.x, gest.sy + p.z - gest.p0.z); gest.moved = true;
       return;
     }
-    orbit.theta -= (e.clientX - px) * .006;
-    orbit.phi = Math.max(.25, Math.min(1.45, orbit.phi - (e.clientY - py) * .006));
+    if (gest.mode === 'orbit') turn(e.clientX - px, e.clientY - py);
   });
   const up = e => {
-    ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = 0;
-    if (drag3 && !ptrs.size) {
-      const moved = drag3.moved; drag3 = null; el.style.cursor = 'grab';
-      if (moved) {
-        save();
-        // ケーブルや置き方（机の上か床か）をつくり直す
-        const old = three.world; three.world = makeWorld(); orbit.target = three.world.center; disposeScene(old.scene);
-      }
-    }
+    if (!ptrs.has(e.pointerId)) return;
+    ptrs.delete(e.pointerId);
+    if (!gest) return;
+    if (gest.mode === 'pending' && e.type === 'pointerup') { select(gest.hit); gest = null; return; }   // タップ: 選ぶ／何もない所なら外す
+    if (gest.mode === 'move') { endMove(); el.style.cursor = 'grab'; return; }
+    if (gest.mode === 'two') { gest = ptrs.size ? { mode: 'done' } : null; return; }   // 残った指では何もしない
+    if (!ptrs.size) gest = null;
   };
   el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
-  el.addEventListener('wheel', e => { e.preventDefault(); orbit.touched = true; rTarget = Math.max(110, Math.min(900, rTarget * (1 + Math.sign(e.deltaY) * .12))); }, { passive: false });
+  el.addEventListener('wheel', e => { e.preventDefault(); zoomBy(1 + Math.sign(e.deltaY) * .12); }, { passive: false });
+
+  // 画面の上のボタン
+  holder.querySelector('.three-tools').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.view) {
+      const [th, ph] = VIEWS[b.dataset.view];
+      const d = ((th - orbit.theta) % (Math.PI * 2) + Math.PI * 3) % (Math.PI * 2) - Math.PI;   // 近い向きから回す
+      orbit.touched = true; orbit.goal = [orbit.theta + d, ph]; setView(b.dataset.view);
+      if (reduce) { [orbit.theta, orbit.phi] = orbit.goal; orbit.goal = null; }
+    } else if (b.dataset.zoom) zoomBy(b.dataset.zoom === '1' ? 1.25 : .8);
+    else if (b.id === 't3Full') setFull(!$('#wireDlg').classList.contains('full'));
+  });
+  selBar.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.nudge) nudge(b.dataset.nudge);
+    else if (b.id === 't3SelX') select(null);
+  });
+  // キーボード: 矢印で選んだ機材を動かす、Esc で選択を外す
+  const onKey = e => {
+    if (!selId || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+    const dir = { ArrowLeft: 'l', ArrowUp: 'u', ArrowDown: 'd', ArrowRight: 'r' }[e.key];
+    if (dir) { e.preventDefault(); nudge(dir); }
+    else if (e.key === 'Escape') { e.preventDefault(); select(null); }
+  };
+  document.addEventListener('keydown', onKey);
+  three.cleanup.push(() => document.removeEventListener('keydown', onKey));
+  syncFull();
+
   const clock = new THREE.Clock();
   const loop = () => {
-    const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime;
+    const raw = clock.getDelta(), dt = Math.min(.05, raw), t = clock.elapsedTime;
     if (!orbit.touched && !reduce) orbit.theta += dt * .12;   // 触るまでゆっくり回る
-    orbit.r += (rTarget - orbit.r) * Math.min(1, dt * 3);
+    if (orbit.goal) {
+      const k = Math.min(1, raw * 6);
+      orbit.theta += (orbit.goal[0] - orbit.theta) * k; orbit.phi += (orbit.goal[1] - orbit.phi) * k;
+      if (Math.abs(orbit.goal[0] - orbit.theta) + Math.abs(orbit.goal[1] - orbit.phi) < .002) { [orbit.theta, orbit.phi] = orbit.goal; orbit.goal = null; }
+    }
+    orbit.r += (rTarget - orbit.r) * Math.min(1, raw * 3);
     place();
     for (const f of three.world.flows) {
       let u = (f.off + t * f.speed) % 1; if (f.rev) u = 1 - u;
       f.dot.position.copy(f.curve.getPointAt(u));
       f.dot.visible = !reduce;
     }
-    renderer.render(three.world.scene, cam);
+    const w = three.world, ring = w.ring, gr = selId && w.groups.get(selId);
+    if (gr) {
+      if (w.ringFor !== selId) {
+        const [fw, fd] = footprint(byId(selId));
+        const outer = roundRect(fw + 7, fd + 7, 4); outer.holes.push(roundRect(fw + 3.5, fd + 3.5, 2.5));
+        ring.geometry.dispose(); ring.geometry = new THREE.ShapeGeometry(outer, 6); w.ringFor = selId;
+      }
+      ring.position.set(gr.g.position.x, (gr.plain ? gr.g.position.y : w.DH) + .35, gr.g.position.z);
+      ring.material.opacity = reduce ? .9 : .65 + .3 * Math.sin(t * 5);
+    }
+    ring.visible = !!gr;
+    renderer.render(w.scene, cam);
     three.raf = requestAnimationFrame(loop);
   };
   loop();
   return true;
 }
+function roundRect(w, h, r) {
+  const s = new THREE.Shape(), x = -w / 2, y = -h / 2;
+  s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+// 3D を画面いっぱいに（スマホでは最初から）
+function setFull(on) {
+  const d = $('#wireDlg'); d.classList.toggle('full', on);
+  const b = $('#t3Full'); if (b) { b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? '全画面をやめる' : '全画面で表示'); }
+}
+function syncFull() { setFull(wireMode === '3d' && matchMedia('(max-width: 560px)').matches); }
 function stop3D() {
   if (!three) return;
   cancelAnimationFrame(three.raf); if (three.ro) three.ro.disconnect();
+  three.cleanup.forEach(f => f());
   disposeScene(three.world.scene);
   three.renderer.dispose(); three = null;
 }
@@ -3143,10 +3299,10 @@ async function openWiring() {
   $('#deskAuto').hidden = wireMode !== 'desk';
   $('#deskLabelsText').textContent = wireMode === '3d' ? '名前' : 'ケーブル名';
   $('#deskW').value = state.desk.w; $('#deskD').value = state.desk.d;
-  if (wireMode !== '3d') stop3D();
+  if (wireMode !== '3d') { stop3D(); setFull(false); }
   if (wireMode === '3d') {
     const d0 = $('#wireDlg'); if (!d0.open) d0.showModal();
-    $('#wireHint').textContent = '機材はドラッグで動かせます。天板の外まで動かすと床に置きます。置き場所は「机の配置」と共通です。高さや形は目安です。';
+    $('#wireHint').textContent = '機材はドラッグで動かせます。選ぶと矢印ボタン（キーボードの矢印キー）で 2cm ずつ動かせます。天板の外まで動かすと床に置きます。置き場所は「机の配置」と共通です。高さや形は目安です。';
     if (!deskItems().length) { wrap.innerHTML = '<div class="wire-empty">机に置く機材がまだありません。構成リストで機材を追加してください。</div>'; $('#wireSave').disabled = true; return; }
     $('#wireSave').disabled = !(await open3D(wrap));
     return;
@@ -3240,7 +3396,7 @@ function wireSnaps() {
   document.querySelectorAll('dialog [data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
   document.querySelectorAll('#wireDlg, #diffDlg').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
   $('#wireBtn').addEventListener('click', openWiring);
-  $('#wireDlg').addEventListener('close', stop3D);
+  $('#wireDlg').addEventListener('close', () => { stop3D(); setFull(false); });
   $('#wireSave').addEventListener('click', async () => {
     let cv = null;
     try { cv = wireMode === '3d' ? (three && three.renderer.domElement) : wireMode === 'desk' ? await deskPNG() : await drawWiring(); } catch (e) { toast('画像を作れませんでした'); return; }
