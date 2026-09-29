@@ -23,6 +23,7 @@
     try { t = localStorage.getItem('desk-setup:theme'); } catch (e) {}
     if (t !== 'light' && t !== 'dark') t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
     document.documentElement.dataset.theme = t;
+    document.documentElement.classList.add('intro');
   })();
 </script>
 <style>
@@ -309,6 +310,60 @@
   dialog.dlg-wide { width: min(1100px, calc(100vw - 24px)); }
   .wire-wrap { overflow: auto; max-height: calc(100vh - 220px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--page); }
   .wire-wrap canvas { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .wire-bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+  .desk-size { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--text-2); }
+  .desk-size label { display: inline-flex; gap: 6px; align-items: center; }
+  .desk-size .text { width: 72px; padding: 5px 8px; font-size: 13px; }
+  .desk-size[hidden] { display: none; }
+  .desk-svg { display: block; width: 100%; height: auto; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .desk-svg .dk-item { cursor: grab; }
+  .desk-svg .dk-item.dragging { cursor: grabbing; }
+  .desk-svg .dk-item.dragging rect.box { filter: drop-shadow(0 8px 14px rgba(0,0,0,.35)); }
+  .desk-svg .flow { stroke-dasharray: 3 11; animation: cable-flow 1.1s linear infinite; }
+  .desk-svg .flow.rev { animation-direction: reverse; }
+  .desk-svg .flow.slow { animation-duration: 2.2s; }
+  @keyframes cable-flow { to { stroke-dashoffset: -28; } }
+
+  /* ---- アニメーション ---- */
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes slash-in { from { opacity: 0; transform: translateY(-18px) skewX(-12deg); } to { opacity: 1; transform: none; } }
+  @keyframes blink { 50% { opacity: 0; } }
+  @keyframes pop { 0% { transform: scale(.97); opacity: .4; } 60% { transform: scale(1.01); opacity: 1; } 100% { transform: none; } }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes dlg-in { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
+  @keyframes spin-in { from { transform: rotate(-90deg) scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .brand .pre::after { content: "_"; margin-left: 2px; animation: blink 1s steps(1) infinite; }
+    .logo .word > span { display: inline-block; }
+    /* ページを開いたときだけの登場 */
+    :root.intro .brand .pre, :root.intro .logo .word, :root.intro .logo .maker, :root.intro .brand p, :root.intro .head-right, :root.intro .tabs { animation: rise .7s cubic-bezier(.2, .7, .2, 1) both; }
+    :root.intro .logo .word { animation-delay: .05s; }
+    :root.intro .logo .word > span { animation: slash-in .6s cubic-bezier(.2, .9, .2, 1.2) .45s both; }
+    :root.intro .logo .maker { animation-delay: .25s; }
+    :root.intro .brand p { animation-delay: .35s; }
+    :root.intro .head-right { animation-delay: .4s; }
+    :root.intro .tabs { animation-delay: .45s; }
+    :root.intro .layout > .main > .card, :root.intro .layout > .side > .card, :root.intro .photo-layout .side > .card, :root.intro .stage { animation: rise .6s cubic-bezier(.2, .7, .2, 1) both; }
+    :root.intro .layout > .main > .card:nth-child(1), :root.intro .stage { animation-delay: .5s; }
+    :root.intro .layout > .main > .card:nth-child(2) { animation-delay: .58s; }
+    :root.intro .layout > .side > .card:nth-child(1), :root.intro .photo-layout .side > .card:nth-child(1) { animation-delay: .55s; }
+    :root.intro .layout > .side > .card:nth-child(2), :root.intro .photo-layout .side > .card:nth-child(2) { animation-delay: .63s; }
+    :root.intro .layout > .side > .card:nth-child(3), :root.intro .photo-layout .side > .card:nth-child(3) { animation-delay: .71s; }
+    :root.intro .layout > .side > .card:nth-child(4), :root.intro .photo-layout .side > .card:nth-child(4) { animation-delay: .79s; }
+    .view-in { animation: fade-in .35s ease-out; }
+    .item.pop { animation: pop .45s cubic-bezier(.2, .7, .2, 1); }
+    .btn { transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, background-color .2s ease; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0) scale(.98); }
+    .btn.primary:hover { box-shadow: 0 0 0 4px var(--accent-soft), 0 8px 24px rgba(200, 255, 46, .22); }
+    .chip, .pick, .tab, .font-opt, .result { transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .15s ease; }
+    .result:hover, .font-opt:hover { transform: translateY(-1px); }
+    .track > i { transition: width .7s cubic-bezier(.2, .7, .2, 1); }
+    dialog.dlg[open] { animation: dlg-in .28s cubic-bezier(.2, .7, .2, 1); }
+    dialog.dlg[open]::backdrop { animation: fade-in .28s ease-out; }
+    .theme-btn svg { animation: spin-in .4s cubic-bezier(.2, .7, .2, 1); }
+    :root.theming, :root.theming * { transition: background-color .35s ease, color .35s ease, border-color .35s ease, fill .35s ease !important; }
+  }
   .wire-empty { padding: 40px 16px; text-align: center; color: var(--text-2); }
   .snaps { display: grid; gap: 6px; margin-top: 12px; }
   .snaps:empty { display: none; }
@@ -545,9 +600,18 @@
 <dialog class="dlg dlg-wide" id="wireDlg" aria-labelledby="wireTitle">
   <div class="dlg-body">
     <div class="dlg-head"><h2 id="wireTitle">配線図</h2><button class="x" type="button" data-close aria-label="閉じる">×</button></div>
+    <div class="wire-bar">
+      <span class="seg" id="wireMode"><button type="button" data-v="desk">机の配置</button><button type="button" data-v="tree">つながり図</button></span>
+      <span class="desk-size" id="deskSize">天板
+        <label><input class="text" type="number" id="deskW" min="40" max="400" step="5" inputmode="numeric" aria-label="天板の幅（cm）"><span>×</span></label>
+        <label><input class="text" type="number" id="deskD" min="40" max="200" step="5" inputmode="numeric" aria-label="天板の奥行（cm）"><span>cm</span></label>
+        <label class="toggle"><input type="checkbox" id="deskLabels" checked> ケーブル名</label>
+        <button class="link-btn" type="button" id="deskAuto">自動で並べ直す</button>
+      </span>
+    </div>
     <div class="wire-wrap" id="wireWrap"></div>
     <div class="ex-foot"><button class="btn primary" type="button" id="wireSave">画像を保存</button></div>
-    <p class="fine" style="margin:0">各機材の「接続先」から作っています。つながり方を変えたいときは、構成リストで接続先を選び直してください。</p>
+    <p class="fine" style="margin:0" id="wireHint">機材はドラッグで好きな場所に動かせます。つながり方は、構成リストの「接続先」で変えられます。</p>
   </div>
 </dialog>
 <dialog class="dlg" id="diffDlg" aria-labelledby="diffTitle">
@@ -715,7 +779,7 @@ let state = emptyState();
 let shared = false;
 let activeCat = '';
 
-function emptyState() { return { title: '', handle: '', items: [], seq: 0 }; }
+function emptyState() { return { title: '', handle: '', items: [], seq: 0, desk: { w: 140, d: 70 } }; }
 const byId = id => state.items.find(i => i.id === id);
 const clone = o => JSON.parse(JSON.stringify(o));
 
@@ -1166,14 +1230,24 @@ function renderList() {
 
 function renderSide() {
   const total = sumPrice(state.items);
-  $('#totalNum').textContent = yen(total);
+  countTo($('#totalNum'), total);
   const outs = Object.entries(TOT_LABEL).map(([k, l]) => ({ l, v: state.items.filter(i => i.tot === k).reduce((s, i) => s + (i.price || 0), 0), n: state.items.filter(i => i.tot === k).length })).filter(x => x.n);
   $('#totalNote').textContent = outs.length ? '合計に含めていない: ' + outs.map(x => `${x.l} ${x.n}点${x.v ? ' ' + yen(x.v) : ''}`).join(' / ') : '';
   const priced = state.items.filter(i => i.price).length;
   $('#totalSub').textContent = `${state.items.length}点` + (state.items.length && priced < state.items.length ? `（価格未入力 ${state.items.length - priced}点）` : '');
   const byCat = CATS.map(c => ({ c, v: sumPrice(state.items.filter(i => i.cat === c.id)) })).filter(x => x.v > 0).sort((a, b) => b.v - a.v);
   const max = byCat[0] ? byCat[0].v : 1;
-  $('#bars').innerHTML = byCat.map(x => `<div class="bar-row"><span class="lbl">${esc(x.c.label)}</span><span class="track"><i style="width:${(x.v / max * 100).toFixed(1)}%"></i></span><span class="val">${yen(x.v)}</span></div>`).join('');
+  const bars = $('#bars'), sig = byCat.map(x => x.c.id).join(',');
+  if (bars.dataset.sig !== sig) {
+    bars.dataset.sig = sig;
+    bars.innerHTML = byCat.map(x => `<div class="bar-row"><span class="lbl">${esc(x.c.label)}</span><span class="track"><i style="width:0%"></i></span><span class="val">${yen(x.v)}</span></div>`).join('');
+    bars.offsetWidth; // 0% から伸ばす
+  }
+  bars.querySelectorAll('.bar-row').forEach((row, i) => {
+    const x = byCat[i];
+    row.querySelector('i').style.width = (x.v / max * 100).toFixed(1) + '%';
+    row.querySelector('.val').textContent = yen(x.v);
+  });
 
   const checks = runChecks();
   const cnt = s => checks.filter(c => c.sev === s).length;
@@ -1221,6 +1295,7 @@ const isAmazon = u => shopFromUrl(u) === 'Amazon';
 function serialize(forShare = false) {
   return {
     v: 1, t: state.title || undefined, u: state.handle || undefined,
+    dk: state.desk && (state.desk.w !== 140 || state.desk.d !== 70) ? [state.desk.w, state.desk.d] : undefined,
     i: state.items.map(it => {
       const base = it.cid && catalogById(it.cid);
       const o = { id: it.id };
@@ -1235,6 +1310,7 @@ function serialize(forShare = false) {
       if (it.pdate) o.pd = it.pdate;
       if (it.tot) o.tt = it.tot;
       if (it.memo) o.me = it.memo;
+      if (it.pos) o.ps = [Math.round(it.pos.x * 10) / 10, Math.round(it.pos.y * 10) / 10];
       if (!forShare && it.links && it.links.length) o.ln = it.links.map(l => [l.s, l.u]);
       return o;
     }),
@@ -1244,6 +1320,7 @@ function deserialize(o) {
   const st = emptyState();
   st.title = String(o.t || '').slice(0, 40);
   st.handle = String(o.u || '').slice(0, 30);
+  if (Array.isArray(o.dk) && o.dk.every(n => Number.isFinite(n) && n >= 40 && n <= 400)) st.desk = { w: o.dk[0], d: o.dk[1] };
   let max = -1;
   for (const x of Array.isArray(o.i) ? o.i : []) {
     const base = x.c && catalogById(x.c);
@@ -1261,6 +1338,7 @@ function deserialize(o) {
       pkind: x.pk === 'r' ? 'ref' : 'paid', pdate: /^\d{4}-\d{2}$/.test(x.pd || '') ? x.pd : '',
       tot: TOT_LABEL[x.tt] ? x.tt : '', memo: String(x.me || '').slice(0, 80),
       links: cleanLinks(Array.isArray(x.ln) ? x.ln.map(l => ({ s: l && l[0], u: l && l[1] })) : []),
+      pos: Array.isArray(x.ps) && x.ps.every(Number.isFinite) ? { x: x.ps[0], y: x.ps[1] } : null,
     });
   }
   st.seq = max + 1;
@@ -1301,9 +1379,28 @@ function toast(msg) {
   const t = $('#toast'); t.textContent = msg; t.classList.add('show');
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2200);
 }
+// 合計金額を、前の値から数え上げる
+function countTo(el, to) {
+  const from = Number(el.dataset.v || 0);
+  el.dataset.v = to;
+  cancelAnimationFrame(el._raf);
+  if (from === to || matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = yen(to); return; }
+  const t0 = performance.now(), dur = 600;
+  const step = now => {
+    const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = yen(from + (to - from) * e);
+    if (k < 1) el._raf = requestAnimationFrame(step);
+  };
+  el._raf = requestAnimationFrame(step);
+}
+
 function flashItem(id) {
   const el = document.querySelector(`.item[data-id="${id}"]`);
-  if (el) { el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); el.animate([{ outline: '2px solid var(--accent-fg)' }, { outline: '2px solid transparent' }], { duration: 1200 }); }
+  if (el) {
+    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    el.classList.remove('pop'); el.offsetWidth; el.classList.add('pop');
+    el.animate([{ outline: '2px solid var(--accent-fg)' }, { outline: '2px solid transparent' }], { duration: 1200 });
+  }
 }
 function syncHead() { $('#title').value = state.title; $('#handle').value = state.handle; }
 
@@ -2041,6 +2138,8 @@ function setTab(t) {
   $('#listView').hidden = t !== 'list';
   $('#listActions').hidden = t !== 'list';
   $('#photoView').hidden = t !== 'photo';
+  const shown = t === 'photo' ? $('#photoView') : $('#listView');
+  shown.classList.remove('view-in'); shown.offsetWidth; shown.classList.add('view-in');
   try { localStorage.setItem('desk-setup:tab', t); } catch (e) {}
   if (t === 'photo') renderPhoto();
 }
@@ -2444,13 +2543,284 @@ async function drawWiring() {
   return cv;
 }
 
+
+// ---- 机の配置図 ----
+let wireMode = 'desk';
+try { wireMode = localStorage.getItem('desk-setup:wire-mode') === 'tree' ? 'tree' : 'desk'; } catch (e) {}
+let deskDrag = null;
+const DESK_SKIP = new Set(['furniture', 'arm']);
+
+// 真上から見た大きさ（cm）
+function footprint(it) {
+  const n = it.name;
+  switch (it.cat) {
+    case 'computer':
+      if (/mini/i.test(n)) return [13, 13];
+      if (/Studio/i.test(n)) return [20, 20];
+      if (/デスクトップ|desktop|tower/i.test(n)) return [22, 45];
+      return [31, 22];
+    case 'monitor': {
+      const s = it.spec, w = s.w, h = s.h, r = w / h;
+      if (/モバイル|portable/i.test(n)) return [36, 6];
+      if (r > 3) return [115, 9];
+      if (r > 2.2) return [82, 9];
+      return [w >= 3800 ? 62 : 58, 8];
+    }
+    case 'dock': return [14, 8];
+    case 'charger': return [8, 8];
+    case 'keyboard': return /mini|HHKB|60|65/i.test(n) ? [30, 12] : [37, 13];
+    case 'mouse': return /trackpad|トラックパッド/i.test(n) ? [16, 11] : [7, 12];
+    case 'audio':
+      if (/ヘッドホン|WH-|headphone/i.test(n)) return [18, 9];
+      if (/インターフェース|interface/i.test(n)) return [18, 12];
+      return [12, 15];
+    case 'camera': return /カメラ|cam|C9/i.test(n) ? [10, 5] : [9, 9];
+    case 'lighting': return /ScreenBar|バー/i.test(n) ? [48, 6] : [15, 15];
+    case 'mobile': return /iPad/i.test(n) ? [18, 25] : /スタンド|3-in-1/i.test(n) ? [12, 12] : [8, 16];
+    default: return [12, 12];
+  }
+}
+
+// 置き場所が決まっていない機材を、それらしく並べる
+function autoDesk(items, W, D, fixed) {
+  const pos = new Map(), fp = new Map(items.map(i => [i.id, footprint(i)]));
+  const put = (it, x, y) => { if (!pos.has(it.id)) pos.set(it.id, { x, y }); };
+  const by = c => items.filter(i => i.cat === c);
+  const mons = by('monitor');
+  const monW = mons.reduce((s, m) => s + fp.get(m.id)[0], 0) + Math.max(0, mons.length - 1) * 4;
+  let mx = W / 2 - monW / 2;
+  for (const m of mons) { const [w, h] = fp.get(m.id); put(m, mx + w / 2, 12 + h / 2); mx += w + 4; }
+  const left = W / 2 - monW / 2, right = W / 2 + monW / 2;
+  const spk = by('audio').filter(a => fp.get(a.id)[0] === 12).slice(0, 2);
+  spk.forEach((a, i) => put(a, i ? (right + 10 <= W - 6 ? right + 10 : W + 10) : (left - 10 >= 6 ? left - 10 : -10), 14));
+  if (mons[0]) {
+    const m0 = pos.get(mons[0].id);
+    by('camera').forEach((c, i) => put(c, m0.x + 32 + i * 14, m0.y - 7));
+    by('lighting').filter(l => fp.get(l.id)[0] > 30).forEach(l => put(l, m0.x, m0.y - 8));
+  }
+  by('computer').forEach((c, i) => {
+    const [w, h] = fp.get(c.id);
+    if (h === 45) put(c, W + 18 + i * 26, D * .5);               // タワーは机の横の床
+    else if (w <= 20) put(c, W - w / 2 - 6, D * .45 + i * 22);    // Mac mini など
+    else put(c, w / 2 + 6 + i * (w + 4), D - h / 2 - 8);          // ノートは手前の左
+  });
+  by('keyboard').forEach((k, i) => put(k, W / 2 - 4, D - 12 - i * 16));
+  by('mouse').forEach((m, i) => put(m, W / 2 + 24 + i * 18, D - 12));
+  by('dock').forEach((d, i) => put(d, W - 12, D * .4 + i * 12));
+  by('charger').forEach((c, i) => put(c, -12, 18 + i * 14));      // 充電器は机の下・横
+  let ry = D - 12;
+  for (const it of items) if (!pos.has(it.id)) { put(it, W - 10, ry); ry -= 20; }
+  // 重なったら少しずつずらす
+  const box = (it, p) => { const [w, h] = fp.get(it.id) || footprint(it); return [p.x - w / 2, p.y - h / 2, p.x + w / 2, p.y + h / 2]; };
+  const hit = (a, b) => a[0] < b[2] - .5 && b[0] < a[2] - .5 && a[1] < b[3] - .5 && b[1] < a[3] - .5;
+  const placed = (fixed || []).map(f => box(f.it, f.p));
+  for (const it of items) {
+    if (it.cat === 'camera' || it.cat === 'lighting') { placed.push(box(it, pos.get(it.id))); continue; }
+    const p = pos.get(it.id);
+    for (let n = 0; n < 80 && placed.some(b => hit(b, box(it, p))); n++) {
+      p.y -= 3;
+      if (p.y < fp.get(it.id)[1] / 2 + 2) { p.y = D - fp.get(it.id)[1] / 2 - 2; p.x -= 6; }
+    }
+    placed.push(box(it, p));
+  }
+  return pos;
+}
+
+function deskItems() { return state.items.filter(i => !DESK_SKIP.has(i.cat)); }
+function deskPositions() {
+  const W = state.desk.w, D = state.desk.d, items = deskItems();
+  const auto = autoDesk(items.filter(i => !i.pos), W, D, items.filter(i => i.pos).map(i => ({ it: i, p: i.pos })));
+  return new Map(items.map(i => [i.id, i.pos || auto.get(i.id)]));
+}
+
+// ケーブルの種類: video 映像 / usb / power 給電・充電 / wireless
+function cableKind(it, host) {
+  const v = it.link.v;
+  if (v === 'bt' || v === 'receiver') return 'wireless';
+  if (host.cat === 'charger') return 'power';
+  if (it.cat === 'monitor') return 'video';
+  return 'usb';
+}
+
+function deskSVG(C, forExport) {
+  const W = state.desk.w, D = state.desk.d, S = 7;            // 1cm = 7px
+  const PADX = 34, TOP = 14, BOTM = 16;                        // cm
+  const RW = (W + PADX * 2) * S, RH = (D + TOP + BOTM + 10) * S;
+  const ox = PADX * S, oy = (TOP + 10) * S;                    // 天板の左上
+  const pos = deskPositions(), items = deskItems(), checks = runChecks();
+  const esc2 = t => esc(String(t));
+  const cutTo = (t, px, per) => { const n = Math.max(2, Math.floor(px / per)); return t.length > n ? t.slice(0, n - 1) + '…' : t; };
+  const FS = '"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif', FM = '"JetBrains Mono",ui-monospace,Menlo,monospace', FD = '"Bebas Neue","Arial Narrow",sans-serif';
+  const col = { video: C.fg, usb: C.sub, power: C.warn, wireless: C.muted };
+  const out = [];
+  out.push(`<svg xmlns="http://www.w3.org/2000/svg" class="desk-svg" viewBox="0 0 ${RW} ${RH}" width="${RW}" height="${RH}" role="img" aria-label="机の配置図">`);
+  out.push(`<defs><pattern id="dgrid" width="${S * 5}" height="${S * 5}" patternUnits="userSpaceOnUse"><path d="M ${S * 5} 0 L 0 0 0 ${S * 5}" fill="none" stroke="${C.grid}" stroke-width="1"/></pattern></defs>`);
+  out.push(`<rect width="${RW}" height="${RH}" fill="${C.page}"/><rect width="${RW}" height="${RH}" fill="url(#dgrid)"/>`);
+  // 見出し
+  out.push(`<text x="${ox}" y="${S * 5}" fill="${C.fg}" font-family='${FM}' font-size="13">// desk_layout</text>`);
+  out.push(`<text x="${ox}" y="${S * 5 + 30}" fill="${C.text}" font-family='${FS}' font-size="24" font-weight="700">${esc2(cutTo(state.title || '私のデスク', RW * .5, 24))}</text>`);
+  const legend = [['video', '映像'], ['usb', 'USB'], ['power', '給電・充電'], ['wireless', 'ワイヤレス']];
+  let lx = RW - ox;
+  const lg = [];
+  for (const [k, l] of legend.slice().reverse()) {
+    const tw = l.length * 13 + 10;
+    lx -= tw;
+    lg.push(`<text x="${lx}" y="${S * 5 + 26}" fill="${C.sub}" font-family='${FS}' font-size="12">${l}</text>`);
+    lx -= 30;
+    lg.push(`<line x1="${lx}" y1="${S * 5 + 22}" x2="${lx + 24}" y2="${S * 5 + 22}" stroke="${col[k]}" stroke-width="3" stroke-linecap="round"${k === 'wireless' ? ' stroke-dasharray="2 5"' : ''}/>`);
+    lx -= 14;
+  }
+  out.push(lg.join(''));
+  // 天板
+  out.push(`<rect x="${ox}" y="${oy}" width="${W * S}" height="${D * S}" rx="10" fill="${C.card}" stroke="${C.line}" stroke-width="1.5"/>`);
+  out.push(`<rect x="${ox}" y="${oy + D * S - 4}" width="${W * S}" height="4" rx="2" fill="${C.accent}" opacity=".85"/>`);
+  out.push(`<text x="${ox + 10}" y="${oy + D * S + 20}" fill="${C.muted}" font-family='${FM}' font-size="11">DESK ${W}×${D}cm</text>`);
+  // ケーブル
+  const center = it => { const p = pos.get(it.id); return p ? [ox + p.x * S, oy + p.y * S] : null; };
+  const labels = [], wantLabels = forExport ? $('#deskLabels').checked : $('#deskLabels').checked;
+  for (const it of items) {
+    const h = it.link && byId(it.link.h);
+    if (!h || !pos.has(h.id)) continue;
+    const a = center(h), b = center(it); if (!a || !b) continue;
+    const kind = cableKind(it, h), c = col[kind];
+    const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy) || 1;
+    const bend = Math.min(60, len * .25), nx = -dy / len * bend, ny = dx / len * bend;
+    const cx = (a[0] + b[0]) / 2 + nx, cy = (a[1] + b[1]) / 2 + ny;
+    const d = `M ${a[0].toFixed(1)} ${a[1].toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
+    const warn = sevOf(it, checks);
+    const stroke = warn ? (warn.sev === 'error' ? C.crit : C.warn) : c;
+    out.push(`<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${kind === 'wireless' ? 2 : 3}" stroke-linecap="round" opacity="${kind === 'wireless' ? .7 : .9}"${kind === 'wireless' ? ' stroke-dasharray="2 7"' : ''}/>`);
+    if (!forExport) {
+      out.push(`<path class="flow${kind === 'wireless' ? ' slow' : ''}" d="${d}" fill="none" stroke="${kind === 'power' ? C.page : kind === 'wireless' ? stroke : C.page}" stroke-width="${kind === 'wireless' ? 2 : 1.6}" stroke-linecap="round" opacity=".75"/>`);
+    }
+    // モニターから PC への給電は、逆向きに流れる線をもう1本
+    if ((it.link.v === 'usbc' || it.link.v === 'tb') && it.spec.pdW && h.cat === 'computer') {
+      const ps = powerSource(h);
+      if (ps.kind === 'pd' && ps.item === it && !forExport) out.push(`<path class="flow rev" d="${d}" fill="none" stroke="${C.warn}" stroke-width="1.6" stroke-linecap="round"/>`);
+      if (ps.kind === 'pd' && ps.item === it && forExport) out.push(`<path d="${d}" fill="none" stroke="${C.warn}" stroke-width="1.6" stroke-dasharray="3 11" stroke-linecap="round"/>`);
+    }
+    if (wantLabels) {
+      const t = edgeLabel({ from: { it: h }, to: { it } });
+      const mxl = (a[0] + 2 * cx + b[0]) / 4, myl = (a[1] + 2 * cy + b[1]) / 4;
+      const tw = t.length * 6.6 + 10;
+      labels.push(`<g transform="translate(${mxl.toFixed(1)} ${myl.toFixed(1)})"><rect x="${-tw / 2}" y="-9" width="${tw}" height="17" rx="4" fill="${C.page}" opacity=".92"/><text x="0" y="4" text-anchor="middle" fill="${stroke === c ? C.sub : stroke}" font-family='${FM}' font-size="10.5">${esc2(t)}</text></g>`);
+    }
+  }
+  // 機材
+  for (const it of items) {
+    const p = pos.get(it.id); if (!p) continue;
+    const [w, h] = footprint(it), X = ox + (p.x - w / 2) * S, Y = oy + (p.y - h / 2) * S, ww = w * S, hh = h * S;
+    const onDesk = p.x - w / 2 >= -1 && p.x + w / 2 <= W + 1 && p.y - h / 2 >= -1 && p.y + h / 2 <= D + 1;
+    const warn = sevOf(it, checks);
+    const edge = warn ? (warn.sev === 'error' ? C.crit : C.warn) : it.cat === 'computer' ? C.fg : C.line;
+    const fill = it.cat === 'monitor' ? C.text : C.page;
+    const ink = it.cat === 'monitor' ? C.page : C.text;
+    const big = hh >= 70 && ww >= 90;
+    out.push(`<g class="dk-item" data-id="${esc2(it.id)}" tabindex="-1">`);
+    out.push(`<rect class="box" x="${X.toFixed(1)}" y="${Y.toFixed(1)}" width="${ww.toFixed(1)}" height="${hh.toFixed(1)}" rx="${Math.min(8, hh / 3).toFixed(1)}" fill="${fill}" stroke="${edge}" stroke-width="${warn || it.cat === 'computer' ? 2 : 1.2}"${onDesk ? '' : ' stroke-dasharray="5 4"'}/>`);
+    const nameSize = Math.max(9, Math.min(13, hh * .38)), catSize = 9.5;
+    const cx = X + ww / 2;
+    if (big) out.push(`<text x="${cx.toFixed(1)}" y="${(Y + hh / 2 - 4).toFixed(1)}" text-anchor="middle" fill="${it.cat === 'monitor' ? C.muted : C.muted}" font-family='${FM}' font-size="${catSize}">${esc2(CAT_LABEL[it.cat])}</text>`);
+    const nm = cutTo(it.name, Math.max(ww, 70) - 10, nameSize * .62);
+    const ty = big ? Y + hh / 2 + 12 : Y + hh / 2 + nameSize * .35;
+    if (ww >= 70 || it.cat === 'monitor') out.push(`<text x="${cx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" fill="${ink}" font-family='${FS}' font-size="${nameSize.toFixed(1)}" font-weight="500">${esc2(nm)}</text>`);
+    else out.push(`<text x="${cx.toFixed(1)}" y="${(Y + hh + 13).toFixed(1)}" text-anchor="middle" fill="${C.text}" font-family='${FS}' font-size="10.5" font-weight="500">${esc2(cutTo(it.name, 120, 6.8))}</text>`);
+    out.push('</g>');
+  }
+  out.push(labels.join(''));
+  // ロゴ
+  out.push(`<text x="${RW - ox}" y="${RH - S * 3}" text-anchor="end" font-family='${FD}' font-size="26"><tspan fill="${C.text}">DESK </tspan><tspan fill="${C.fg}">/</tspan><tspan fill="${C.text}"> RECIPE</tspan></text>`);
+  const off = items.filter(i => !pos.has(i.id));
+  out.push('</svg>');
+  return { svg: out.join(''), RW, RH, S, ox, oy, off };
+}
+
+function renderDesk() {
+  const C = themeColors();
+  const { svg } = deskSVG(C, false);
+  $('#wireWrap').innerHTML = svg;
+}
+
+async function deskPNG() {
+  const C = themeColors();
+  const { svg, RW, RH } = deskSVG(C, true);
+  const img = new Image();
+  const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+  await new Promise((ok, ng) => { img.onload = ok; img.onerror = ng; img.src = url; });
+  const cv = document.createElement('canvas'); cv.width = RW * 2; cv.height = RH * 2;
+  const x = cv.getContext('2d'); x.scale(2, 2); x.drawImage(img, 0, 0, RW, RH);
+  URL.revokeObjectURL(url);
+  return cv;
+}
+
+function svgPoint(svg, e) {
+  const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+function wireDesk() {
+  const wrap = $('#wireWrap');
+  wrap.addEventListener('pointerdown', e => {
+    if (wireMode !== 'desk') return;
+    const g = e.target.closest('.dk-item'); if (!g) return;
+    const svg = wrap.querySelector('svg'), it = byId(g.dataset.id); if (!svg || !it) return;
+    e.preventDefault();
+    // 最初に動かしたときに、全部の位置を固定する（ほかの機材が勝手に動かないように）
+    const all = deskPositions();
+    for (const i of deskItems()) if (!i.pos && all.get(i.id)) i.pos = { ...all.get(i.id) };
+    const { S } = deskSVG(themeColors(), false);
+    const p = svgPoint(svg, e);
+    deskDrag = { it, S, sx: p.x, sy: p.y, x0: it.pos.x, y0: it.pos.y, id: e.pointerId };
+    wrap.setPointerCapture(e.pointerId);
+    g.classList.add('dragging');
+  });
+  wrap.addEventListener('pointermove', e => {
+    if (!deskDrag) return;
+    const svg = wrap.querySelector('svg'); if (!svg) return;
+    const p = svgPoint(svg, e), W = state.desk.w, D = state.desk.d;
+    const nx = deskDrag.x0 + (p.x - deskDrag.sx) / deskDrag.S, ny = deskDrag.y0 + (p.y - deskDrag.sy) / deskDrag.S;
+    deskDrag.it.pos = { x: Math.max(-30, Math.min(W + 30, Math.round(nx * 2) / 2)), y: Math.max(-18, Math.min(D + 24, Math.round(ny * 2) / 2)) };
+    renderDesk();
+    const g = wrap.querySelector(`.dk-item[data-id="${CSS.escape(deskDrag.it.id)}"]`); if (g) { g.classList.add('dragging'); g.parentNode.appendChild(g); }
+  });
+  const end = () => { if (!deskDrag) return; deskDrag = null; save(); renderDesk(); };
+  wrap.addEventListener('pointerup', end);
+  wrap.addEventListener('pointercancel', end);
+  const size = () => {
+    const w = parseInt($('#deskW').value, 10), d = parseInt($('#deskD').value, 10);
+    if (w >= 40 && w <= 400 && d >= 40 && d <= 200) { state.desk = { w, d }; save(); renderDesk(); }
+  };
+  $('#deskW').addEventListener('change', size); $('#deskD').addEventListener('change', size);
+  $('#deskLabels').addEventListener('change', () => { if (wireMode === 'desk') renderDesk(); });
+  $('#deskAuto').addEventListener('click', () => {
+    if (!confirm('機材の置き場所を自動で並べ直しますか？動かした位置は元に戻せません。')) return;
+    for (const i of state.items) i.pos = null;
+    save(); renderDesk();
+  });
+  $('#wireMode').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    wireMode = b.dataset.v; try { localStorage.setItem('desk-setup:wire-mode', wireMode); } catch (err) {}
+    openWiring();
+  });
+}
+
 async function openWiring() {
   const wrap = $('#wireWrap');
-  const cv = await drawWiring();
-  wrap.innerHTML = '';
-  if (cv) { cv.style.width = cv.width / 2 + 'px'; wrap.appendChild(cv); }
-  else wrap.innerHTML = '<div class="wire-empty">まだ接続がありません。構成リストで、モニターや周辺機器の「接続先」を選ぶと配線図になります。</div>';
-  $('#wireSave').disabled = !cv;
+  document.querySelectorAll('#wireMode button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === wireMode)));
+  $('#deskSize').hidden = wireMode !== 'desk';
+  $('#deskW').value = state.desk.w; $('#deskD').value = state.desk.d;
+  if (wireMode === 'desk') {
+    if (!deskItems().length) { wrap.innerHTML = '<div class="wire-empty">机に置く機材がまだありません。構成リストで機材を追加してください。</div>'; $('#wireSave').disabled = true; }
+    else { renderDesk(); $('#wireSave').disabled = false; }
+    $('#wireHint').textContent = '機材はドラッグで好きな場所に動かせます。点線の枠は天板の外（床やデスクの下）にある機材です。つながり方は、構成リストの「接続先」で変えられます。';
+  } else {
+    const cv = await drawWiring();
+    wrap.innerHTML = '';
+    if (cv) { cv.style.width = cv.width / 2 + 'px'; wrap.appendChild(cv); }
+    else wrap.innerHTML = '<div class="wire-empty">まだ接続がありません。構成リストで、モニターや周辺機器の「接続先」を選ぶと配線図になります。</div>';
+    $('#wireSave').disabled = !cv;
+    $('#wireHint').textContent = '各機材の「接続先」から作っています。つながり方を変えたいときは、構成リストで接続先を選び直してください。';
+  }
   const d = $('#wireDlg'); if (!d.open) d.showModal();
 }
 
@@ -2530,8 +2900,10 @@ function wireSnaps() {
   document.querySelectorAll('#wireDlg, #diffDlg').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
   $('#wireBtn').addEventListener('click', openWiring);
   $('#wireSave').addEventListener('click', async () => {
-    const cv = await drawWiring(); if (!cv) return;
-    cv.toBlob(bl => { const a = document.createElement('a'); a.href = URL.createObjectURL(bl); a.download = 'desk-wiring.png'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }, 'image/png');
+    let cv = null;
+    try { cv = wireMode === 'desk' ? await deskPNG() : await drawWiring(); } catch (e) { toast('画像を作れませんでした'); return; }
+    if (!cv) return;
+    cv.toBlob(bl => { const a = document.createElement('a'); a.href = URL.createObjectURL(bl); a.download = wireMode === 'desk' ? 'desk-layout.png' : 'desk-wiring.png'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }, 'image/png');
   });
   $('#snapSave').addEventListener('click', () => {
     if (!state.items.length) { toast('記録する機材がありません'); return; }
@@ -2592,7 +2964,14 @@ function applyTheme(t, remember) {
 }
 function wireTheme() {
   applyTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark', false);
-  $('#themeBtn').addEventListener('click', () => applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light', true));
+  $('#themeBtn').addEventListener('click', () => {
+    const root = document.documentElement;
+    root.classList.add('theming');
+    applyTheme(root.dataset.theme === 'light' ? 'dark' : 'light', true);
+    const b = $('#themeBtn'); b.innerHTML = b.innerHTML; // アイコンの回転をもう一度
+    clearTimeout(root._tt); root._tt = setTimeout(() => root.classList.remove('theming'), 400);
+    if ($('#wireDlg').open) openWiring();
+  });
   // 自分で選ぶまでは、端末の設定の変化についていく
   if (window.matchMedia) matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
     let saved = null; try { saved = localStorage.getItem('desk-setup:theme'); } catch (err) {}
@@ -2631,6 +3010,8 @@ async function init() {
   wireTheme();
   wireExport();
   wireSnaps();
+  wireDesk();
+  setTimeout(() => document.documentElement.classList.remove('intro'), 1600);
   renderChips();
   const m = location.hash.match(/^#d=(.+)$/);
   if (m) {
