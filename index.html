@@ -367,6 +367,7 @@
   .three-wrap { position: relative; height: min(62vh, 560px); min-height: 340px; }
   .three-wrap canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
   .three-wrap canvas:active { cursor: grabbing; }
+  @media (max-width: 560px) { .three-wrap { height: 48vh; min-height: 280px; } }
   .three-hint { position: absolute; left: 12px; bottom: 10px; font: 400 11px var(--font-mono); color: var(--muted); pointer-events: none; }
   .three-load { position: absolute; inset: 0; display: grid; place-items: center; color: var(--text-2); font-size: 13px; }
   .wire-empty { padding: 40px 16px; text-align: center; color: var(--text-2); }
@@ -3076,7 +3077,7 @@ async function open3D(wrap) {
     const [px, py] = ptrs.get(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]);
     if (ptrs.size === 2) {
       const [a, b] = [...ptrs.values()], dist = Math.hypot(a[0] - b[0], a[1] - b[1]);
-      if (pinch) rTarget = Math.max(80, Math.min(900, rTarget * pinch / dist));
+      if (pinch) rTarget = Math.max(110, Math.min(900, rTarget * Math.pow(pinch / dist, .6)));   // 指の動きより少し穏やかに
       pinch = dist; return;
     }
     if (drag3) {
@@ -3110,7 +3111,7 @@ async function open3D(wrap) {
     }
   };
   el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
-  el.addEventListener('wheel', e => { e.preventDefault(); orbit.touched = true; rTarget = Math.max(80, Math.min(900, rTarget * (1 + Math.sign(e.deltaY) * .12))); }, { passive: false });
+  el.addEventListener('wheel', e => { e.preventDefault(); orbit.touched = true; rTarget = Math.max(110, Math.min(900, rTarget * (1 + Math.sign(e.deltaY) * .12))); }, { passive: false });
   const clock = new THREE.Clock();
   const loop = () => {
     const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime;
