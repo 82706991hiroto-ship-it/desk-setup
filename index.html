@@ -235,7 +235,7 @@
     border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 3px 11px; font-size: 12px; color: var(--text-2);
   }
   .chip[aria-pressed="true"] { background: var(--text); color: var(--card); border-color: var(--text); }
-  .results { margin-top: 10px; display: grid; gap: 6px; }
+  .results { margin-top: 10px; display: grid; gap: 6px; max-height: 420px; overflow-y: auto; overscroll-behavior: contain; }
   .results:empty { display: none; }
   .result {
     display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; text-align: left;
@@ -290,6 +290,7 @@
   .spec-grid.dim-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .badges { display: flex; gap: 6px; flex-wrap: wrap; }
   .badge { font-size: 11px; border-radius: 999px; padding: 1px 8px; background: var(--field); color: var(--text-2); }
+  .spec-note { font-size: 11px; color: var(--muted); margin-top: -4px; }
   .memo { font-size: 12px; color: var(--text-2); overflow-wrap: anywhere; }
   .memo::before { content: "メモ: "; color: var(--muted); }
   .links-edit { display: grid; gap: 6px; margin-top: 8px; }
@@ -714,32 +715,44 @@ function minLink(a, b) {
 }
 
 // ---- カタログ ----
-// computer: ports, out(ポートごとの映像出力), pxMax(ポートごとの画素レート上限 px/秒), maxDisp(外部ディスプレイ), clamDisp(蓋を閉じた時), chargeW(推奨給電), magsafe
+// computer: ports, out(ポートごとの映像出力), pxMax(ポートごとの画素レート上限 px/秒。Thunderbolt 5 の Mac は TB 側の上限を置かず DP 2.1 の帯域で判定), maxDisp(外部ディスプレイ), clamDisp(蓋を閉じた時), chargeW(推奨給電), magsafe
 // monitor:  w,h,hz, in(入力ごとの規格), pdW(USB-C給電), dsc, ports(USBハブ)
 // dock:     up(上流), ports, out, pdW
 // charger:  ports, totalW, portW
 // その他:   conn（bt / receiver / usbc / usba）, chargeW
+// ref: 参考価格（円、CATALOG_PRICE_DATE 時点）。追加したときに「参考価格」として入る
+// note: 公式に記載がなく推定した値や、販売店の情報を使ったことの説明（カードに表示）
+// 調べた記録と出典は research/devices.md（2026年9月調べ。機械で読む版は research/devices.json）
 const MAC = (name, o) => ({ cat: 'computer', name, spec: Object.assign({ out: { tb: 'dp1.4', hdmi: 'hdmi2.1' }, pxMax: { tb: 1.23e9, hdmi: 2.0e9 }, dsc: true, magsafe: true }, o) });
 const CATALOG = [
-  { id: 'mba-m2',       ...MAC('MacBook Air 13" (M2)',     { ports: { tb: 2 }, maxDisp: 1, chargeW: 35 }) },
-  { id: 'mba-m3',       ...MAC('MacBook Air (M3)',         { ports: { tb: 2 }, maxDisp: 1, clamDisp: 2, chargeW: 35 }) },
-  { id: 'mba-m4',       ...MAC('MacBook Air (M4)',         { ports: { tb: 2 }, maxDisp: 2, chargeW: 35 }) },
+  { id: 'mba-m2',       ...MAC('MacBook Air 13" (M2)',     { ports: { tb: 2 }, maxDisp: 1, chargeW: 30 }) },
+  { id: 'mba-m3',       ...MAC('MacBook Air (M3)',         { ports: { tb: 2 }, maxDisp: 1, clamDisp: 2, chargeW: 30 }) },
+  { id: 'mba-m4',       ...MAC('MacBook Air (M4)',         { ports: { tb: 2 }, maxDisp: 2, chargeW: 30 }) },
   { id: 'mbp14-m4',     ...MAC('MacBook Pro 14" (M4)',     { ports: { tb: 3, hdmi: 1 }, maxDisp: 2, chargeW: 70 }) },
-  { id: 'mbp14-m4pro',  ...MAC('MacBook Pro 14" (M4 Pro)', { ports: { tb: 3, hdmi: 1 }, maxDisp: 2, chargeW: 96 }) },
-  { id: 'mbp16-m4pro',  ...MAC('MacBook Pro 16" (M4 Pro)', { ports: { tb: 3, hdmi: 1 }, maxDisp: 2, chargeW: 140 }) },
-  { id: 'mbp16-m4max',  ...MAC('MacBook Pro 16" (M4 Max)', { ports: { tb: 3, hdmi: 1 }, maxDisp: 4, chargeW: 140 }) },
+  { id: 'mbp14-m4pro',  ...MAC('MacBook Pro 14" (M4 Pro)', { ports: { tb: 3, hdmi: 1 }, out: { tb: 'dp2.1', hdmi: 'hdmi2.1' }, pxMax: { hdmi: 2.0e9 }, maxDisp: 2, chargeW: 96 }) },
+  { id: 'mbp16-m4pro',  ...MAC('MacBook Pro 16" (M4 Pro)', { ports: { tb: 3, hdmi: 1 }, out: { tb: 'dp2.1', hdmi: 'hdmi2.1' }, pxMax: { hdmi: 2.0e9 }, maxDisp: 2, chargeW: 140 }) },
+  { id: 'mbp16-m4max',  ...MAC('MacBook Pro 16" (M4 Max)', { ports: { tb: 3, hdmi: 1 }, out: { tb: 'dp2.1', hdmi: 'hdmi2.1' }, pxMax: { hdmi: 2.0e9 }, maxDisp: 4, chargeW: 140 }) },
   { id: 'macmini-m4',   ...MAC('Mac mini (M4)',            { ports: { tb: 3, usbc: 2, hdmi: 1 }, maxDisp: 3, chargeW: 0, magsafe: false }) },
-  { id: 'macmini-m4pro',...MAC('Mac mini (M4 Pro)',        { ports: { tb: 3, usbc: 2, hdmi: 1 }, maxDisp: 3, chargeW: 0, magsafe: false }) },
-  { id: 'macstudio-m4max', ...MAC('Mac Studio (M4 Max)',   { ports: { tb: 4, usbc: 2, usba: 2, hdmi: 1 }, maxDisp: 5, chargeW: 0, magsafe: false }) },
+  { id: 'macmini-m4pro',...MAC('Mac mini (M4 Pro)',        { ports: { tb: 3, usbc: 2, hdmi: 1 }, out: { tb: 'dp2.1', hdmi: 'hdmi2.1' }, pxMax: { hdmi: 2.0e9 }, maxDisp: 3, chargeW: 0, magsafe: false }) },
+  { id: 'macstudio-m4max', ...MAC('Mac Studio (M4 Max)',   { ports: { tb: 4, usbc: 2, usba: 2, hdmi: 1 }, out: { tb: 'dp2.1', hdmi: 'hdmi2.1' }, pxMax: { hdmi: 2.0e9 }, maxDisp: 5, chargeW: 0, magsafe: false }) },
   { id: 'win-laptop',   cat: 'computer', name: 'Windows ノート（Thunderbolt 4×2・HDMI）', spec: { ports: { tb: 2, usba: 1, hdmi: 1 }, out: { tb: 'dp1.4', hdmi: 'hdmi2.0' }, maxDisp: 3, chargeW: 65, dsc: true, magsafe: false } },
   { id: 'win-desktop',  cat: 'computer', name: 'デスクトップPC（GPU: DP×3・HDMI×1）', spec: { ports: { dp: 3, hdmi: 1, usba: 6, usbc: 1 }, out: { dp: 'dp1.4', hdmi: 'hdmi2.1' }, maxDisp: 4, chargeW: 0, dsc: true, magsafe: false } },
+  { id: 'mba13-m5', ...MAC('MacBook Air 13" (M5)', { ports: { tb: 2 }, maxDisp: 2, chargeW: 40, magsafe: true }), ref: 224800 },
+  { id: 'mba15-m5', ...MAC('MacBook Air 15" (M5)', { ports: { tb: 2 }, maxDisp: 2, chargeW: 40, magsafe: true }), ref: 264800 },
+  { id: 'mbp14-m5', ...MAC('MacBook Pro 14" (M5)', { ports: { tb: 3, hdmi: 1 }, maxDisp: 2, chargeW: 70, magsafe: true }), ref: 339800, note: '公式に記載がないため推定: HDMI は 2.1 相当' },
+  { id: 'mbp14-m5pro', ...MAC('MacBook Pro 14" (M5 Pro)', { ports: { tb: 3, hdmi: 1 }, out: { tb: 'dp2.1', hdmi: 'hdmi2.1' }, pxMax: { hdmi: 2.0e9 }, maxDisp: 3, chargeW: 70, magsafe: true }), ref: 429800, note: '公式に記載がないため推定: HDMI は 2.1 相当' },
+  { id: 'mbp16-m5pro', ...MAC('MacBook Pro 16" (M5 Pro)', { ports: { tb: 3, hdmi: 1 }, out: { tb: 'dp2.1', hdmi: 'hdmi2.1' }, pxMax: { hdmi: 2.0e9 }, maxDisp: 3, chargeW: 140, magsafe: true }), ref: 519800, note: '公式に記載がないため推定: HDMI は 2.1 相当' },
+  { id: 'macmini-m6', ...MAC('Mac mini (M6)', { ports: { tb: 3, usbc: 2, hdmi: 1 }, maxDisp: 3, chargeW: 0, magsafe: false }), ref: 149800, note: '公式に記載がないため推定: HDMI は 2.1 相当' },
+  { id: 'macmini-m5pro', ...MAC('Mac mini (M5 Pro)', { ports: { tb: 3, usbc: 2, hdmi: 1 }, out: { tb: 'dp2.1', hdmi: 'hdmi2.1' }, pxMax: { hdmi: 2.0e9 }, maxDisp: 3, chargeW: 0, magsafe: false }), ref: 299800, note: '公式に記載がないため推定: HDMI は 2.1 相当' },
+  { id: 'macstudio-m5max', ...MAC('Mac Studio (M5 Max)', { ports: { tb: 4, usbc: 2, usba: 2, hdmi: 1 }, out: { tb: 'dp2.1', hdmi: 'hdmi2.1' }, pxMax: { hdmi: 2.0e9 }, maxDisp: 5, chargeW: 0, magsafe: false }), ref: 419800 },
+  { id: 'thinkpad-x1c13', cat: 'computer', name: 'Lenovo ThinkPad X1 Carbon Gen 13', spec: { ports: { tb: 2, usba: 2, hdmi: 1 }, out: { tb: 'dp1.4', hdmi: 'hdmi2.0' }, maxDisp: 3, chargeW: 65, magsafe: false }, ref: 327067, note: '公式に記載がないため推定: Thunderbolt の映像は DP 1.4 相当' },
 
-  { id: 'studio-display', cat: 'monitor', name: 'Apple Studio Display', spec: { w: 5120, h: 2880, hz: 60, in: { tb: 'dp1.4' }, pdW: 96, dsc: true, ports: { usbc: 3 } } },
-  { id: 'u2723qe',  cat: 'monitor', name: 'Dell U2723QE',            spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 4, usbc: 1 } } },
-  { id: 'u2724de',  cat: 'monitor', name: 'Dell U2724DE',            spec: { w: 2560, h: 1440, hz: 120, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 4, usbc: 1 } } },
-  { id: '27up850n', cat: 'monitor', name: 'LG 27UP850N-W',           spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 96, dsc: false, ports: { usba: 2 } } },
-  { id: 'pa279crv', cat: 'monitor', name: 'ASUS ProArt PA279CRV',    spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 96, dsc: false, ports: { usba: 2 } } },
-  { id: '32gs95ue', cat: 'monitor', name: 'LG UltraGear 32GS95UE',   spec: { w: 3840, h: 2160, hz: 240, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true } },
+  { id: 'studio-display', cat: 'monitor', name: 'Apple Studio Display（初代）', spec: { w: 5120, h: 2880, hz: 60, in: { tb: 'dp1.4' }, pdW: 96, dsc: true, ports: { usbc: 3 } } },
+  { id: 'u2723qe',  cat: 'monitor', name: 'Dell U2723QE',            spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: true, ports: { usba: 5, usbc: 1 } } },
+  { id: 'u2724de',  cat: 'monitor', name: 'Dell U2724DE',            spec: { w: 2560, h: 1440, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { tb: 1, usba: 4, usbc: 1 } } },
+  { id: '27up850n', cat: 'monitor', name: 'LG 27UP850N-W',           spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 2 } }, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当' },
+  { id: 'pa279crv', cat: 'monitor', name: 'ASUS ProArt PA279CRV',    spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 96, dsc: false, ports: { usba: 3, usbc: 1 } }, ref: 68800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当。仕様の一部は販売店の情報です' },
+  { id: '32gs95ue', cat: 'monitor', name: 'LG UltraGear 32GS95UE',   spec: { w: 3840, h: 2160, hz: 240, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true, ports: { usba: 2 } }, note: '公式に記載がないため推定: HDMI は 2.1 相当' },
   { id: 'odyssey-g9', cat: 'monitor', name: 'Samsung Odyssey OLED G9 49"', spec: { w: 5120, h: 1440, hz: 240, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true } },
   { id: 'generic-4k60',   cat: 'monitor', name: '4K 60Hz モニター（HDMI・DP）',        spec: { w: 3840, h: 2160, hz: 60,  in: { hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 0, dsc: false } },
   { id: 'generic-4k60c',  cat: 'monitor', name: '4K 60Hz モニター（USB-C 65W給電）',   spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 65, dsc: false, ports: { usba: 2 } } },
@@ -748,38 +761,82 @@ const CATALOG = [
   { id: 'generic-uw',     cat: 'monitor', name: '34" ウルトラワイド 3440×1440 100Hz', spec: { w: 3440, h: 1440, hz: 100, in: { hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 0, dsc: false } },
   { id: 'generic-fhd',    cat: 'monitor', name: 'フルHD 60Hz モニター',                spec: { w: 1920, h: 1080, hz: 60,  in: { hdmi: 'hdmi1.4' }, pdW: 0, dsc: false } },
   { id: 'portable',       cat: 'monitor', name: 'モバイルモニター 15.6" フルHD',       spec: { w: 1920, h: 1080, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi1.4' }, pdW: 0, dsc: false } },
+  { id: 'u2725qe', cat: 'monitor', name: 'Dell U2725QE', spec: { w: 3840, h: 2160, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 140, dsc: true, ports: { tb: 1, usbc: 2, usba: 5 } }, ref: 102886 },
+  { id: 'u3225qe', cat: 'monitor', name: 'Dell U3225QE', spec: { w: 3840, h: 2160, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 140, dsc: true, ports: { tb: 1, usbc: 2, usba: 5 } }, ref: 138969 },
+  { id: 'u3425we', cat: 'monitor', name: 'Dell U3425WE', spec: { w: 3440, h: 1440, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { tb: 1, usbc: 2, usba: 5 } }, ref: 138969 },
+  { id: '27up850k', cat: 'monitor', name: 'LG 27UP850K-W', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 2 } }, ref: 43610, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当' },
+  { id: '32un880k', cat: 'monitor', name: 'LG 32UN880K-B（Ergo）', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 60, dsc: false, ports: { usba: 2 } }, ref: 94800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当' },
+  { id: '27gr93u', cat: 'monitor', name: 'LG UltraGear 27GR93U-B', spec: { w: 3840, h: 2160, hz: 144, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true, ports: { usba: 2 } }, note: '公式に記載がないため推定: HDMI は 2.1 相当' },
+  { id: 'pd2706u', cat: 'monitor', name: 'BenQ PD2706U', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 3, usbc: 1 } }, ref: 72400, note: '公式に記載がないため推定: USB-C は DP 1.4 相当' },
+  { id: 'ex271uz', cat: 'monitor', name: 'BenQ MOBIUZ EX271UZ', spec: { w: 3840, h: 2160, hz: 240, in: { usbc: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 90, dsc: true, ports: { usba: 2, usbc: 1 } }, ref: 154800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、DSC 対応（高リフレッシュの4Kのため）。仕様の一部は販売店・レビューの情報です' },
+  { id: 'pg27ucdm', cat: 'monitor', name: 'ASUS ROG Swift OLED PG27UCDM', spec: { w: 3840, h: 2160, hz: 240, in: { usbc: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp2.1' }, pdW: 90, dsc: true, ports: { usba: 3 } }, ref: 179818, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、DSC 対応（高リフレッシュの4Kのため）。仕様の一部は販売店・レビューの情報です' },
+  { id: 'ev2785', cat: 'monitor', name: 'EIZO FlexScan EV2785', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 60, dsc: false, ports: { usba: 2 } }, ref: 129800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当、DisplayPort は DP 1.4 相当' },
+  { id: 'ev3240x', cat: 'monitor', name: 'EIZO FlexScan EV3240X', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 94, dsc: false, ports: { usba: 3, usbc: 1 } }, ref: 116964, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当、DisplayPort は DP 1.4 相当' },
+  { id: 'studio-display-tb5', cat: 'monitor', name: 'Apple Studio Display（Thunderbolt 5）', spec: { w: 5120, h: 2880, hz: 60, in: { tb: 'dp2.1' }, pdW: 96, dsc: false, ports: { tb: 1, usbc: 2 } }, ref: 269800, note: '公式に記載がないため推定: Thunderbolt の映像は DP 2.1 相当' },
+  { id: 'studio-display-xdr', cat: 'monitor', name: 'Apple Studio Display XDR', spec: { w: 5120, h: 2880, hz: 120, in: { tb: 'dp2.1' }, pdW: 140, dsc: false, ports: { tb: 1, usbc: 2 } }, ref: 479800, note: '公式に記載がないため推定: Thunderbolt の映像は DP 2.1 相当' },
+  { id: 'mb16acv', cat: 'monitor', name: 'ASUS ZenScreen MB16ACV', spec: { w: 1920, h: 1080, hz: 60, in: { usbc: 'dp1.4' }, pdW: 0, dsc: false }, ref: 28500, note: '公式に記載がないため推定: USB-C は DP 1.4 相当。仕様の一部は販売店・レビューの情報です' },
 
-  { id: 'caldigit-ts4', cat: 'dock', name: 'CalDigit TS4',                         spec: { up: 'tb', ports: { tb: 3, usbc: 3, usba: 5, dp: 1 }, out: { tb: 'dp1.4', dp: 'dp1.4' }, pdW: 98 } },
+  { id: 'caldigit-ts4', cat: 'dock', name: 'CalDigit TS4',                         spec: { up: 'tb', ports: { tb: 2, usbc: 3, usba: 5, dp: 1 }, out: { tb: 'dp1.4', dp: 'dp1.4' }, pdW: 98 } },
   { id: 'tb4-dock',     cat: 'dock', name: 'Thunderbolt 4 ドック',                  spec: { up: 'tb', ports: { tb: 3, usba: 4, hdmi: 1 }, out: { tb: 'dp1.4', hdmi: 'hdmi2.0' }, pdW: 90 } },
   { id: 'hub-4k60',     cat: 'dock', name: 'USB-C ハブ（HDMI 4K60Hz・PD 100W）',   spec: { up: 'usbc', ports: { hdmi: 1, usba: 3, usbc: 1 }, out: { hdmi: 'hdmi2.0' }, pdW: 85 } },
   { id: 'hub-4k30',     cat: 'dock', name: 'USB-C ハブ（HDMI 4K30Hz・PD 100W）',   spec: { up: 'usbc', ports: { hdmi: 1, usba: 2, usbc: 1 }, out: { hdmi: 'hdmi1.4' }, pdW: 85 } },
+  { id: 'caldigit-ts5plus', cat: 'dock', name: 'CalDigit TS5 Plus', spec: { up: 'tb', ports: { tb: 2, usbc: 5, usba: 5, dp: 1 }, out: { tb: 'dp2.1', dp: 'dp2.1' }, pdW: 140 }, note: '公式に記載がないため推定: Thunderbolt の映像出力は DP 2.1 相当' },
+  { id: 'caldigit-element-hub', cat: 'dock', name: 'CalDigit Element Hub', spec: { up: 'tb', ports: { tb: 3, usba: 4 }, out: { tb: 'dp1.4' }, pdW: 60 }, note: '仕様の一部は販売店・レビューの情報です' },
+  { id: 'belkin-inc006', cat: 'dock', name: 'Belkin Connect Pro Thunderbolt 4 Dock（INC006）', spec: { up: 'tb', ports: { tb: 1, usbc: 1, usba: 4, hdmi: 2 }, out: { hdmi: 'hdmi2.0', tb: 'dp1.4' }, pdW: 90 }, note: '公式に記載がないため推定: Thunderbolt の映像出力は DP 1.4 相当。仕様の一部は販売店・レビューの情報です' },
+  { id: 'anker-nano-dock-13in1', cat: 'dock', name: 'Anker Nano ドッキングステーション (13-in-1)', spec: { up: 'usbc', ports: { usbc: 3, usba: 3, hdmi: 3, dp: 1 }, out: { hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 85 }, ref: 16990, note: '公式に記載がないため推定: HDMI の映像出力は HDMI 2.0 相当、DisplayPort の映像出力は DP 1.4 相当' },
+  { id: 'anker-prime-tb5-dock', cat: 'dock', name: 'Anker Prime ドッキングステーション (14-in-1, 8K, Thunderbolt 5)', spec: { up: 'tb', ports: { tb: 2, usbc: 2, usba: 3, hdmi: 1, dp: 1 }, out: { hdmi: 'hdmi2.1', dp: 'dp2.1', tb: 'dp2.1' }, pdW: 140 }, ref: 49990, note: '公式に記載がないため推定: Thunderbolt の映像出力は DP 2.1 相当' },
+  { id: 'anker-nano-hub-8in1', cat: 'dock', name: 'Anker Nano USB-C ハブ (8-in-1, Dual Display)', spec: { up: 'usbc', ports: { usbc: 1, usba: 2, hdmi: 2 }, out: { hdmi: 'hdmi2.0' }, pdW: 85 }, ref: 5990 },
 
-  { id: 'hhkb-hybrid',  cat: 'keyboard', name: 'HHKB Professional HYBRID Type-S', spec: { conn: ['bt', 'usbc'] } },
+  { id: 'hhkb-hybrid',  cat: 'keyboard', name: 'HHKB Professional HYBRID Type-S', spec: { conn: ['bt', 'usbc'] }, ref: 36750 },
   { id: 'realforce-r3', cat: 'keyboard', name: 'REALFORCE R3',                   spec: { conn: ['bt', 'usbc'] } },
-  { id: 'keychron-q1max', cat: 'keyboard', name: 'Keychron Q1 Max',              spec: { conn: ['bt', 'receiver', 'usbc'] } },
-  { id: 'mx-keys-s',    cat: 'keyboard', name: 'Logicool MX Keys S',             spec: { conn: ['bt', 'receiver'] } },
-  { id: 'mx-mech-mini', cat: 'keyboard', name: 'Logicool MX Mechanical Mini',    spec: { conn: ['bt', 'receiver'] } },
-  { id: 'magic-kb',     cat: 'keyboard', name: 'Apple Magic Keyboard（Touch ID）', spec: { conn: ['bt', 'usbc'] } },
+  { id: 'keychron-q1max', cat: 'keyboard', name: 'Keychron Q1 Max',              spec: { conn: ['bt', 'receiver', 'usbc'] }, ref: 43890 },
+  { id: 'mx-keys-s',    cat: 'keyboard', name: 'Logicool MX Keys S',             spec: { conn: ['bt', 'receiver'] }, ref: 21780 },
+  { id: 'mx-mech-mini', cat: 'keyboard', name: 'Logicool MX Mechanical Mini',    spec: { conn: ['bt', 'receiver'] }, ref: 22220 },
+  { id: 'magic-kb',     cat: 'keyboard', name: 'Apple Magic Keyboard（Touch ID）', spec: { conn: ['bt', 'usbc'] }, ref: 21800 },
+  { id: 'hhkb-studio', cat: 'keyboard', name: 'HHKB Studio', spec: { conn: ['bt', 'usbc'] }, ref: 44000 },
+  { id: 'realforce-r3s-tkl', cat: 'keyboard', name: 'REALFORCE R3S テンキーレス（R3SC11）', spec: { conn: ['usbc'] }, ref: 25740, note: '仕様の一部は販売店・レビューの情報です' },
+  { id: 'realforce-r3s', cat: 'keyboard', name: 'REALFORCE R3S フルサイズ（R3SA11）', spec: { conn: ['usbc'] }, ref: 26620, note: '仕様の一部は販売店・レビューの情報です' },
+  { id: 'realforce-r3-tkl', cat: 'keyboard', name: 'REALFORCE R3 テンキーレス（R3HC11）', spec: { conn: ['bt', 'usbc'] }, ref: 36520, note: '仕様の一部は販売店・レビューの情報です' },
+  { id: 'mx-keys-mini', cat: 'keyboard', name: 'Logicool MX Keys Mini', spec: { conn: ['bt'] }, ref: 18370 },
+  { id: 'mx-mechanical', cat: 'keyboard', name: 'Logicool MX Mechanical', spec: { conn: ['bt', 'receiver'] }, ref: 24640 },
+  { id: 'keychron-v1-max', cat: 'keyboard', name: 'Keychron V1 Max', spec: { conn: ['bt', 'receiver', 'usbc'] }, ref: 19360 },
+  { id: 'nuphy-halo75-v2', cat: 'keyboard', name: 'NuPhy Halo75 V2', spec: { conn: ['usbc'] }, ref: 36660, note: '公式に記載がないため推定: 接続は USB-C（有線）だけを入れています。仕様の一部は販売店・レビューの情報です' },
+  { id: 'lofree-flow2', cat: 'keyboard', name: 'Lofree Flow 2 (84)', spec: { conn: ['bt', 'receiver', 'usbc'] }, ref: 23760, note: '仕様の一部は販売店・レビューの情報です' },
 
-  { id: 'mx-master-3s', cat: 'mouse', name: 'Logicool MX Master 3S',               spec: { conn: ['bt', 'receiver'] } },
-  { id: 'mx-ergo-s',    cat: 'mouse', name: 'Logicool MX ERGO S',                  spec: { conn: ['bt', 'receiver'] } },
-  { id: 'gpx-sl2',      cat: 'mouse', name: 'Logicool G PRO X SUPERLIGHT 2',       spec: { conn: ['receiver', 'usbc'] } },
-  { id: 'magic-trackpad', cat: 'mouse', name: 'Apple Magic Trackpad',             spec: { conn: ['bt', 'usbc'] } },
-  { id: 'magic-mouse',  cat: 'mouse', name: 'Apple Magic Mouse',                   spec: { conn: ['bt', 'usbc'] } },
+  { id: 'mx-master-3s', cat: 'mouse', name: 'Logicool MX Master 3S',               spec: { conn: ['bt', 'receiver'] }, ref: 17820 },
+  { id: 'mx-ergo-s',    cat: 'mouse', name: 'Logicool MX ERGO S',                  spec: { conn: ['bt', 'receiver'] }, ref: 19580 },
+  { id: 'gpx-sl2',      cat: 'mouse', name: 'Logicool G PRO X SUPERLIGHT 2',       spec: { conn: ['receiver', 'usbc'] }, ref: 26950 },
+  { id: 'magic-trackpad', cat: 'mouse', name: 'Apple Magic Trackpad',             spec: { conn: ['bt', 'usbc'] }, ref: 18800 },
+  { id: 'magic-mouse',  cat: 'mouse', name: 'Apple Magic Mouse',                   spec: { conn: ['bt', 'usbc'] }, ref: 10800 },
+  { id: 'mx-master-4', cat: 'mouse', name: 'Logicool MX Master 4', spec: { conn: ['bt', 'receiver'] }, ref: 21890 },
+  { id: 'mx-anywhere-3s', cat: 'mouse', name: 'Logicool MX Anywhere 3S', spec: { conn: ['bt'] }, ref: 15950 },
+  { id: 'razer-viper-v3-pro', cat: 'mouse', name: 'Razer Viper V3 Pro', spec: { conn: ['receiver', 'usbc'] }, ref: 25980 },
 
-  { id: 'pebble',       cat: 'audio', name: 'Creative Pebble V3',                  spec: { conn: ['usbc', 'bt'] } },
+  { id: 'pebble',       cat: 'audio', name: 'Creative Pebble V3',                  spec: { conn: ['usbc', 'bt'] }, ref: 4384 },
   { id: 'usb-speaker',  cat: 'audio', name: 'デスクトップスピーカー（USB給電）',   spec: { conn: ['usba', 'usbc'] } },
-  { id: 'wh1000xm6',    cat: 'audio', name: 'Sony WH-1000XM6',                     spec: { conn: ['bt'] } },
+  { id: 'wh1000xm6',    cat: 'audio', name: 'Sony WH-1000XM6',                     spec: { conn: ['bt'] }, ref: 51200 },
   { id: 'audio-if',     cat: 'audio', name: 'オーディオインターフェース（USB-C）', spec: { conn: ['usbc'] } },
+  { id: 'edifier-mr4', cat: 'audio', name: 'Edifier MR4', spec: { conn: [] }, ref: 16977, note: '仕様の一部は販売店・レビューの情報です' },
+  { id: 'edifier-r1280db', cat: 'audio', name: 'Edifier R1280DB', spec: { conn: ['bt'] }, ref: 13981, note: '仕様の一部は販売店・レビューの情報です' },
+  { id: 'audioengine-a2plus', cat: 'audio', name: 'Audioengine A2+ Next Gen', spec: { conn: ['bt'] }, ref: 44990, note: '仕様の一部は販売店・レビューの情報です' },
+  { id: 'presonus-eris35bt', cat: 'audio', name: 'PreSonus Eris 3.5BT 2nd Gen', spec: { conn: ['bt'] }, ref: 20978, note: '仕様の一部は販売店・レビューの情報です' },
 
-  { id: 'c920n',        cat: 'camera', name: 'Logicool C920n',                     spec: { conn: ['usba'] } },
-  { id: 'facecam-mk2',  cat: 'camera', name: 'Elgato Facecam MK.2',                spec: { conn: ['usbc'] } },
-  { id: 'mv7plus',      cat: 'camera', name: 'Shure MV7+',                         spec: { conn: ['usbc'] } },
+  { id: 'c920n',        cat: 'camera', name: 'Logicool C920n',                     spec: { conn: ['usba'] }, ref: 9680 },
+  { id: 'facecam-mk2',  cat: 'camera', name: 'Elgato Facecam MK.2',                spec: { conn: ['usbc'] }, ref: 19615 },
+  { id: 'mv7plus',      cat: 'camera', name: 'Shure MV7+',                         spec: { conn: ['usbc'] }, ref: 46530 },
   { id: 'wave3',        cat: 'camera', name: 'Elgato Wave:3',                      spec: { conn: ['usbc'] } },
+  { id: 'mx-brio', cat: 'camera', name: 'Logicool MX Brio', spec: { conn: ['usbc'] }, ref: 33000 },
+  { id: 'insta360-link2', cat: 'camera', name: 'Insta360 Link 2', spec: { conn: ['usbc'] }, ref: 27500, note: '公式に記載がないため推定: 接続は USB-C（有線）だけを入れています。仕様の一部は販売店・レビューの情報です' },
+  { id: 'obsbot-tiny2', cat: 'camera', name: 'OBSBOT Tiny 2', spec: { conn: ['usbc'] }, ref: 51800, note: '公式に記載がないため推定: 接続は USB-C（有線）だけを入れています。仕様の一部は販売店・レビューの情報です' },
 
-  { id: 'screenbar-halo', cat: 'lighting', name: 'BenQ ScreenBar Halo',            spec: { conn: ['usbc', 'usba'], chargeW: 5 } },
-  { id: 'key-light-air',  cat: 'lighting', name: 'Elgato Key Light Air',           spec: { conn: [] } },
+  { id: 'screenbar-halo', cat: 'lighting', name: 'BenQ ScreenBar Halo',            spec: { conn: ['usbc', 'usba'], chargeW: 6.5 } },
+  { id: 'key-light-air',  cat: 'lighting', name: 'Elgato Key Light Air（初代・AC電源）', spec: { conn: [] } },
   { id: 'hue-bar',        cat: 'lighting', name: 'Philips Hue ライトバー',          spec: { conn: [] } },
+  { id: 'screenbar-halo2', cat: 'lighting', name: 'BenQ ScreenBar Halo 2', spec: { conn: ['usbc'], chargeW: 15 }, ref: 27800 },
+  { id: 'screenbar-pro', cat: 'lighting', name: 'BenQ ScreenBar Pro', spec: { conn: ['usbc'], chargeW: 8.5 }, ref: 23400 },
+  { id: 'screenbar-plus', cat: 'lighting', name: 'BenQ ScreenBar Plus', spec: { conn: ['usba'], chargeW: 5 } },
+  { id: 'xiaomi-lightbar', cat: 'lighting', name: 'Xiaomi Mi モニター掛け式ライト', spec: { conn: ['usbc'], chargeW: 5 }, ref: 6280 },
+  { id: 'key-light-air-mk2', cat: 'lighting', name: 'Elgato Key Light Air MK.2', spec: { conn: ['usbc'], chargeW: 30 }, ref: 26160, note: '仕様の一部は販売店の情報です' },
 
   { id: 'ergotron-lx',  cat: 'arm', name: 'エルゴトロン LX モニターアーム',         spec: { conn: [] } },
   { id: 'amazon-arm',   cat: 'arm', name: 'Amazonベーシック モニターアーム',        spec: { conn: [] } },
@@ -792,14 +849,19 @@ const CATALOG = [
 
   { id: 'charger-100',  cat: 'charger', name: 'USB充電器 100W（USB-C×3・USB-A×1）', spec: { ports: { usbc: 3, usba: 1 }, totalW: 100, portW: 100 } },
   { id: 'charger-65',   cat: 'charger', name: 'USB充電器 65W（USB-C×2）',           spec: { ports: { usbc: 2 }, totalW: 65, portW: 65 } },
-  { id: 'apple-96w',    cat: 'charger', name: 'Apple 96W USB-C電源アダプタ',        spec: { ports: { usbc: 1 }, totalW: 96, portW: 96 } },
-  { id: 'apple-140w',   cat: 'charger', name: 'Apple 140W USB-C電源アダプタ',       spec: { ports: { usbc: 1 }, totalW: 140, portW: 140 } },
+  { id: 'apple-96w',    cat: 'charger', name: 'Apple 96W USB-C電源アダプタ',        spec: { ports: { usbc: 1 }, totalW: 96, portW: 96 }, ref: 10800 },
+  { id: 'apple-140w',   cat: 'charger', name: 'Apple 140W USB-C電源アダプタ',       spec: { ports: { usbc: 1 }, totalW: 140, portW: 140 }, ref: 13800 },
+  { id: 'anker-prime-100w', cat: 'charger', name: 'Anker Prime Charger (100W, 3 Ports, GaN)', spec: { ports: { usbc: 2, usba: 1 }, totalW: 100, portW: 100 }, ref: 8990 },
+  { id: 'anker-nano-70w', cat: 'charger', name: 'Anker Nano Charger (70W, 3 Ports)', spec: { ports: { usbc: 2, usba: 1 }, totalW: 70, portW: 70 }, ref: 5990 },
+  { id: 'anker-prime-base-150w', cat: 'charger', name: 'Anker Prime Charging Base (150W, 3 Ports)', spec: { ports: { usbc: 2, usba: 1 }, totalW: 150, portW: 140 }, ref: 12990 },
+  { id: 'apple-70w', cat: 'charger', name: 'Apple 70W USB-C電源アダプタ', spec: { ports: { usbc: 1 }, totalW: 70, portW: 70 }, ref: 8800, note: '仕様の一部は販売店・レビューの情報です' },
 
   { id: 'phone',        cat: 'mobile', name: 'スマートフォン',                      spec: { conn: ['usbc'], chargeW: 20 } },
   { id: 'ipad',         cat: 'mobile', name: 'iPad',                                spec: { conn: ['usbc'], chargeW: 30 } },
   { id: 'magsafe-3in1', cat: 'mobile', name: '3-in-1 ワイヤレス充電スタンド',       spec: { conn: ['usbc'], chargeW: 30 } },
 ];
 const catalogById = id => CATALOG.find(c => c.id === id);
+const CATALOG_PRICE_DATE = '2026-09';
 
 // カタログにない機材を追加するときの土台
 const TEMPLATE = {
@@ -827,6 +889,7 @@ function newItem(cat, name, spec, cid) {
 function addFromCatalog(cid) {
   const c = catalogById(cid);
   const it = newItem(c.cat, c.name, c.spec, cid);
+  if (c.ref) { it.price = c.ref; it.pkind = 'ref'; it.pdate = CATALOG_PRICE_DATE; }
   state.items.push(it);
   autoLink(it);
   commit(true);
@@ -935,7 +998,8 @@ function monitorSignal(m) {
 const needGbps = (s, hz = s.hz) => s.w * s.h * hz * 24 * 1.1 / 1e9;
 function signalCap(m, sig) {
   const root = rootOf(m);
-  const dsc = m.spec.dsc && (root.cat !== 'computer' || root.spec.dsc !== false);
+  // HDMI 2.0 までの TMDS では DSC は使えない（HDMI は 2.1 の FRL だけ）
+  const dsc = m.spec.dsc && sig !== 'hdmi1.4' && sig !== 'hdmi2.0' && (root.cat !== 'computer' || root.spec.dsc !== false);
   return { cap: LINK_CAP[sig] * (dsc ? 3 : 1), dsc };
 }
 // モニターがつながっている PC と、PC 側のポート（ドック経由ならドックが刺さっているポート）
@@ -1113,7 +1177,7 @@ function specText(it) {
   }
   if (it.cat === 'monitor') {
     const ins = [];
-    if (s.in.tb) ins.push('Thunderbolt');
+    if (s.in.tb) ins.push(`Thunderbolt${s.pdW && !s.in.usbc ? `（${s.pdW}W給電）` : ''}`);
     if (s.in.usbc) ins.push(`USB-C${s.pdW ? `（${s.pdW}W給電）` : ''}`);
     if (s.in.hdmi) ins.push(LINK_LABEL[s.in.hdmi]);
     if (s.in.dp) ins.push(LINK_LABEL[s.in.dp]);
@@ -1148,9 +1212,9 @@ function renderResults() {
   const hits = CATALOG.filter(c =>
     (!activeCat || c.cat === activeCat) &&
     words.every(w => (c.name + ' ' + CAT_LABEL[c.cat] + ' ' + c.id).toLowerCase().includes(w))
-  ).slice(0, 12);
+  ).slice(0, words.length ? 20 : 40);
   $('#results').innerHTML = hits.length
-    ? hits.map(c => `<button class="result" type="button" data-add="${c.id}"><span style="min-width:0"><b>${esc(c.name)}</b><small>${esc(CAT_LABEL[c.cat])} · ${esc(specText(c))}</small></span><span class="plus" aria-hidden="true">＋</span><span class="sr">追加</span></button>`).join('')
+    ? hits.map(c => `<button class="result" type="button" data-add="${c.id}"><span style="min-width:0"><b>${esc(c.name)}</b><small>${esc(CAT_LABEL[c.cat])} · ${esc(specText(c))}${c.ref ? ` · 参考 ${yen(c.ref)}` : ''}</small></span><span class="plus" aria-hidden="true">＋</span><span class="sr">追加</span></button>`).join('')
     : `<div class="hint">見つかりませんでした。下の「カタログにないとき」から追加できます。</div>`;
 }
 
@@ -1169,6 +1233,8 @@ function itemHTML(it, checks) {
   </div>`);
   const st = specText(it);
   if (st) parts.push(`<div class="spec">${esc(st)}</div>`);
+  const base = it.cid && catalogById(it.cid);
+  if (base && base.note && JSON.stringify(base.spec) === JSON.stringify(it.spec)) parts.push(`<div class="spec-note">※ ${esc(base.note)}</div>`);
 
   const fields = [];
   const needsLink = it.cat === 'monitor' || it.cat === 'dock' || ((it.spec.conn || []).length && it.cat !== 'computer' && it.cat !== 'charger');
@@ -2615,18 +2681,93 @@ const DESK_SKIP = new Set(['furniture', 'arm']);
 // 並びはどれも [幅, 奥行, 高さ]。モニターはスタンド込みで、高さは机から画面の上端まで（一番低くしたとき）。
 // ノートPCの高さは閉じたときの厚さ。
 const CATALOG_DIM = {
-  'mba-m2': [30.4, 21.5, 1.1], 'mba-m3': [30.4, 21.5, 1.1], 'mba-m4': [30.4, 21.5, 1.1],
-  'mbp14-m4': [31.3, 22.1, 1.6], 'mbp14-m4pro': [31.3, 22.1, 1.6],
-  'mbp16-m4pro': [35.6, 24.8, 1.7], 'mbp16-m4max': [35.6, 24.8, 1.7],
-  'macmini-m4': [12.7, 12.7, 5], 'macmini-m4pro': [12.7, 12.7, 5], 'macstudio-m4max': [19.7, 19.7, 9.5],
+  'mba-m2': [30.4, 21.5, 1.1],
+  'mba-m3': [30.4, 21.5, 1.1],
+  'mba-m4': [30.4, 21.5, 1.1],
+  'mbp14-m4': [31.3, 22.1, 1.6],
+  'mbp14-m4pro': [31.3, 22.1, 1.6],
+  'mbp16-m4pro': [35.6, 24.8, 1.7],
+  'mbp16-m4max': [35.6, 24.8, 1.7],
+  'macmini-m4': [12.7, 12.7, 5],
+  'macmini-m4pro': [12.7, 12.7, 5],
+  'macstudio-m4max': [19.7, 19.7, 9.5],
   'studio-display': [62.3, 16.8, 47.8],
   'u2723qe': [61.1, 18.5, 38.5],
-  'caldigit-ts4': [14, 11.3, 4.2],
-  'hhkb-hybrid': [29.4, 12, 4], 'mx-keys-s': [43, 13.2, 2.1], 'mx-mech-mini': [31.3, 13.2, 2.6], 'magic-kb': [27.9, 11.5, 1.1],
-  'mx-master-3s': [8.4, 12.5, 5.1], 'mx-ergo-s': [10, 13.3, 5.1], 'gpx-sl2': [6.4, 12.5, 4], 'magic-trackpad': [16, 11.5, 1.1], 'magic-mouse': [5.7, 11.4, 2.2],
+  'u2724de': [61.2, 19.2, 38.6],
+  '27up850n': [61.4, 29.3, 45.9],
+  'pa279crv': [61.2, 21.5, 40.8],
+  '32gs95ue': [71.4, 27.9, 50.7],
+  'caldigit-ts4': [14.1, 11.3, 4.2],
+  'hhkb-hybrid': [29.4, 12, 4],
+  'keychron-q1max': [32.8, 14.5, 3.2],
+  'mx-keys-s': [43, 13.2, 2.1],
+  'mx-mech-mini': [31.3, 13.2, 2.6],
+  'magic-kb': [27.9, 11.5, 1.1],
+  'mx-master-3s': [8.4, 12.5, 5.1],
+  'mx-ergo-s': [10, 13.3, 5.1],
+  'gpx-sl2': [6.4, 12.5, 4],
+  'magic-trackpad': [16, 11.5, 1.1],
+  'magic-mouse': [5.7, 11.4, 2.2],
+  'pebble': [12.3, 12, 11.8],
   'c920n': [9.4, 7.1, 4.3],
-  'screenbar-halo': [50, null, null],
-  'apple-96w': [8, 8, 2.9],
+  'facecam-mk2': [8.4, 6.1, 3.8],
+  'mv7plus': [9, 20.7, 16.4],
+  'screenbar-halo': [50, 9.5, 9.7],
+  'mba13-m5': [30.4, 21.5, 1.1],
+  'mba15-m5': [34, 23.8, 1.2],
+  'mbp14-m5': [31.3, 22.1, 1.6],
+  'mbp14-m5pro': [31.3, 22.1, 1.6],
+  'mbp16-m5pro': [35.6, 24.8, 1.7],
+  'macmini-m6': [12.7, 12.7, 5],
+  'macmini-m5pro': [12.7, 12.7, 5],
+  'macstudio-m5max': [19.7, 19.7, 9.5],
+  'thinkpad-x1c13': [31.3, 21.5, 1.8],
+  'u2725qe': [61.2, 18.9, 38.6],
+  'u3225qe': [71.3, 21.5, 46.9],
+  'u3425we': [81.4, 24, 39.3],
+  '27up850k': [61.4, 23.9, 45.9],
+  '32un880k': [71.4, 22.7, 51.1],
+  '27gr93u': [61.4, 25.4, 46.8],
+  'pd2706u': [61.4, 23.8, 45.1],
+  'ex271uz': [61.1, 22.4, 43.7],
+  'pg27ucdm': [61, 21.9, 44],
+  'ev2785': [61.1, 23, 36.7],
+  'ev3240x': [71.2, 24.2, 42.7],
+  'studio-display-tb5': [62.3, 16.8, 47.8],
+  'studio-display-xdr': [62.3, 21.4, 47.8],
+  'mb16acv': [35.8, null, null],
+  'caldigit-ts5plus': [12.8, 4.7, 15.5],
+  'caldigit-element-hub': [11.4, 7, 1.8],
+  'belkin-inc006': [20, 7.3, 3.4],
+  'anker-nano-dock-13in1': [14, 9.5, 4],
+  'anker-prime-tb5-dock': [11.6, 11.6, 7.5],
+  'anker-nano-hub-8in1': [14, 4.8, 1.5],
+  'hhkb-studio': [30.8, 13.2, 4.1],
+  'realforce-r3s-tkl': [36.9, 14.2, 3.8],
+  'realforce-r3s': [45.5, 14.2, 3.8],
+  'realforce-r3-tkl': [37.9, 16.3, 3],
+  'mx-keys-mini': [29.6, 13.2, 2.1],
+  'mx-mechanical': [43.4, 13.2, 2.6],
+  'keychron-v1-max': [32.9, 14.9, 2.9],
+  'nuphy-halo75-v2': [32, 13.5, 3.3],
+  'mx-master-4': [8.8, 12.8, 5.1],
+  'mx-anywhere-3s': [6.5, 10.1, 3.4],
+  'razer-viper-v3-pro': [6.4, 12.7, 4],
+  'mx-brio': [9.8, 5.2, 6.2],
+  'insta360-link2': [7.1, 3.8, 5.9],
+  'obsbot-tiny2': [4.7, 4.4, 6.2],
+  'screenbar-halo2': [50, 14.3, 10.9],
+  'screenbar-pro': [50, 13.5, 9.2],
+  'screenbar-plus': [45, 9, 9.2],
+  'xiaomi-lightbar': [44.8, 2.3, 2.3],
+  'edifier-mr4': [14, 17, 22.8],
+  'edifier-r1280db': [14.6, 19.6, 23.4],
+  'audioengine-a2plus': [10.6, 13.8, 15.6],
+  'presonus-eris35bt': [14.1, 16.4, 21],
+  'anker-prime-100w': [6.8, 4.5, 2.9],
+  'anker-nano-70w': [5.3, 4.3, 3.2],
+  'anker-prime-base-150w': [10.3, 10.3, 2.3],
+  'key-light-air-mk2': [31.9, 3.3, 20.7],
 };
 const MIC_RE = /マイク|\bmic(rophone)?\b|MV7|Wave:?\s?\d|Yeti|SM7|NT-USB/i;
 // 形の種類（大きさではなく、カテゴリと名前で決める）
