@@ -264,9 +264,34 @@
   details.more[open] summary { margin-bottom: 8px; }
   .spec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
   .spec-grid label { display: grid; gap: 3px; font-size: 11px; color: var(--muted); }
-  .spec-grid .text { padding: 6px 10px; font-size: 13px; }
+  .spec-grid .text { padding: 6px 10px; font-size: 13px; color: var(--text); }
   .spec-grid select.text { padding-right: 28px; }
 
+  .spec-grid .full { grid-column: 1 / -1; }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge { font-size: 11px; border-radius: 999px; padding: 1px 8px; background: var(--field); color: var(--text-2); }
+  .memo { font-size: 12px; color: var(--text-2); overflow-wrap: anywhere; }
+  .memo::before { content: "メモ: "; color: var(--muted); }
+  .links-edit { display: grid; gap: 6px; margin-top: 8px; }
+  .link-row { display: grid; grid-template-columns: 120px minmax(0, 1fr) 30px; gap: 6px; align-items: center; }
+  .link-row .text { padding: 6px 10px; font-size: 13px; }
+  @media (max-width: 560px) { .link-row { grid-template-columns: 96px minmax(0, 1fr) 30px; } }
+  .total-note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .total-note:empty { display: none; }
+  dialog.dlg {
+    border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 0; background: var(--card); color: var(--text);
+    width: min(720px, calc(100vw - 24px)); max-height: calc(100vh - 32px); box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  }
+  dialog.dlg::backdrop { background: rgba(0,0,0,.35); }
+  .dlg-body { padding: 18px; display: grid; gap: 12px; }
+  .dlg-head { display: flex; justify-content: space-between; align-items: center; }
+  .dlg-head h2 { margin: 0; font-size: 16px; }
+  .checks-row { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+  .checks-row label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  .ex-out { width: 100%; min-height: 240px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.6; resize: vertical; }
+  .ex-warn { background: var(--warn-soft); color: var(--warn); border-radius: 10px; padding: 8px 12px; font-size: 12px; }
+  .ex-warn:empty { display: none; }
+  .ex-foot { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
   .empty { text-align: center; padding: 36px 16px; color: var(--text-2); }
   .empty p { margin: 0 0 14px; }
 
@@ -364,6 +389,7 @@
         <h2 id="totalTitle">合計</h2>
         <div class="total-num" id="totalNum">¥0</div>
         <div class="total-sub" id="totalSub">0点</div>
+        <div class="total-note" id="totalNote"></div>
         <div class="bars" id="bars"></div>
       </section>
 
@@ -380,8 +406,9 @@
           <button class="btn primary block" id="postBtn" type="button">X でポスト</button>
           <button class="btn block" id="copyBtn" type="button">共有リンクをコピー</button>
           <button class="btn block" id="imgBtn" type="button">画像を保存（ポストに添付用）</button>
+          <button class="btn block" id="exportBtn" type="button">記事用に書き出す（ブログ・note・概要欄）</button>
         </div>
-        <p class="fine">構成はリンクの中に入っています。サーバーには何も送られません。</p>
+        <p class="fine">構成はリンクの中に入っています。サーバーには何も送られません。購入先のリンクは共有リンクには入らず、書き出しでだけ使います。</p>
       </section>
     </aside>
   </div>
@@ -447,6 +474,25 @@
   <footer>データはこのブラウザの中にだけ保存されます。</footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<datalist id="shopList"><option value="Amazon"><option value="楽天市場"><option value="Yahoo!ショッピング"><option value="公式ストア"><option value="メルカリ"></datalist>
+<dialog class="dlg" id="exportDlg" aria-labelledby="exTitle">
+  <div class="dlg-body">
+    <div class="dlg-head"><h2 id="exTitle">記事用に書き出す</h2><button class="x" type="button" id="exClose" aria-label="閉じる">×</button></div>
+    <div class="opt-row"><span>形式</span><span class="seg" id="exFmt"><button type="button" data-v="md">マークダウン</button><button type="button" data-v="html">HTML の表</button><button type="button" data-v="text">テキスト（概要欄・X）</button></span></div>
+    <div class="checks-row">
+      <label><input type="checkbox" data-ex="price"> 価格</label>
+      <label><input type="checkbox" data-ex="links"> 購入先リンク</label>
+      <label><input type="checkbox" data-ex="memo"> メモ</label>
+      <label><input type="checkbox" data-ex="total"> 合計</label>
+      <label><input type="checkbox" data-ex="pr"> 「PR」の表示</label>
+    </div>
+    <label class="opt-row" style="gap:10px"><span style="white-space:nowrap">アソシエイトの表示文</span><input class="text" id="exSite" maxlength="40" placeholder="サイト名（空欄なら付けない）"></label>
+    <div class="ex-warn" id="exWarn" role="status"></div>
+    <textarea class="text ex-out" id="exOut" readonly aria-label="書き出した内容"></textarea>
+    <div class="ex-foot"><button class="btn primary" type="button" id="exCopy">コピー</button></div>
+    <p class="fine" style="margin:0">購入先のリンクは、アフィリエイトに登録した自分のサイト・アカウントにだけ貼ってください。Amazon アソシエイトでは、手で入力した価格を Amazon のリンクと並べて載せると規約違反になるおそれがあります。</p>
+  </div>
+</dialog>
 
 <script>
 // ---- カテゴリ ----
@@ -587,7 +633,8 @@ const byId = id => state.items.find(i => i.id === id);
 const clone = o => JSON.parse(JSON.stringify(o));
 
 function newItem(cat, name, spec, cid) {
-  return { id: (state.seq++).toString(36), cid: cid || null, cat, name, price: null, spec: clone(spec), link: null, power: 'auto', clam: false };
+  return { id: (state.seq++).toString(36), cid: cid || null, cat, name, price: null, spec: clone(spec), link: null, power: 'auto', clam: false,
+    pkind: 'paid', pdate: '', tot: '', memo: '', links: [] };
 }
 function addFromCatalog(cid) {
   const c = catalogById(cid);
@@ -970,6 +1017,31 @@ function itemHTML(it, checks) {
 
   if (worst) parts.push(`<div class="item-msg ${worst.sev}">${esc(worst.title)}</div>`);
 
+  const badges = [];
+  if (TOT_LABEL[it.tot]) badges.push(`合計外（${TOT_LABEL[it.tot]}）`);
+  const pn = it.price != null && it.pdate ? priceNote({ ...it, tot: '' }) : (it.pkind === 'ref' && it.price != null ? '参考価格' : '');
+  if (pn) badges.push(pn);
+  const nLinks = (it.links || []).filter(l => validUrl(l.u)).length;
+  if (nLinks) badges.push(`購入先 ${nLinks}件`);
+  if (badges.length) parts.push(`<div class="badges">${badges.map(b => `<span class="badge">${esc(b)}</span>`).join('')}</div>`);
+  if (it.memo) parts.push(`<div class="memo">${esc(it.memo)}</div>`);
+  const opt = (v, cur, l) => `<option value="${v}"${cur === v ? ' selected' : ''}>${l}</option>`;
+  parts.push(`<details class="more"${it._open2 ? ' open' : ''} data-open2="${it.id}"><summary>価格の詳細・購入先・メモ</summary><div class="spec-grid">
+      <label>価格の種類<select class="text" data-f="pkind">${opt('paid', it.pkind || 'paid', '購入時の価格')}${opt('ref', it.pkind, '参考価格')}</select></label>
+      <label>いつの価格<input class="text" type="month" data-f="pdate" value="${esc(it.pdate || '')}"></label>
+      <label>合計<select class="text" data-f="tot">${opt('', it.tot || '', '合計に含める')}${opt('ex', it.tot, '含めない（番外）')}${opt('gift', it.tot, '含めない（提供品）')}${opt('work', it.tot, '含めない（会社支給）')}</select></label>
+      <label class="full">メモ（どこで・いつ買ったか、元は何か など）<input class="text" data-f="memo" maxlength="80" value="${esc(it.memo || '')}" placeholder="例: 100均のキャンドルホルダーをペン立てに"></label>
+    </div>
+    <div class="links-edit">
+      ${(it.links || []).map((l, i) => `<div class="link-row">
+        <input class="text" list="shopList" data-lf="s" data-li="${i}" value="${esc(l.s)}" placeholder="店名" aria-label="店名" maxlength="20">
+        <input class="text" type="url" data-lf="u" data-li="${i}" value="${esc(l.u)}" placeholder="https://…" aria-label="購入先のURL" inputmode="url">
+        <button class="x" type="button" data-link-remove="${i}" aria-label="この購入先を消す">×</button>
+      </div>`).join('')}
+      ${(it.links || []).length < 8 ? `<button class="link-btn" type="button" data-link-add style="justify-self:start">＋ 購入先を追加</button>` : ''}
+      <span class="hint">購入先のリンクは共有リンクには入りません。「記事用に書き出す」でだけ使います。</span>
+    </div></details>`);
+
   if (it.cat === 'monitor') {
     const s = it.spec;
     const resOpts = Object.entries(RES_NAME).map(([k, v]) => `<option value="${k}"${k === `${s.w}x${s.h}` ? ' selected' : ''}>${v}（${k.replace('x', '×')}）</option>`).join('')
@@ -999,18 +1071,20 @@ function renderList() {
   for (const c of CATS) {
     const its = state.items.filter(i => i.cat === c.id);
     if (!its.length) continue;
-    const sub = its.reduce((s, i) => s + (i.price || 0), 0);
+    const sub = sumPrice(its);
     html.push(`<section class="group"><div class="group-head"><h3>${esc(c.label)}</h3><span>${sub ? yen(sub) : ''}</span></div>${its.map(i => itemHTML(i, checks)).join('')}</section>`);
   }
   list.innerHTML = html.join('');
 }
 
 function renderSide() {
-  const total = state.items.reduce((s, i) => s + (i.price || 0), 0);
+  const total = sumPrice(state.items);
   $('#totalNum').textContent = yen(total);
+  const outs = Object.entries(TOT_LABEL).map(([k, l]) => ({ l, v: state.items.filter(i => i.tot === k).reduce((s, i) => s + (i.price || 0), 0), n: state.items.filter(i => i.tot === k).length })).filter(x => x.n);
+  $('#totalNote').textContent = outs.length ? '合計に含めていない: ' + outs.map(x => `${x.l} ${x.n}点${x.v ? ' ' + yen(x.v) : ''}`).join(' / ') : '';
   const priced = state.items.filter(i => i.price).length;
   $('#totalSub').textContent = `${state.items.length}点` + (state.items.length && priced < state.items.length ? `（価格未入力 ${state.items.length - priced}点）` : '');
-  const byCat = CATS.map(c => ({ c, v: state.items.filter(i => i.cat === c.id).reduce((s, i) => s + (i.price || 0), 0) })).filter(x => x.v > 0).sort((a, b) => b.v - a.v);
+  const byCat = CATS.map(c => ({ c, v: sumPrice(state.items.filter(i => i.cat === c.id)) })).filter(x => x.v > 0).sort((a, b) => b.v - a.v);
   const max = byCat[0] ? byCat[0].v : 1;
   $('#bars').innerHTML = byCat.map(x => `<div class="bar-row"><span class="lbl">${esc(x.c.label)}</span><span class="track"><i style="width:${(x.v / max * 100).toFixed(1)}%"></i></span><span class="val">${yen(x.v)}</span></div>`).join('');
 
@@ -1028,7 +1102,36 @@ function renderSide() {
 }
 
 // ---- 保存・共有 ----
-function serialize() {
+// 価格まわり: pkind 購入時/参考、pdate いつの価格（YYYY-MM）、tot 合計に含めない理由
+const TOT_LABEL = { ex: '番外', gift: '提供品', work: '会社支給' };
+const counted = i => !TOT_LABEL[i.tot];
+const sumPrice = items => items.reduce((s, i) => s + (counted(i) && i.price || 0), 0);
+function priceNote(it) {
+  const parts = [];
+  if (it.pdate) {
+    const [y, m] = it.pdate.split('-').map(Number);
+    parts.push(`${y}年${m}月` + (it.pkind === 'ref' ? '時点の参考価格' : '購入'));
+  } else if (it.pkind === 'ref') parts.push('参考価格');
+  if (TOT_LABEL[it.tot]) parts.push(TOT_LABEL[it.tot]);
+  return parts.join('・');
+}
+function cleanLinks(arr) {
+  return (Array.isArray(arr) ? arr : []).slice(0, 8).map(l => ({ s: String((l && l.s) || '').slice(0, 20), u: String((l && l.u) || '').trim().slice(0, 500) }));
+}
+const validUrl = u => /^https?:\/\/[^\s]+$/i.test(u);
+function shopFromUrl(u) {
+  let h = '';
+  try { h = new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; }
+  if (/(^|\.)(amazon\.(co\.jp|com)|amzn\.(to|asia))$/.test(h)) return 'Amazon';
+  if (/(^|\.)rakuten\.(co\.jp|com)$/.test(h)) return '楽天市場';
+  if (/(^|\.)yahoo\.co\.jp$/.test(h)) return 'Yahoo!ショッピング';
+  if (/(^|\.)mercari\.com$/.test(h)) return 'メルカリ';
+  return h;
+}
+const isAmazon = u => shopFromUrl(u) === 'Amazon';
+
+// forShare: 共有リンク用。購入先リンクは入れない（登録サイト以外にアソシエイトリンクを出さないため）
+function serialize(forShare = false) {
   return {
     v: 1, t: state.title || undefined, u: state.handle || undefined,
     i: state.items.map(it => {
@@ -1041,6 +1144,11 @@ function serialize() {
       if (it.link) o.l = [it.link.h, it.link.p, it.link.v];
       if (it.power && it.power !== 'auto') o.w = it.power;
       if (it.clam) o.m = 1;
+      if (it.pkind === 'ref') o.pk = 'r';
+      if (it.pdate) o.pd = it.pdate;
+      if (it.tot) o.tt = it.tot;
+      if (it.memo) o.me = it.memo;
+      if (!forShare && it.links && it.links.length) o.ln = it.links.map(l => [l.s, l.u]);
       return o;
     }),
   };
@@ -1063,6 +1171,9 @@ function deserialize(o) {
       price: Number.isFinite(x.p) ? x.p : null, spec,
       link: Array.isArray(x.l) ? { h: String(x.l[0]), p: x.l[1], v: x.l[2] } : null,
       power: x.w ? String(x.w) : 'auto', clam: !!x.m,
+      pkind: x.pk === 'r' ? 'ref' : 'paid', pdate: /^\d{4}-\d{2}$/.test(x.pd || '') ? x.pd : '',
+      tot: TOT_LABEL[x.tt] ? x.tt : '', memo: String(x.me || '').slice(0, 80),
+      links: cleanLinks(Array.isArray(x.ln) ? x.ln.map(l => ({ s: l && l[0], u: l && l[1] })) : []),
     });
   }
   st.seq = max + 1;
@@ -1087,7 +1198,7 @@ async function decode(str) {
   return JSON.parse(new TextDecoder().decode(bytes));
 }
 async function shareUrl() {
-  return location.origin + location.pathname + '#d=' + await encode(serialize());
+  return location.origin + location.pathname + '#d=' + await encode(serialize(true));
 }
 
 function save() {
@@ -1128,7 +1239,7 @@ async function drawCard() {
   x.fillStyle = C.text; x.font = `700 36px ${F}`; x.fillText(fit(state.title || '私のデスク', 700), 72, 140);
   if (state.handle) { x.fillStyle = C.sub; x.font = `400 18px ${F}`; x.fillText('@' + state.handle.replace(/^@/, ''), 72, 172); }
 
-  const total = state.items.reduce((s, i) => s + (i.price || 0), 0);
+  const total = sumPrice(state.items);
   x.textAlign = 'right';
   x.fillStyle = C.muted; x.font = `500 15px ${F}`; x.fillText(`${state.items.length}点の合計`, W - 72, 92);
   x.fillStyle = C.text; x.font = `700 44px ${F}`; x.fillText(total ? yen(total) : '—', W - 72, 142);
@@ -1202,15 +1313,34 @@ function wire() {
       commit(true); return;
     }
     if (e.target.closest('[data-sample]')) loadSample();
+    const la = e.target.closest('[data-link-add]'), lr = e.target.closest('[data-link-remove]');
+    if (la || lr) {
+      const it = byId(e.target.closest('.item').dataset.id); if (!it) return;
+      it.links = it.links || [];
+      if (la && it.links.length < 8) it.links.push({ s: '', u: '' });
+      if (lr) it.links.splice(Number(lr.dataset.linkRemove), 1);
+      it._open2 = true;
+      commit(true);
+      if (la) { const rows = document.querySelectorAll(`.item[data-id="${it.id}"] [data-lf="u"]`); if (rows.length) rows[rows.length - 1].focus(); }
+    }
   });
   list.addEventListener('toggle', e => {
+    const d2 = e.target.closest('details[data-open2]');
+    if (d2) { const it = byId(d2.dataset.open2); if (it) it._open2 = d2.open; return; }
     const d = e.target.closest('details[data-open]'); if (!d) return;
     const it = byId(d.dataset.open); if (it) it._open = d.open;
   }, true);
   list.addEventListener('input', e => {
+    const lf = e.target.dataset.lf;
+    if (lf) {
+      const it = byId(e.target.closest('.item').dataset.id); const l = it && it.links[Number(e.target.dataset.li)];
+      if (l) { l[lf] = e.target.value.slice(0, lf === 'u' ? 500 : 20); save(); }
+      return;
+    }
     const f = e.target.dataset.f, card = e.target.closest('.item'); if (!f || !card) return;
     const it = byId(card.dataset.id); if (!it) return;
     if (f === 'name') { it.name = e.target.value; commit(false); }
+    if (f === 'memo') { it.memo = e.target.value.slice(0, 80); save(); }
     if (f === 'price') {
       const digits = e.target.value.replace(/[^\d]/g, '');
       it.price = digits ? Math.min(Number(digits), 1e9) : null;
@@ -1218,12 +1348,24 @@ function wire() {
     }
   });
   list.addEventListener('change', e => {
+    if (e.target.dataset.lf) {
+      const it = byId(e.target.closest('.item').dataset.id); const l = it && it.links[Number(e.target.dataset.li)];
+      if (!l) return;
+      l.u = l.u.trim();
+      if (e.target.dataset.lf === 'u' && l.u && !validUrl(l.u)) toast('URL は https:// から始まる形で入れてください');
+      if (e.target.dataset.lf === 'u' && !l.s && validUrl(l.u)) l.s = shopFromUrl(l.u).slice(0, 20);
+      commit(true); return;
+    }
+    if (e.target.dataset.f === 'memo') { commit(true); return; }
     const f = e.target.dataset.f, card = e.target.closest('.item'); if (!f || !card) return;
     const it = byId(card.dataset.id); if (!it) return;
     const v = e.target.value, s = it.spec;
     if (f === 'price') { e.target.value = it.price != null ? it.price.toLocaleString('ja-JP') : ''; return; }
     if (f === 'name') { if (!it.name.trim()) it.name = CAT_LABEL[it.cat]; commit(true); return; }
     if (f === 'link') { it.link = v ? (([h, p, vv]) => ({ h, p, v: vv }))(v.split('|')) : null; }
+    if (f === 'pkind') it.pkind = v === 'ref' ? 'ref' : 'paid';
+    if (f === 'pdate') it.pdate = /^\d{4}-\d{2}$/.test(v) ? v : '';
+    if (f === 'tot') it.tot = TOT_LABEL[v] ? v : '';
     if (f === 'power') it.power = v;
     if (f === 'clam') it.clam = e.target.checked;
     if (f === 'res') { const [w, h] = v.split('x').map(Number); s.w = w; s.h = h; }
@@ -1247,7 +1389,7 @@ function wire() {
   });
   $('#postBtn').addEventListener('click', async () => {
     const url = await shareUrl();
-    const total = state.items.reduce((s, i) => s + (i.price || 0), 0);
+    const total = sumPrice(state.items);
     const text = `${state.title || '私のデスク'}（${state.items.length}点${total ? '・合計' + yen(total) : ''}）\n#デスクツアー #デスク環境`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'noopener');
   });
@@ -1965,8 +2107,129 @@ async function initPhoto() {
   setTab(t === 'photo' ? 'photo' : 'list');
 }
 
+// ---- 記事用に書き出す ----
+const EX_KEY = 'desk-setup:export:v1';
+let exOpt = { fmt: 'md', price: true, links: false, memo: true, total: true, pr: false, site: '' };
+try { Object.assign(exOpt, JSON.parse(localStorage.getItem(EX_KEY) || '{}')); } catch (e) {}
+const saveEx = () => { try { localStorage.setItem(EX_KEY, JSON.stringify(exOpt)); } catch (e) {} };
+const mdEsc = t => String(t).replace(/([\\`*_\[\]<>])/g, '\\$1');
+
+function exportGroups() {
+  return CATS.map(c => ({ c, items: state.items.filter(i => i.cat === c.id) })).filter(g => g.items.length);
+}
+function priceText(it) {
+  if (it.price == null) return TOT_LABEL[it.tot] ? `（${TOT_LABEL[it.tot]}）` : '';
+  const n = priceNote(it);
+  return yen(it.price) + (n ? `（${n}）` : '');
+}
+function goodLinks(it) { return (it.links || []).filter(l => validUrl(l.u)).map(l => ({ s: l.s || shopFromUrl(l.u) || 'リンク', u: l.u })); }
+function totalText() {
+  const total = sumPrice(state.items), n = state.items.length;
+  const outs = Object.entries(TOT_LABEL).filter(([k]) => state.items.some(i => i.tot === k)).map(([, l]) => l);
+  return `合計 ${yen(total)}（${n}点${outs.length ? '・' + outs.join('・') + 'は含まない' : ''}）`;
+}
+function disclosure() {
+  const out = [];
+  if (exOpt.site.trim()) out.push(`Amazonのアソシエイトとして、${exOpt.site.trim()}は適格販売により収入を得ています。`);
+  return out;
+}
+
+function buildExport() {
+  const o = exOpt, groups = exportGroups();
+  const lines = [];
+  if (o.fmt === 'md') {
+    if (o.pr) lines.push('※この記事にはPR（アフィリエイトリンク）が含まれています。', '');
+    for (const g of groups) {
+      lines.push(`## ${g.c.label}`, '');
+      for (const it of g.items) {
+        const pt = o.price ? priceText(it) : (TOT_LABEL[it.tot] ? `（${TOT_LABEL[it.tot]}）` : '');
+        lines.push(`- **${mdEsc(it.name)}**${pt ? ' ' + pt : ''}`);
+        if (o.memo && it.memo) lines.push(`  - ${mdEsc(it.memo)}`);
+        const ls = goodLinks(it);
+        if (o.links && ls.length) lines.push(`  - 購入先: ${ls.map(l => `[${mdEsc(l.s)}](${l.u})`).join(' / ')}`);
+      }
+      lines.push('');
+    }
+    if (o.total) lines.push(totalText(), '');
+    const d = disclosure(); if (d.length) lines.push('---', ...d);
+  } else if (o.fmt === 'text') {
+    if (o.pr) lines.push('※PR（アフィリエイトリンク）を含みます', '');
+    for (const g of groups) {
+      lines.push(`■ ${g.c.label}`);
+      for (const it of g.items) {
+        const pt = o.price ? priceText(it) : (TOT_LABEL[it.tot] ? `（${TOT_LABEL[it.tot]}）` : '');
+        lines.push(`・${it.name}${pt ? ' ' + pt : ''}`);
+        if (o.memo && it.memo) lines.push(`　${it.memo}`);
+        if (o.links) for (const l of goodLinks(it)) lines.push(`　${l.s}: ${l.u}`);
+      }
+      lines.push('');
+    }
+    if (o.total) lines.push(totalText(), '');
+    lines.push(...disclosure());
+  } else {
+    const head = ['カテゴリ', '機材'];
+    if (o.price) head.push('価格');
+    if (o.memo) head.push('メモ');
+    if (o.links) head.push('購入先');
+    if (o.pr) lines.push('<p>※この記事にはPR（アフィリエイトリンク）が含まれています。</p>');
+    lines.push('<table>', '  <thead><tr>' + head.map(h => `<th>${h}</th>`).join('') + '</tr></thead>', '  <tbody>');
+    for (const g of groups) for (const it of g.items) {
+      const cells = [esc(g.c.label), esc(it.name) + (!o.price && TOT_LABEL[it.tot] ? `（${TOT_LABEL[it.tot]}）` : '')];
+      if (o.price) cells.push(esc(priceText(it)));
+      if (o.memo) cells.push(esc(it.memo || ''));
+      if (o.links) cells.push(goodLinks(it).map(l => `<a href="${esc(l.u)}" target="_blank" rel="noopener sponsored">${esc(l.s)}</a>`).join(' / '));
+      lines.push('    <tr>' + cells.map(c => `<td>${c}</td>`).join('') + '</tr>');
+    }
+    lines.push('  </tbody>');
+    if (o.total) lines.push(`  <tfoot><tr><td colspan="${head.length}">${esc(totalText())}</td></tr></tfoot>`);
+    lines.push('</table>');
+    for (const d of disclosure()) lines.push(`<p>${esc(d)}</p>`);
+  }
+  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+}
+
+function renderExport() {
+  document.querySelectorAll('#exFmt button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === exOpt.fmt)));
+  document.querySelectorAll('[data-ex]').forEach(c => { c.checked = !!exOpt[c.dataset.ex]; });
+  $('#exSite').value = exOpt.site;
+  const amazon = state.items.some(i => goodLinks(i).some(l => isAmazon(l.u)));
+  const warn = [];
+  if (exOpt.links && exOpt.price && amazon) warn.push('Amazon のリンクと、手で入力した価格を並べています。Amazon アソシエイトの規約違反になるおそれがあるので、価格を外すのがおすすめです。');
+  if (exOpt.links && amazon && !exOpt.site.trim()) warn.push('Amazon のリンクを載せるときは、アソシエイトであることの表示が必要です。サイト名を入れると表示文を付けます。');
+  if (exOpt.links && !state.items.some(i => goodLinks(i).length)) warn.push('購入先のリンクがまだありません。機材の「価格の詳細・購入先・メモ」から追加できます。');
+  $('#exWarn').innerHTML = warn.map(esc).join('<br>');
+  $('#exOut').value = state.items.length ? buildExport() : '';
+}
+
+function wireExport() {
+  const dlg = $('#exportDlg');
+  $('#exportBtn').addEventListener('click', () => {
+    if (!state.items.length) { toast('先に機材を追加してください'); return; }
+    renderExport();
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  });
+  $('#exClose').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+  $('#exFmt').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; exOpt.fmt = b.dataset.v; saveEx(); renderExport(); });
+  document.querySelectorAll('[data-ex]').forEach(c => c.addEventListener('change', () => {
+    exOpt[c.dataset.ex] = c.checked;
+    // Amazon のリンクを載せるなら、価格は外しておく
+    if (c.dataset.ex === 'links' && c.checked && exOpt.price && state.items.some(i => goodLinks(i).some(l => isAmazon(l.u)))) {
+      exOpt.price = false; toast('Amazon のリンクがあるので、価格を外しました');
+    }
+    saveEx(); renderExport();
+  }));
+  $('#exSite').addEventListener('input', e => { exOpt.site = e.target.value.slice(0, 40); saveEx(); renderExport(); });
+  $('#exCopy').addEventListener('click', async () => {
+    const t = $('#exOut').value;
+    try { await navigator.clipboard.writeText(t); toast('コピーしました'); }
+    catch (e) { $('#exOut').select(); toast('選択しました。コピーしてください'); }
+  });
+}
+
 async function init() {
   wire();
+  wireExport();
   renderChips();
   const m = location.hash.match(/^#d=(.+)$/);
   if (m) {
