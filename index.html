@@ -112,7 +112,7 @@
     .stage { position: relative; top: auto; }
   }
   .stage canvas {
-    display: block; max-width: 100%; max-height: calc(100vh - 32px); width: auto; height: auto; margin: 0 auto;
+    display: block; max-width: 100%; max-height: max(60vh, calc(100vh - 160px)); width: auto; height: auto; margin: 0 auto;
     border-radius: var(--radius-lg); touch-action: none; cursor: crosshair; background: var(--field);
   }
   .stage canvas[hidden] { display: none; }
@@ -154,6 +154,29 @@
   .pick:hover { border-color: var(--muted); }
   .pick[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 500; }
   .pick.custom { border-style: dashed; }
+  .pick.pend { border-color: var(--accent); border-style: dashed; }
+  .pick.pend[aria-pressed="true"] { border-style: solid; }
+  .link-btn { border: 0; background: none; padding: 4px 2px; font-size: 12px; color: var(--muted); text-decoration: underline; }
+  .paste { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
+  .paste summary { font-size: 13px; font-weight: 500; cursor: pointer; }
+  .paste[open] summary { margin-bottom: 8px; }
+  .paste textarea { resize: vertical; font-size: 13px; line-height: 1.6; min-height: 120px; }
+  .paste-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .quick {
+    position: absolute; z-index: 5; width: 300px; max-width: calc(100% - 16px); padding: 8px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  }
+  .quick[hidden] { display: none; }
+  .quick .text { padding: 8px 10px; }
+  .quick-list { display: grid; gap: 2px; margin-top: 6px; max-height: 240px; overflow-y: auto; }
+  .quick-list:empty { display: none; }
+  .quick-list button {
+    display: grid; gap: 1px; width: 100%; text-align: left; border: 0; background: transparent; border-radius: 8px; padding: 6px 8px; min-width: 0;
+  }
+  .quick-list button[aria-selected="true"] { background: var(--accent-soft); }
+  .quick-list b { font-weight: 500; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .quick-list small { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .quick-foot { font-size: 11px; color: var(--muted); margin-top: 6px; padding: 0 2px; }
   .anns { display: grid; gap: 8px; }
   .ann { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; display: grid; gap: 6px; }
   .ann.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
@@ -372,13 +395,27 @@
       </div>
       <canvas id="photoCanvas" hidden aria-label="書き込み中の写真"></canvas>
       <div class="stage-hint" id="stageHint" aria-live="polite"></div>
+      <div class="quick" id="quick" hidden>
+        <input class="text" id="quickInput" placeholder="機材名（例: MX Master 3S）" autocomplete="off" aria-label="ラベルにする機材名" aria-controls="quickList" aria-autocomplete="list" role="combobox" aria-expanded="true">
+        <div class="quick-list" id="quickList" role="listbox"></div>
+        <div class="quick-foot">Enter で追加 · Esc でやめる</div>
+      </div>
     </div>
 
     <aside class="side">
       <section class="card" aria-labelledby="placeTitle">
         <h2 id="placeTitle">ラベルを置く</h2>
-        <p class="hint" style="margin:0 0 10px">機材を選んでから、写真の上でその機材をタップします。ラベルと矢印の先はドラッグで動かせます。</p>
+        <p class="hint" style="margin:0 0 10px">写真の上で機材をタップすると、名前を入力して置けます。下のリストから選んでからタップしても置けます。ラベルと矢印の先はドラッグで動かせます。</p>
         <div class="pick-list" id="pickList"></div>
+        <details class="paste" id="pasteBox">
+          <summary>一覧を貼り付けてまとめて追加</summary>
+          <textarea class="text" id="pasteText" rows="6" aria-label="機材の一覧" placeholder="Logicool MX Master 3S ¥16,500&#10;EDIFIER スピーカー ¥19,800&#10;HHKB Professional HYBRID Type-S"></textarea>
+          <div class="paste-actions">
+            <button class="btn primary" id="pasteAdd" type="button">一覧を追加</button>
+            <button class="btn ghost" id="copyPrompt" type="button">AI に頼む文をコピー</button>
+          </div>
+          <p class="fine">1行に1つ。ブランド・機材名・価格（¥ か 円 つき）を書くと分けて入ります。表計算ソフトやマークダウンの表からの貼り付けにも対応しています。追加したあとは、写真の上で順番にタップしていくだけです。</p>
+        </details>
       </section>
 
       <section class="card" aria-labelledby="annTitle">
@@ -1266,21 +1303,65 @@ function loadSample() {
 const PHOTO_KEY = 'desk-setup:photo:v1';
 const PHOTO_IMG_KEY = 'desk-setup:photo-img:v1';
 const PHOTO_MAX = 2400;
-let photo = { anns: [], font: 'hand', color: 'auto', size: 1, seq: 0 };
+let photo = { anns: [], pending: [], font: 'hand', color: 'auto', size: 1, seq: 0 };
 let photoImg = null;
-let armed = null;       // { item: id } か { custom: true }
+let armed = null;       // { item: id } / { pending: id } / { custom: true }
+let quick = null;       // 写真をタップして名前を入力している途中の位置 { x, y }
 let selAnn = null;
 let drag = null;
 let tab = 'list';
 
-const BRANDS = ['Apple', 'Dell', 'LG UltraGear', 'LG', 'ASUS ProArt', 'ASUS', 'Samsung', 'CalDigit', 'HHKB', 'REALFORCE', 'Keychron',
-  'Logicool', 'Sony', 'Creative', 'Elgato', 'Shure', 'BenQ', 'Philips Hue', 'Philips', 'Herman Miller', 'FlexiSpot', 'エルゴトロン', 'Amazonベーシック'];
+const BRANDS = ['Apple', 'Dell', 'LG UltraGear', 'LG', 'ASUS ProArt', 'ASUS ROG', 'ASUS', 'Samsung', 'BenQ', 'EIZO', 'MSI', 'Acer', 'Alienware',
+  'CalDigit', 'Anker', 'Belkin', 'UGREEN', 'HHKB', 'REALFORCE', 'Keychron', 'NuPhy', 'Wooting', 'Lofree', 'Razer', 'SteelSeries', 'HyperX', 'Corsair',
+  'Logicool G', 'Logicool', 'Logitech', 'Microsoft', 'Xbox', 'Nintendo', 'PlayStation', 'Kensington', 'ELECOM', 'エレコム', 'サンワサプライ', 'Pulsar', 'ZOWIE', 'Glorious',
+  'Sony', 'Bose', 'Sennheiser', 'audio-technica', 'オーディオテクニカ', 'Shure', 'RODE', 'Elgato', 'COMICA', 'FIFINE', 'Audient', 'Focusrite', 'Universal Audio', 'YAMAHA',
+  'Creative', 'EDIFIER', 'Kanto', 'Topping', 'FiiO', 'Insta360', 'Amazon', 'Google', 'Philips Hue', 'Philips', 'Nanoleaf', 'Govee', 'SwitchBot', 'BALMUDA', 'IKEA', 'nwm',
+  'Herman Miller', 'Steelcase', 'Sihoo', 'オカムラ', 'コクヨ', 'FlexiSpot', 'PREDUCTS', 'エルゴトロン', 'Ergotron', 'Amazonベーシック', 'グリーンファンニチャー', 'WALLHACK', 'Louis Poulsen'];
 function splitBrand(name) {
-  if (/^(MacBook|Mac |iPad|iPhone)/.test(name)) return ['Apple', name];
-  for (const b of BRANDS) if (name.startsWith(b + ' ')) return [b, name.slice(b.length + 1)];
+  name = name.trim();
+  if (/^(MacBook|Mac |iPad|iPhone|AirPods)/.test(name)) return ['Apple', name];
+  const low = name.toLowerCase();
+  for (const b of BRANDS) {
+    const bl = b.toLowerCase();
+    if (low.startsWith(bl + ' ') || low.startsWith(bl + '　')) return [name.slice(0, b.length), name.slice(b.length + 1).trim()];
+  }
   return ['', name];
 }
-// w: [名前, ブランド・価格] の太さ。load: 描く前に読み込んでおくフォント
+
+// 貼り付けた1行を { brand, name, price } に分ける
+const PRICE_RE = /(?:[¥￥]\s*[\d,，]+|[\d,，]+\s*円)(?:\s*[+＋]\s*(?:[¥￥]\s*[\d,，]+|[\d,，]+\s*円))*/;
+function normPrice(t) {
+  return (t.match(/[\d,，]+/g) || []).map(d => Number(d.replace(/[,，]/g, ''))).filter(n => n > 0).map(yen).join(' + ');
+}
+function parseLine(raw) {
+  let t = String(raw).replace(/^\s*(?:[-*・•●○◆◇■□►▶]+|\d+[.)．、]|[①-⑳])\s*/, '').trim();
+  if (!t || /^[\s|:\-–—=+]+$/.test(t)) return null;
+  let brand = '', name = '', price = '';
+  let fields = null;
+  if (t.includes('|')) fields = t.split('|');
+  else if (t.includes('\t')) fields = t.split('\t');
+  else if (/\s[\/／]\s/.test(t)) fields = t.split(/\s[\/／]\s/);
+  const HEAD = /^(ブランド|メーカー|機材|機材名|商品|商品名|名前|価格|値段|金額|カテゴリ|種類|brand|name|price|item)$/i;
+  if (fields) {
+    fields = fields.map(f => f.trim()).filter(Boolean);
+    if (fields.every(f => HEAD.test(f))) return null;
+    const i = fields.findIndex(f => (PRICE_RE.test(f) && f.replace(PRICE_RE, '').trim().length <= 3) || /^[\d,，]{3,}$/.test(f));
+    if (i >= 0) { price = normPrice(fields[i]); fields.splice(i, 1); }
+    if (!fields.length) return null;
+    if (fields.length >= 2) { brand = fields[0]; name = fields.slice(1).join(' '); }
+    else [brand, name] = splitBrand(fields[0]);
+  } else {
+    const m = t.match(PRICE_RE);
+    if (m) {
+      price = normPrice(m[0]);
+      t = (t.slice(0, m.index) + t.slice(m.index + m[0].length)).replace(/[\s:：\-–—(（]+$/, '').replace(/^[\s:：]+/, '').replace(/[（(]\s*[)）]/, '').trim();
+    }
+    [brand, name] = splitBrand(t);
+  }
+  if (!name || /^(ブランド|メーカー|機材|機材名|商品名|名前|価格|値段|brand|name|price)$/i.test(name)) return null;
+  return { brand, name, price };
+}
+
 const PFONTS = {
   hand:  { label: '手書き風',   note: 'Klee One',         stack: '"Klee One", "Noto Sans JP", sans-serif',         w: [600, 600], load: ['Klee One'] },
   pen:   { label: 'ペン字',     note: 'Yomogi',           stack: '"Yomogi", "Klee One", sans-serif',               w: [400, 400], load: ['Yomogi'] },
@@ -1322,6 +1403,7 @@ async function setPhotoFile(file) {
     for (const a of photo.anns) { a.tx *= sx; a.ty *= sy; a.lx *= sx; a.ly *= sy; }
   }
   photoImg = await loadImage(data);
+  if (!armed && photo.pending.length) armed = { pending: photo.pending[0].id };
   try { localStorage.setItem(PHOTO_IMG_KEY, data); }
   catch (e) { toast('写真が大きく、ブラウザに保存できませんでした。再読み込みすると消えます'); }
   savePhoto();
@@ -1468,6 +1550,11 @@ function drawPhoto(ctx, forExport) {
   }
   if (forExport) return;
   const k = stageScale();
+  if (quick) {
+    ctx.beginPath(); ctx.arc(quick.x, quick.y, 10 * k, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(43,179,163,.35)'; ctx.fill();
+    ctx.lineWidth = 2.5 * k; ctx.strokeStyle = '#2bb3a3'; ctx.stroke();
+  }
   photo.anns.forEach((a, i) => {
     const sel = a.id === selAnn, box = boxes[i];
     if (sel) {
@@ -1508,8 +1595,9 @@ function refreshText() { clearTimeout(fontT); redraw(); fontT = setTimeout(() =>
 
 function updateHint() {
   let t = '';
-  if (photoImg && armed) t = `「${armed.custom ? '自由なラベル' : (byId(armed.item) || {}).name || ''}」の場所をタップ`;
-  else if (photoImg && !photo.anns.length) t = `${matchMedia('(max-width: 900px)').matches ? '下' : '右'}のリストから機材を選んでください`;
+  const d = armed && labelSource(armed);
+  if (photoImg && d) t = `「${armed.custom ? '自由なラベル' : [d.brand, d.name].filter(Boolean).join(' ')}」の場所をタップ` + (armed.pending && photo.pending.length > 1 ? `（あと${photo.pending.length}件）` : '');
+  else if (photoImg && !photo.anns.length && !quick) t = '機材をタップすると、名前を入力してラベルを置けます';
   $('#stageHint').textContent = t;
 }
 
@@ -1545,10 +1633,12 @@ function renderPickList() {
   const placed = new Set(photo.anns.map(a => a.item).filter(Boolean));
   const items = state.items.filter(i => !placed.has(i.id));
   const btn = (attrs, label, pressed, cls = '') => `<button type="button" class="pick ${cls}" ${attrs} aria-pressed="${pressed}" title="${esc(label)}">${esc(label)}</button>`;
-  let html = items.map(i => btn(`data-arm="${i.id}"`, i.name, !!(armed && armed.item === i.id))).join('');
+  let html = photo.pending.map(p => btn(`data-arm-pending="${esc(p.id)}"`, [p.brand, p.name].filter(Boolean).join(' '), !!(armed && armed.pending === p.id), 'pend')).join('');
+  html += items.map(i => btn(`data-arm="${i.id}"`, i.name, !!(armed && armed.item === i.id))).join('');
   html += btn('data-arm-custom', '＋ 自由なラベル', !!(armed && armed.custom), 'custom');
-  if (!state.items.length) html = `<span class="hint">「構成リスト」で機材を追加すると、ここから選べます。</span> ` + html;
-  else if (!items.length) html = `<span class="hint">すべての機材を置きました。</span> ` + html;
+  if (photo.pending.length) html += ` <button type="button" class="link-btn" data-clear-pending>貼り付けた一覧を消す</button>`;
+  else if (!state.items.length) html = `<span class="hint">「構成リスト」の機材や、貼り付けた一覧がここに並びます。</span> ` + html;
+  else if (!items.length) html = `<span class="hint">構成リストの機材はすべて置きました。</span> ` + html;
   $('#pickList').innerHTML = html;
 }
 
@@ -1574,17 +1664,94 @@ function renderAnnList() {
   </div>`).join('');
 }
 
-function placeAt(x, y) {
-  const it = armed.item ? byId(armed.item) : null;
-  const [brand, name] = it ? splitBrand(it.name) : ['', 'ラベル'];
-  const a = { id: (photo.seq++).toString(36), item: it ? it.id : null, brand, name, price: it && it.price ? yen(it.price) : '', tx: x, ty: y, lx: 0, ly: 0, curve: 'a' };
+// ラベルの中身を決める。src は armed と同じ形か、{ data: { brand, name, price } }
+function labelSource(src) {
+  if (!src) return null;
+  if (src.data) return { item: null, ...src.data };
+  if (src.item) {
+    const it = byId(src.item); if (!it) return null;
+    const [brand, name] = splitBrand(it.name);
+    return { item: it.id, brand, name, price: it.price ? yen(it.price) : '' };
+  }
+  if (src.pending) {
+    const pd = photo.pending.find(x => x.id === src.pending); if (!pd) return null;
+    return { item: null, brand: pd.brand, name: pd.name, price: pd.price };
+  }
+  if (src.custom) return { item: null, brand: '', name: 'ラベル', price: '' };
+  return null;
+}
+function placeAt(x, y, src = armed) {
+  const d = labelSource(src);
+  if (!d) { armed = null; renderPhoto(); return; }
+  const a = { id: (photo.seq++).toString(36), item: d.item, brand: d.brand, name: d.name, price: d.price, tx: x, ty: y, lx: 0, ly: 0, curve: 'a' };
   photo.anns.push(a);
   const ctx = $('#photoCanvas').getContext('2d');
   const sp = bestSpot(a, photo.anns.filter(o => o !== a).map(o => labelBox(ctx, o)));
   a.lx = sp.x; a.ly = sp.y;
   selAnn = a.id; armed = null;
+  // 貼り付けた一覧から置いたときは、続けて次の機材を置けるようにする
+  if (src && src.pending) {
+    photo.pending = photo.pending.filter(p => p.id !== src.pending);
+    if (photo.pending.length) armed = { pending: photo.pending[0].id };
+  }
   savePhoto();
   renderPhoto();
+}
+
+// ---- 写真をタップして名前を入力 ----
+let quickSugg = [], quickSel = 0;
+function openQuick(p, e) {
+  quick = { x: p.x, y: p.y };
+  const box = $('#quick'), stage = $('#stage').getBoundingClientRect();
+  box.hidden = false;
+  const w = box.offsetWidth, h = 300;
+  let left = e.clientX - stage.left - 24, top = e.clientY - stage.top + 18;
+  left = Math.max(8, Math.min(stage.width - w - 8, left));
+  if (top + h > stage.height && e.clientY - stage.top - h - 18 > 0) top = e.clientY - stage.top - h - 18;
+  box.style.left = left + 'px'; box.style.top = Math.max(8, top) + 'px';
+  $('#quickInput').value = '';
+  renderQuick();
+  $('#quickInput').focus({ preventScroll: true });
+  redraw();
+}
+function closeQuick() {
+  if (!quick) return;
+  quick = null; $('#quick').hidden = true; redraw();
+}
+function renderQuick() {
+  const q = $('#quickInput').value.trim(), words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const hit = str => words.every(w => str.toLowerCase().includes(w));
+  const placed = new Set(photo.anns.map(a => a.item).filter(Boolean));
+  const out = [];
+  for (const pd of photo.pending) if (hit(pd.brand + ' ' + pd.name)) out.push({ src: { pending: pd.id }, label: [pd.brand, pd.name].filter(Boolean).join(' '), sub: '貼り付けた一覧' + (pd.price ? ' · ' + pd.price : '') });
+  for (const it of state.items) if (!placed.has(it.id) && hit(it.name)) out.push({ src: { item: it.id }, label: it.name, sub: '構成リスト' + (it.price ? ' · ' + yen(it.price) : '') });
+  if (words.length) for (const c of CATALOG) if (hit(c.name + ' ' + CAT_LABEL[c.cat])) {
+    const [brand, name] = splitBrand(c.name);
+    out.push({ src: { data: { brand, name, price: '' } }, label: c.name, sub: 'カタログ · ' + CAT_LABEL[c.cat] });
+  }
+  quickSugg = out.slice(0, 7);
+  if (q) {
+    const d = parseLine(q) || { brand: '', name: q, price: '' };
+    quickSugg.push({ src: { data: d }, label: `「${q}」で追加`, sub: [d.brand && 'ブランド: ' + d.brand, d.price && '価格: ' + d.price].filter(Boolean).join(' · ') || '入力したとおりの名前で追加' });
+  }
+  quickSel = 0;
+  $('#quickList').innerHTML = quickSugg.map((g, i) => `<button type="button" role="option" data-qi="${i}" aria-selected="${i === quickSel}"><b>${esc(g.label)}</b><small>${esc(g.sub)}</small></button>`).join('')
+    || `<div class="hint" style="padding:6px 8px">構成リストにない機材は、名前を入力して Enter</div>`;
+}
+function pickQuick(i) {
+  const g = quickSugg[i]; if (!g || !quick) return;
+  const { x, y } = quick;
+  closeQuick();
+  placeAt(x, y, g.src);
+}
+
+function addPasted(text) {
+  const rows = String(text).split(/\r?\n/).map(parseLine).filter(Boolean);
+  if (!rows.length) { toast('機材を読み取れませんでした。1行に1つずつ書いてください'); return 0; }
+  for (const r of rows) photo.pending.push({ id: 'p' + (photo.seq++).toString(36), ...r });
+  if (!armed && photoImg) armed = { pending: photo.pending[0].id };
+  savePhoto(); renderPhoto();
+  return rows.length;
 }
 
 function hitTest(p) {
@@ -1646,34 +1813,54 @@ function wirePhoto() {
   const cv = $('#photoCanvas');
   cv.addEventListener('pointerdown', e => {
     if (!photoImg) return;
+    if (quick) { closeQuick(); return; }
     const p = toPhoto(e), hit = hitTest(p);
     if (hit) {
-      drag = { a: hit.a, part: hit.part, dx: p.x - (hit.part === 'tip' ? hit.a.tx : hit.a.lx), dy: p.y - (hit.part === 'tip' ? hit.a.ty : hit.a.ly) };
+      // 機材を置いている途中なら、動かさずに離したときは新しいラベルを置く
+      drag = { a: hit.a, part: hit.part, dx: p.x - (hit.part === 'tip' ? hit.a.tx : hit.a.lx), dy: p.y - (hit.part === 'tip' ? hit.a.ty : hit.a.ly),
+        sx: e.clientX, sy: e.clientY, moved: false, place: armed ? p : null };
       cv.setPointerCapture(e.pointerId);
-      if (selAnn !== hit.a.id) selectAnn(hit.a.id);
+      if (!armed && selAnn !== hit.a.id) selectAnn(hit.a.id);
       return;
     }
     if (armed) { placeAt(p.x, p.y); return; }
-    if (selAnn) { selectAnn(null); return; }
-    toast(state.items.length ? 'ラベルにする機材を、先にリストから選んでください' : '「構成リスト」で機材を追加するか、「自由なラベル」を選んでください');
+    if (selAnn) selectAnn(null);
+    e.preventDefault();
+    openQuick(p, e);
   });
   cv.addEventListener('pointermove', e => {
     if (!drag) {
       if (photoImg && e.pointerType === 'mouse') { const h = hitTest(toPhoto(e)); cv.style.cursor = h ? (h.part === 'tip' ? 'grab' : 'move') : armed ? 'crosshair' : 'default'; }
       return;
     }
+    if (!drag.moved) {
+      if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 6) return;
+      drag.moved = true;
+      if (selAnn !== drag.a.id) selectAnn(drag.a.id);
+    }
     const p = toPhoto(e), W = photoImg.naturalWidth, H = photoImg.naturalHeight;
     const x = Math.min(W, Math.max(0, p.x - drag.dx)), y = Math.min(H, Math.max(0, p.y - drag.dy));
     if (drag.part === 'tip') { drag.a.tx = x; drag.a.ty = y; } else { drag.a.lx = x; drag.a.ly = y; }
     redraw();
   });
-  const end = () => { if (drag) { drag = null; savePhoto(); } };
+  const end = () => {
+    if (!drag) return;
+    const d = drag; drag = null;
+    if (!d.moved && d.place && armed) { placeAt(d.place.x, d.place.y); return; }
+    if (d.moved) savePhoto();
+  };
   cv.addEventListener('pointerup', end);
-  cv.addEventListener('pointercancel', end);
+  cv.addEventListener('pointercancel', () => { if (drag && drag.moved) savePhoto(); drag = null; });
 
   $('#pickList').addEventListener('click', e => {
+    if (e.target.closest('[data-clear-pending]')) {
+      if (!confirm('まだ置いていない、貼り付けた一覧を消しますか？')) return;
+      photo.pending = []; if (armed && armed.pending) armed = null;
+      savePhoto(); renderPhoto(); return;
+    }
     const b = e.target.closest('.pick'); if (!b) return;
     if (b.hasAttribute('data-arm-custom')) armed = armed && armed.custom ? null : { custom: true };
+    else if (b.dataset.armPending) armed = armed && armed.pending === b.dataset.armPending ? null : { pending: b.dataset.armPending };
     else armed = armed && armed.item === b.dataset.arm ? null : { item: b.dataset.arm };
     if (!photoImg && armed) toast('先に写真を選んでください');
     renderPickList(); updateHint();
@@ -1713,6 +1900,38 @@ function wirePhoto() {
   $('#sizeRange').addEventListener('change', savePhoto);
 
   $('#photoSave').addEventListener('click', exportPhoto);
+
+  const qi = $('#quickInput');
+  qi.addEventListener('input', renderQuick);
+  qi.addEventListener('keydown', e => {
+    if (e.isComposing) return;
+    const n = quickSugg.length;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault(); if (!n) return;
+      quickSel = (quickSel + (e.key === 'ArrowDown' ? 1 : n - 1)) % n;
+      $('#quickList').querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-selected', String(i === quickSel)));
+      $('#quickList').querySelectorAll('button')[quickSel].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter') { e.preventDefault(); pickQuick(quickSel); }
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeQuick(); }
+  });
+  $('#quickList').addEventListener('pointerdown', e => { if (e.target.closest('[data-qi]')) e.preventDefault(); });
+  $('#quickList').addEventListener('click', e => { const b = e.target.closest('[data-qi]'); if (b) pickQuick(Number(b.dataset.qi)); });
+  document.addEventListener('pointerdown', e => {
+    if (quick && !e.target.closest('#quick') && e.target !== $('#photoCanvas')) closeQuick();
+  });
+
+  $('#pasteAdd').addEventListener('click', () => {
+    const n = addPasted($('#pasteText').value);
+    if (!n) return;
+    $('#pasteText').value = '';
+    $('#pasteBox').open = false;
+    toast(photoImg ? `${n}件を追加しました。写真の上で順番にタップしてください` : `${n}件を追加しました。写真を選ぶと置けます`);
+  });
+  $('#copyPrompt').addEventListener('click', async () => {
+    const text = 'この写真に写っているデスクまわりの機材を、1行に1つずつ「ブランド 機材名 ¥価格」の形で書き出してください。ブランドや価格が分からないものは、その部分を省いてください。見出しや説明は付けず、一覧だけを出してください。';
+    try { await navigator.clipboard.writeText(text); toast('コピーしました。Claude などに写真と一緒に貼り付けてください'); }
+    catch (e) { prompt('この文をコピーしてください', text); }
+  });
   $('#autoLayout').addEventListener('click', () => {
     if (!photoImg || !photo.anns.length) { toast('先にラベルを置いてください'); return; }
     if (!confirm('ラベルの位置を自動で並べ直しますか？手で動かした位置は元に戻せません。')) return;
