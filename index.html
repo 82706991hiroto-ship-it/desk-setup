@@ -3,91 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>デスク構成ビルダー</title>
-<meta name="description" content="デスクの機材を並べるだけで、合計金額・カテゴリ別の内訳と、モニターの映り方・ポート数・給電W数の接続チェックまで。構成はURLでそのまま共有できます。登録不要・データは端末内にのみ保存。">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22%230f766e%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2214%22%20width%3D%2232%22%20height%3D%2220%22%20rx%3D%223%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%2230%22%20y%3D%2234%22%20width%3D%224%22%20height%3D%228%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%2210%22%20y%3D%2242%22%20width%3D%2244%22%20height%3D%225%22%20rx%3D%222%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E">
+<title>デスクレシピメーカー｜DESK / RECIPE MAKER</title>
+<meta name="description" content="機材を並べて、写真に機材名と価格を書き込んで、#デスクレシピ をつくる。モニターの映り方・ポート数・給電の接続チェックや、ブログ用の一覧の書き出しも。登録不要・データは端末内にのみ保存。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23111317%22%2F%3E%3Cpolygon%20points%3D%2237%2C9%2047%2C9%2027%2C55%2017%2C55%22%20fill%3D%22%23c8ff2e%22%2F%3E%3C%2Fsvg%3E">
 <meta property="og:type" content="website">
-<meta property="og:title" content="デスク構成ビルダー">
-<meta property="og:description" content="デスクの機材を並べるだけで、合計金額と接続チェック（モニターの映り方・ポート数・給電W数）まで。構成はURLでそのまま共有できます。">
+<meta property="og:title" content="デスクレシピメーカー｜DESK / RECIPE MAKER">
+<meta property="og:description" content="機材を並べて、写真に機材名と価格を書き込んで、#デスクレシピ をつくる。接続チェックやブログ用の書き出しも。登録不要・無料。">
 <meta property="og:url" content="https://82706991hiroto-ship-it.github.io/desk-setup/">
 <meta property="og:image" content="https://82706991hiroto-ship-it.github.io/desk-setup/og.png">
-<meta property="og:site_name" content="デスク構成ビルダー">
+<meta property="og:site_name" content="デスクレシピメーカー">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0f1114">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Klee+One:wght@400;600&family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@500;700&family=Yomogi&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600;700&family=Klee+One:wght@400;600&family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@500;700&family=Yomogi&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    color-scheme: light;
-    --font-sans: "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", sans-serif;
-    --page: #f5f4f0;
-    --card: #ffffff;
-    --text: #22262a;
-    --text-2: #59616b;
-    --muted: #949ba4;
-    --line: #e6e4de;
-    --field: #f3f2ee;
-    --accent: #0f766e;
-    --accent-ink: #ffffff;
-    --accent-soft: #e3f2ef;
-    --good: #15803d;  --good-soft: #e8f5ec;
-    --warn: #b45309;  --warn-soft: #fcf1e1;
-    --crit: #dc2626;  --crit-soft: #fdecec;
-    --info: #57606a;  --info-soft: #eef0f2;
-    --bar: #0f766e;
-    --radius: 12px;
-    --radius-lg: 18px;
-    --shadow: 0 4px 16px rgba(40,36,28,.06);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --page: #141517;
-      --card: #1c1e21;
-      --text: #ecedef;
-      --text-2: #aab0b8;
-      --muted: #7b828c;
-      --line: #2c2f34;
-      --field: #25282c;
-      --accent: #2bb3a3;
-      --accent-ink: #0b1614;
-      --accent-soft: #173330;
-      --good: #4ade80;  --good-soft: #16291d;
-      --warn: #f5a524;  --warn-soft: #33260f;
-      --crit: #f87171;  --crit-soft: #361a1a;
-      --info: #aab0b8;  --info-soft: #25282c;
-      --bar: #2bb3a3;
-      --shadow: none;
-    }
-  }
-  :root[data-theme="dark"] {
     color-scheme: dark;
-    --page: #141517; --card: #1c1e21; --text: #ecedef; --text-2: #aab0b8; --muted: #7b828c;
-    --line: #2c2f34; --field: #25282c; --accent: #2bb3a3; --accent-ink: #0b1614; --accent-soft: #173330;
-    --good: #4ade80; --good-soft: #16291d; --warn: #f5a524; --warn-soft: #33260f;
-    --crit: #f87171; --crit-soft: #361a1a; --info: #aab0b8; --info-soft: #25282c; --bar: #2bb3a3; --shadow: none;
+    --font-sans: "Noto Sans JP", system-ui, -apple-system, "Hiragino Sans", sans-serif;
+    --font-display: "Bebas Neue", "Noto Sans JP", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --page: #0f1114;
+    --card: #16191d;
+    --text: #eef1f3;
+    --text-2: #a9b1b8;
+    --muted: #6f7880;
+    --line: #262b31;
+    --field: #1d2126;
+    --accent: #c8ff2e;
+    --accent-ink: #0f1114;
+    --accent-soft: #232d12;
+    --good: #7ee787;  --good-soft: #14261a;
+    --warn: #ffb547;  --warn-soft: #2e2311;
+    --crit: #ff6b5b;  --crit-soft: #331a19;
+    --info: #a9b1b8;  --info-soft: #1d2126;
+    --bar: #c8ff2e;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --shadow: none;
+    --grid: rgba(255,255,255,.028);
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0; background: var(--page); color: var(--text);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px; background-attachment: fixed;
     font-family: var(--font-sans); font-size: 14px; line-height: 1.6;
   }
   button, input, select { font: inherit; color: inherit; }
   button { cursor: pointer; }
   .wrap { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
 
-  header.top { padding: 28px 0 18px; display: flex; gap: 16px; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; }
-  .brand h1 { margin: 0; font-size: 22px; letter-spacing: .02em; }
-  .brand p { margin: 4px 0 0; color: var(--text-2); font-size: 13px; }
+  header.top { padding: 34px 0 22px; display: flex; gap: 16px; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; }
+  .brand .pre { font: 400 12px var(--font-mono); color: var(--accent); margin-bottom: 10px; letter-spacing: .02em; }
+  .logo { margin: 0; display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; font-weight: 400; }
+  .logo .word { font: 400 68px/.82 var(--font-display); letter-spacing: .01em; }
+  .logo .word span { color: var(--accent); }
+  .logo .maker { font: 700 11px var(--font-mono); letter-spacing: .42em; background: var(--accent); color: var(--accent-ink); padding: 5px 4px 5px 10px; margin-bottom: 6px; }
+  .brand p { margin: 14px 0 0; color: var(--text-2); font-size: 13px; }
+  .brand p .jp { letter-spacing: .3em; color: var(--text); font-weight: 500; margin-right: 10px; }
+  @media (max-width: 560px) { .logo .word { font-size: 50px; } }
   .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
   .btn {
-    border: 1px solid var(--line); background: var(--card); border-radius: 999px;
-    padding: 7px 14px; font-size: 13px; font-weight: 500; line-height: 1.3;
+    border: 1px solid var(--line); background: var(--card); border-radius: 6px;
+    padding: 8px 14px; font-size: 13px; font-weight: 500; line-height: 1.3;
   }
   .btn:hover { border-color: var(--muted); }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
   .btn.primary:hover { filter: brightness(1.05); }
   .btn.ghost { background: transparent; }
   .btn.block { width: 100%; border-radius: 10px; padding: 10px 14px; }
@@ -296,7 +280,7 @@
   .empty p { margin: 0 0 14px; }
 
   /* サイド */
-  .total-num { font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: .01em; line-height: 1.2; }
+  .total-num { font: 400 56px/1 var(--font-display); letter-spacing: .02em; font-variant-numeric: tabular-nums; }
   .total-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
   .bars { margin-top: 14px; display: grid; gap: 8px; }
   .bar-row { display: grid; grid-template-columns: 96px minmax(0, 1fr) 76px; gap: 8px; align-items: center; font-size: 12px; }
@@ -335,8 +319,9 @@
 <div class="wrap">
   <header class="top">
     <div class="brand">
-      <h1>デスク構成ビルダー</h1>
-      <p>機材を並べると、合計金額と接続チェック（映り方・ポート数・給電）が出ます。</p>
+      <div class="pre" aria-hidden="true">// desk_recipe/maker</div>
+      <h1 class="logo" aria-label="デスクレシピメーカー（DESK / RECIPE MAKER）"><span class="word" aria-hidden="true">DESK <span>/</span> RECIPE</span><span class="maker" aria-hidden="true">MAKER</span></h1>
+      <p><span class="jp">デスクレシピメーカー</span>機材を並べて、接続を確かめて、写真に書き込んで #デスクレシピ をつくる。</p>
     </div>
     <div class="top-actions" id="listActions">
       <button class="btn ghost" id="sampleBtn" type="button">サンプルを見る</button>
@@ -1222,48 +1207,55 @@ function syncHead() { $('#title').value = state.title; $('#handle').value = stat
 
 // ---- 画像カード ----
 async function drawCard() {
-  try { await document.fonts.load('700 20px "Noto Sans JP"'); await document.fonts.ready; } catch (e) {}
+  try {
+    await Promise.all(['700 20px "Noto Sans JP"', '400 40px "Bebas Neue"', '400 14px "JetBrains Mono"'].map(f => document.fonts.load(f)));
+    await document.fonts.ready;
+  } catch (e) {}
   const W = 1200, H = 675, S = 2;
   const cv = document.createElement('canvas'); cv.width = W * S; cv.height = H * S;
   const x = cv.getContext('2d'); x.scale(S, S);
   const F = '"Noto Sans JP", "Hiragino Sans", system-ui, sans-serif';
-  const C = { page: '#efece4', card: '#ffffff', text: '#22262a', sub: '#59616b', muted: '#949ba4', line: '#e6e4de', accent: '#0f766e', warn: '#b45309', crit: '#dc2626', good: '#15803d' };
+  const D = '"Bebas Neue", "Noto Sans JP", sans-serif';
+  const M = '"JetBrains Mono", ui-monospace, monospace';
+  const C = { page: '#0f1114', text: '#eef1f3', sub: '#a9b1b8', muted: '#6f7880', line: '#262b31', accent: '#c8ff2e', warn: '#ffb547', crit: '#ff6b5b', good: '#7ee787' };
   const rr = (X, Y, w, h, r) => { x.beginPath(); x.roundRect(X, Y, w, h, r); };
   const fit = (t, w) => { if (x.measureText(t).width <= w) return t; while (t && x.measureText(t + '…').width > w) t = t.slice(0, -1); return t + '…'; };
 
   x.fillStyle = C.page; x.fillRect(0, 0, W, H);
-  x.fillStyle = C.card; rr(32, 32, W - 64, H - 64, 24); x.fill();
+  x.strokeStyle = 'rgba(255,255,255,.035)'; x.lineWidth = 1;
+  for (let g = 32; g < W; g += 32) { x.beginPath(); x.moveTo(g + .5, 0); x.lineTo(g + .5, H); x.stroke(); }
+  for (let g = 32; g < H; g += 32) { x.beginPath(); x.moveTo(0, g + .5); x.lineTo(W, g + .5); x.stroke(); }
 
   x.textBaseline = 'alphabetic';
-  x.fillStyle = C.accent; x.font = `700 15px ${F}`; x.fillText('MY DESK SETUP', 72, 92);
-  x.fillStyle = C.text; x.font = `700 36px ${F}`; x.fillText(fit(state.title || '私のデスク', 700), 72, 140);
-  if (state.handle) { x.fillStyle = C.sub; x.font = `400 18px ${F}`; x.fillText('@' + state.handle.replace(/^@/, ''), 72, 172); }
+  x.fillStyle = C.accent; x.font = `400 14px ${M}`; x.fillText('// my_desk_recipe', 64, 84);
+  x.fillStyle = C.text; x.font = `700 38px ${F}`; x.fillText(fit(state.title || '私のデスク', 700), 64, 134);
+  if (state.handle) { x.fillStyle = C.sub; x.font = `400 16px ${M}`; x.fillText('@' + state.handle.replace(/^@/, ''), 64, 166); }
 
   const total = sumPrice(state.items);
   x.textAlign = 'right';
-  x.fillStyle = C.muted; x.font = `500 15px ${F}`; x.fillText(`${state.items.length}点の合計`, W - 72, 92);
-  x.fillStyle = C.text; x.font = `700 44px ${F}`; x.fillText(total ? yen(total) : '—', W - 72, 142);
+  x.fillStyle = C.muted; x.font = `400 13px ${M}`; x.fillText(`TOTAL / ${state.items.length} ITEMS`, W - 64, 84);
+  x.fillStyle = C.text; x.font = `400 76px ${D}`; x.fillText(total ? yen(total) : '—', W - 64, 150);
   x.textAlign = 'left';
 
-  x.strokeStyle = C.line; x.lineWidth = 1; x.beginPath(); x.moveTo(72, 200); x.lineTo(W - 72, 200); x.stroke();
+  x.strokeStyle = C.line; x.lineWidth = 1; x.beginPath(); x.moveTo(64, 196.5); x.lineTo(W - 64, 196.5); x.stroke();
 
   const rows = [];
   for (const c of CATS) for (const it of state.items.filter(i => i.cat === c.id)) rows.push({ cat: c.label, name: it.name, price: it.price });
-  const perCol = 12, colW = (W - 144 - 48) / 2, top = 238, lh = 29;
+  const perCol = 12, colW = (W - 128 - 48) / 2, top = 236, lh = 29;
   const maxRows = perCol * 2;
   const shown = rows.length > maxRows ? rows.slice(0, maxRows - 1) : rows;
   shown.forEach((r, i) => {
     const col = Math.floor(i / perCol), row = i % perCol;
-    const X = 72 + col * (colW + 48), Y = top + row * lh;
+    const X = 64 + col * (colW + 48), Y = top + row * lh;
     x.fillStyle = C.muted; x.font = `500 13px ${F}`; x.fillText(fit(r.cat, 110), X, Y);
     const priceTxt = r.price ? yen(r.price) : '';
-    x.font = `400 15px ${F}`;
+    x.font = `400 13px ${M}`;
     const pw = priceTxt ? x.measureText(priceTxt).width + 12 : 0;
-    x.fillStyle = C.text; x.fillText(fit(r.name, colW - 118 - pw), X + 118, Y);
-    if (priceTxt) { x.textAlign = 'right'; x.fillStyle = C.sub; x.fillText(priceTxt, X + colW, Y); x.textAlign = 'left'; }
+    x.fillStyle = C.text; x.font = `400 15px ${F}`; x.fillText(fit(r.name, colW - 118 - pw), X + 118, Y);
+    if (priceTxt) { x.textAlign = 'right'; x.fillStyle = C.sub; x.font = `400 13px ${M}`; x.fillText(priceTxt, X + colW, Y); x.textAlign = 'left'; }
   });
   if (rows.length > maxRows) {
-    const i = maxRows - 1, X = 72 + Math.floor(i / perCol) * (colW + 48), Y = top + (i % perCol) * lh;
+    const i = maxRows - 1, X = 64 + Math.floor(i / perCol) * (colW + 48), Y = top + (i % perCol) * lh;
     x.fillStyle = C.muted; x.font = `500 15px ${F}`; x.fillText(`ほか ${rows.length - shown.length}点`, X + 118, Y);
   }
 
@@ -1273,11 +1265,23 @@ async function drawCard() {
   const color = e ? C.crit : w ? C.warn : C.good;
   x.font = `500 14px ${F}`;
   const lw = x.measureText(label).width + 28;
-  x.fillStyle = color + '1a'; rr(72, H - 102, lw, 32, 16); x.fill();
-  x.fillStyle = color; x.fillText(label, 86, H - 81);
-  x.textAlign = 'right'; x.fillStyle = C.muted; x.font = `400 14px ${F}`;
-  x.fillText('デスク構成ビルダー', W - 72, H - 81);
+  x.fillStyle = color + '24'; rr(64, H - 96, lw, 32, 6); x.fill();
+  x.fillStyle = color; x.fillText(label, 78, H - 75);
+
+  // ロゴ: DESK / RECIPE  MAKER
   x.textAlign = 'left';
+  x.font = `700 11px ${M}`;
+  const mk = 'M A K E R', mkW = x.measureText(mk).width + 16;
+  x.font = `400 34px ${D}`;
+  const p1 = 'DESK ', p2 = '/', p3 = ' RECIPE';
+  const w1 = x.measureText(p1).width, w2 = x.measureText(p2).width, w3 = x.measureText(p3).width;
+  let lx = W - 64 - mkW - 10 - (w1 + w2 + w3);
+  const ly = H - 66;
+  x.fillStyle = C.text; x.fillText(p1, lx, ly); lx += w1;
+  x.fillStyle = C.accent; x.fillText(p2, lx, ly); lx += w2;
+  x.fillStyle = C.text; x.fillText(p3, lx, ly); lx += w3 + 10;
+  x.fillStyle = C.accent; x.fillRect(lx, ly - 20, mkW, 20);
+  x.fillStyle = C.page; x.font = `700 11px ${M}`; x.fillText(mk, lx + 8, ly - 6);
   return cv;
 }
 
@@ -1390,7 +1394,7 @@ function wire() {
   $('#postBtn').addEventListener('click', async () => {
     const url = await shareUrl();
     const total = sumPrice(state.items);
-    const text = `${state.title || '私のデスク'}（${state.items.length}点${total ? '・合計' + yen(total) : ''}）\n#デスクツアー #デスク環境`;
+    const text = `${state.title || '私のデスク'}（${state.items.length}点${total ? '・合計' + yen(total) : ''}）\n#デスクレシピ #デスクツアー`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'noopener');
   });
   $('#imgBtn').addEventListener('click', async () => {
@@ -1694,20 +1698,20 @@ function drawPhoto(ctx, forExport) {
   const k = stageScale();
   if (quick) {
     ctx.beginPath(); ctx.arc(quick.x, quick.y, 10 * k, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(43,179,163,.35)'; ctx.fill();
-    ctx.lineWidth = 2.5 * k; ctx.strokeStyle = '#2bb3a3'; ctx.stroke();
+    ctx.fillStyle = 'rgba(200,255,46,.3)'; ctx.fill();
+    ctx.lineWidth = 2.5 * k; ctx.strokeStyle = '#c8ff2e'; ctx.stroke();
   }
   photo.anns.forEach((a, i) => {
     const sel = a.id === selAnn, box = boxes[i];
     if (sel) {
       ctx.save();
-      ctx.setLineDash([6 * k, 5 * k]); ctx.lineWidth = 1.5 * k; ctx.strokeStyle = '#2bb3a3';
+      ctx.setLineDash([6 * k, 5 * k]); ctx.lineWidth = 1.5 * k; ctx.strokeStyle = '#c8ff2e';
       const p = 8 * k;
       ctx.strokeRect(box.x - p, box.y - p, box.w + p * 2, box.h + p * 2);
       ctx.restore();
     }
     ctx.beginPath(); ctx.arc(a.tx, a.ty, (sel ? 9 : 6) * k, 0, Math.PI * 2);
-    ctx.fillStyle = sel ? '#2bb3a3' : 'rgba(43,179,163,.55)'; ctx.fill();
+    ctx.fillStyle = sel ? '#c8ff2e' : 'rgba(200,255,46,.55)'; ctx.fill();
     ctx.lineWidth = 2 * k; ctx.strokeStyle = '#fff'; ctx.stroke();
   });
 }
