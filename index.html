@@ -287,6 +287,7 @@
   .spec-grid select.text { padding-right: 28px; }
 
   .spec-grid .full { grid-column: 1 / -1; }
+  .spec-grid.dim-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .badges { display: flex; gap: 6px; flex-wrap: wrap; }
   .badge { font-size: 11px; border-radius: 999px; padding: 1px 8px; background: var(--field); color: var(--text-2); }
   .memo { font-size: 12px; color: var(--text-2); overflow-wrap: anywhere; }
@@ -821,7 +822,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 
 function newItem(cat, name, spec, cid) {
   return { id: (state.seq++).toString(36), cid: cid || null, cat, name, price: null, spec: clone(spec), link: null, power: 'auto', clam: false,
-    pkind: 'paid', pdate: '', tot: '', memo: '', links: [] };
+    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null };
 }
 function addFromCatalog(cid) {
   const c = catalogById(cid);
@@ -1229,6 +1230,17 @@ function itemHTML(it, checks) {
       <span class="hint">購入先のリンクは共有リンクには入りません。「記事用に書き出す」でだけ使います。</span>
     </div></details>`);
 
+  if (!DESK_SKIP.has(it.cat)) {
+    const bd = baseDims(it), u = it.dim || [], nf = v => String(r1(v));
+    const src = it.cid && CATALOG_DIM[it.cid] ? 'カタログの実寸' : '名前と種類からの目安';
+    const k = kindOf(it);
+    const note = k === 'monitor' || k === 'portable' ? 'モニターはスタンド込みの大きさで、高さは机から画面の上端まで（一番低くしたとき）です。'
+      : k === 'laptop' ? 'ノートPCの高さは閉じたときの厚さです。' : '';
+    parts.push(`<details class="more"${it._open3 ? ' open' : ''} data-open3="${it.id}"><summary>大きさ（配置図・3D）${it.dim ? ' ・ 入力済み' : ''}</summary><div class="spec-grid dim-grid">
+      ${['幅', '奥行', '高さ'].map((l, i) => `<label>${l} (cm)<input class="text" data-dim="${i}" inputmode="decimal" value="${u[i] > 0 ? nf(u[i]) : ''}" placeholder="${nf(bd[i])}"></label>`).join('')}
+      <span class="hint full">空欄のところは${src}（${bd.map(nf).join(' × ')} cm）を使います。${note}</span>
+    </div></details>`);
+  }
   if (it.cat === 'monitor') {
     const s = it.spec;
     const resOpts = Object.entries(RES_NAME).map(([k, v]) => `<option value="${k}"${k === `${s.w}x${s.h}` ? ' selected' : ''}>${v}（${k.replace('x', '×')}）</option>`).join('')
@@ -1347,6 +1359,7 @@ function serialize(forShare = false) {
       if (it.tot) o.tt = it.tot;
       if (it.memo) o.me = it.memo;
       if (it.pos) o.ps = [Math.round(it.pos.x * 10) / 10, Math.round(it.pos.y * 10) / 10];
+      if (it.dim) o.sz = it.dim;
       if (!forShare && it.links && it.links.length) o.ln = it.links.map(l => [l.s, l.u]);
       return o;
     }),
@@ -1375,6 +1388,7 @@ function deserialize(o) {
       tot: TOT_LABEL[x.tt] ? x.tt : '', memo: String(x.me || '').slice(0, 80),
       links: cleanLinks(Array.isArray(x.ln) ? x.ln.map(l => ({ s: l && l[0], u: l && l[1] })) : []),
       pos: Array.isArray(x.ps) && x.ps.every(Number.isFinite) ? { x: x.ps[0], y: x.ps[1] } : null,
+      dim: cleanDim(x.sz),
     });
   }
   st.seq = max + 1;
@@ -1566,6 +1580,8 @@ function wire() {
   list.addEventListener('toggle', e => {
     const d2 = e.target.closest('details[data-open2]');
     if (d2) { const it = byId(d2.dataset.open2); if (it) it._open2 = d2.open; return; }
+    const d3 = e.target.closest('details[data-open3]');
+    if (d3) { const it = byId(d3.dataset.open3); if (it) it._open3 = d3.open; return; }
     const d = e.target.closest('details[data-open]'); if (!d) return;
     const it = byId(d.dataset.open); if (it) it._open = d.open;
   }, true);
@@ -1596,6 +1612,13 @@ function wire() {
       commit(true); return;
     }
     if (e.target.dataset.f === 'memo') { commit(true); return; }
+    if (e.target.dataset.dim) {
+      const it = byId(e.target.closest('.item').dataset.id); if (!it) return;
+      const n = parseFloat(e.target.value.replace(/[^\d.]/g, '')), d = (it.dim || [null, null, null]).slice();
+      d[Number(e.target.dataset.dim)] = n > 0 ? n : null;
+      if (e.target.value.trim() && !(n > 0 && n <= 400)) toast('大きさは 0〜400cm の数字で入れてください');
+      it.dim = cleanDim(d); it._open3 = true; commit(true); return;
+    }
     const f = e.target.dataset.f, card = e.target.closest('.item'); if (!f || !card) return;
     const it = byId(card.dataset.id); if (!it) return;
     const v = e.target.value, s = it.spec;
@@ -2587,34 +2610,89 @@ let deskDrag = null;
 const DESK_SKIP = new Set(['furniture', 'arm']);
 
 // 真上から見た大きさ（cm）
-function footprint(it) {
+// ---- 機材の大きさ（cm） ----
+// 自分で入れた値 → カタログの実寸 → 名前と種類からの目安、の順に使う
+// 並びはどれも [幅, 奥行, 高さ]。モニターはスタンド込みで、高さは机から画面の上端まで（一番低くしたとき）。
+// ノートPCの高さは閉じたときの厚さ。
+const CATALOG_DIM = {
+  'mba-m2': [30.4, 21.5, 1.1], 'mba-m3': [30.4, 21.5, 1.1], 'mba-m4': [30.4, 21.5, 1.1],
+  'mbp14-m4': [31.3, 22.1, 1.6], 'mbp14-m4pro': [31.3, 22.1, 1.6],
+  'mbp16-m4pro': [35.6, 24.8, 1.7], 'mbp16-m4max': [35.6, 24.8, 1.7],
+  'macmini-m4': [12.7, 12.7, 5], 'macmini-m4pro': [12.7, 12.7, 5], 'macstudio-m4max': [19.7, 19.7, 9.5],
+  'studio-display': [62.3, 16.8, 47.8],
+  'u2723qe': [61.1, 18.5, 38.5],
+  'caldigit-ts4': [14, 11.3, 4.2],
+  'hhkb-hybrid': [29.4, 12, 4], 'mx-keys-s': [43, 13.2, 2.1], 'mx-mech-mini': [31.3, 13.2, 2.6], 'magic-kb': [27.9, 11.5, 1.1],
+  'mx-master-3s': [8.4, 12.5, 5.1], 'mx-ergo-s': [10, 13.3, 5.1], 'gpx-sl2': [6.4, 12.5, 4], 'magic-trackpad': [16, 11.5, 1.1], 'magic-mouse': [5.7, 11.4, 2.2],
+  'c920n': [9.4, 7.1, 4.3],
+  'screenbar-halo': [50, null, null],
+  'apple-96w': [8, 8, 2.9],
+};
+const MIC_RE = /マイク|\bmic(rophone)?\b|MV7|Wave:?\s?\d|Yeti|SM7|NT-USB/i;
+// 形の種類（大きさではなく、カテゴリと名前で決める）
+function kindOf(it) {
   const n = it.name;
   switch (it.cat) {
-    case 'computer':
-      if (/mini/i.test(n)) return [13, 13];
-      if (/Studio/i.test(n)) return [20, 20];
-      if (/デスクトップ|desktop|tower/i.test(n)) return [22, 45];
-      return [31, 22];
-    case 'monitor': {
-      const s = it.spec, w = s.w, h = s.h, r = w / h;
-      if (/モバイル|portable/i.test(n)) return [36, 6];
-      if (r > 3) return [115, 9];
-      if (r > 2.2) return [82, 9];
-      return [w >= 3800 ? 62 : 58, 8];
-    }
-    case 'dock': return [14, 8];
-    case 'charger': return [8, 8];
-    case 'keyboard': return /mini|HHKB|60|65/i.test(n) ? [30, 12] : [37, 13];
-    case 'mouse': return /trackpad|トラックパッド/i.test(n) ? [16, 11] : [7, 12];
-    case 'audio':
-      if (/ヘッドホン|WH-|headphone/i.test(n)) return [18, 9];
-      if (/インターフェース|interface/i.test(n)) return [18, 12];
-      return [12, 15];
-    case 'camera': return /カメラ|cam|C9/i.test(n) ? [10, 5] : [9, 9];
-    case 'lighting': return /ScreenBar|バー/i.test(n) ? [48, 6] : [15, 15];
-    case 'mobile': return /iPad/i.test(n) ? [18, 25] : /スタンド|3-in-1/i.test(n) ? [12, 12] : [8, 16];
-    default: return [12, 12];
+    case 'computer': return /デスクトップ|desktop|tower|タワー/i.test(n) ? 'tower' : /mini|Studio|NUC|ミニPC/i.test(n) ? 'smallpc' : 'laptop';
+    case 'monitor': return /モバイル|portable/i.test(n) ? 'portable' : 'monitor';
+    case 'mouse': return /trackpad|トラックパッド/i.test(n) ? 'trackpad' : 'mouse';
+    case 'audio': return /ヘッドホン|ヘッドフォン|WH-|headphone/i.test(n) ? 'headphones' : /インターフェース|interface/i.test(n) ? 'interface' : MIC_RE.test(n) ? 'mic' : 'speaker';
+    case 'camera': return MIC_RE.test(n) ? 'mic' : 'webcam';
+    case 'lighting': return /ScreenBar|モニターライト|monitor ?light/i.test(n) ? 'monbar' : /ライトバー|light ?bar|Play/i.test(n) ? 'lightbar' : 'lamp';
+    case 'mobile': return /iPad|タブレット|tablet/i.test(n) ? 'tablet' : /スタンド|3-in-1|stand/i.test(n) ? 'stand' : 'phone';
+    default: return it.cat;   // keyboard, dock, charger など
   }
+}
+// 名前からインチ数を読む（27" / 27インチ / 27型、Dell U27xx、LG 27UP850 など）
+function inchOf(n) {
+  const m = n.match(/(\d{2}(?:\.\d)?)\s*(?:"|”|″|インチ|型)/) || n.match(/\bU(\d{2})\d{2}/) || n.match(/\b(\d{2})[A-Z]{2}\d{2,3}/) || n.match(/\bPA(\d{2})\d/);
+  const v = m ? parseFloat(m[1]) : 0;
+  return v >= 10 && v <= 65 ? v : 0;
+}
+const r1 = v => Math.round(v * 10) / 10;
+function guessDims(it) {
+  const n = it.name, k = kindOf(it), inch = inchOf(n);
+  switch (k) {
+    case 'monitor': case 'portable': {
+      // 画面の対角と縦横比から、枠を少し足して幅と高さを出す
+      const s = it.spec, r = s.w / s.h;
+      const diag = inch || (k === 'portable' ? 15.6 : r > 3 ? 49 : r > 2.2 ? 34 : s.w <= 1920 ? 24 : 27);
+      const hcm = diag * 2.54 / Math.hypot(r, 1), pw = r1(hcm * r + 1.4), ph = hcm + 2.4;
+      return k === 'portable' ? [pw, 12, r1(ph + 1)] : [pw, 20, r1(ph + 9)];
+    }
+    case 'laptop': {
+      const t = { 13: [30.4, 21.5], 14: [31.3, 22.1], 15: [34.4, 23.8], 16: [35.6, 24.8] }[Math.round(inch)] || (/Air/.test(n) ? [30.4, 21.5] : [31, 22]);
+      return [...t, 1.6];
+    }
+    case 'smallpc': return /Studio/i.test(n) ? [19.7, 19.7, 9.5] : [13, 13, 5];
+    case 'tower': return [22, 45, 45];
+    case 'keyboard': return /mini|HHKB|60|65|75/i.test(n) ? [30, 12, 3] : /TKL|テンキーレス|80%/i.test(n) ? [36, 14, 3] : [44, 14, 3];
+    case 'mouse': return [6.5, 12, 4];
+    case 'trackpad': return [16, 11.5, 1];
+    case 'speaker': return [12, 15, 20];
+    case 'headphones': return [18, 9, 8];
+    case 'interface': return [18, 12, 5];
+    case 'mic': return [10, 10, 20];
+    case 'webcam': return [10, 5, 4];
+    case 'monbar': return [48, 6, 3];
+    case 'lightbar': return [5, 5, 25];
+    case 'lamp': return [15, 15, 35];
+    case 'tablet': return [18, 25, .7];
+    case 'stand': return [12, 12, 14];
+    case 'phone': return [7.5, 15.5, .8];
+    case 'dock': return [14, 8, 3];
+    case 'charger': return [8, 8, 3];
+    default: return [12, 12, 6];
+  }
+}
+// 自分で入れた値がないときに使う大きさ
+function baseDims(it) { const g = guessDims(it), c = it.cid && CATALOG_DIM[it.cid]; return g.map((v, i) => c && c[i] > 0 ? c[i] : v); }
+function dims(it) { const b = baseDims(it), u = it.dim || []; return b.map((v, i) => u[i] > 0 ? u[i] : v); }
+function footprint(it) { const [w, d] = dims(it); return [w, d]; }
+function cleanDim(a) {
+  if (!Array.isArray(a) || a.length !== 3) return null;
+  const v = a.map(x => Number.isFinite(x) && x > 0 && x <= 400 ? r1(x) : null);
+  return v.some(x => x) ? v : null;
 }
 
 // 置き場所が決まっていない機材を、それらしく並べる
@@ -2625,23 +2703,27 @@ function autoDesk(items, W, D, fixed) {
   const mons = by('monitor');
   const monW = mons.reduce((s, m) => s + fp.get(m.id)[0], 0) + Math.max(0, mons.length - 1) * 4;
   let mx = W / 2 - monW / 2;
-  for (const m of mons) { const [w, h] = fp.get(m.id); put(m, mx + w / 2, 12 + h / 2); mx += w + 4; }
+  for (const m of mons) { const [w, h] = fp.get(m.id); put(m, mx + w / 2, 4 + h / 2); mx += w + 4; }
   const left = W / 2 - monW / 2, right = W / 2 + monW / 2;
-  const spk = by('audio').filter(a => fp.get(a.id)[0] === 12).slice(0, 2);
-  spk.forEach((a, i) => put(a, i ? (right + 10 <= W - 6 ? right + 10 : W + 10) : (left - 10 >= 6 ? left - 10 : -10), 14));
+  const kind = c => items.filter(i => kindOf(i) === c);
+  const spk = kind('speaker').slice(0, 2);
+  spk.forEach((a, i) => { const hw = fp.get(a.id)[0] / 2 + 4; put(a, i ? (right + hw <= W - 6 ? right + hw : W + 10) : (left - hw >= 6 ? left - hw : -10), 14); });
   if (mons[0]) {
-    const m0 = pos.get(mons[0].id);
-    by('camera').forEach((c, i) => put(c, m0.x + 32 + i * 14, m0.y - 7));
-    by('lighting').filter(l => fp.get(l.id)[0] > 30).forEach(l => put(l, m0.x, m0.y - 8));
+    const m0 = pos.get(mons[0].id), py = m0.y - fp.get(mons[0].id)[1] * .2;   // 画面の位置（スタンドの少し奥）
+    kind('webcam').forEach((c, i) => put(c, m0.x + 32 + i * 14, py));
+    kind('monbar').forEach(l => put(l, m0.x, py));
   }
+  kind('lightbar').forEach((l, i) => put(l, i ? Math.min(W - 6, right + 6) : Math.max(6, left - 6), 8));
+  kind('mic').forEach((c, i) => put(c, W / 2 - 38 - i * 14, D * .5));
   by('computer').forEach((c, i) => {
-    const [w, h] = fp.get(c.id);
-    if (h === 45) put(c, W + 18 + i * 26, D * .5);               // タワーは机の横の床
-    else if (w <= 20) put(c, W - w / 2 - 6, D * .45 + i * 22);    // Mac mini など
+    const [w, h] = fp.get(c.id), k = kindOf(c);
+    if (k === 'tower') put(c, W + 18 + i * 26, D * .5);            // タワーは机の横の床
+    else if (k === 'smallpc') put(c, W - w / 2 - 6, D * .45 + i * 22);    // Mac mini など
     else put(c, w / 2 + 6 + i * (w + 4), D - h / 2 - 8);          // ノートは手前の左
   });
   by('keyboard').forEach((k, i) => put(k, W / 2 - 4, D - 12 - i * 16));
-  by('mouse').forEach((m, i) => put(m, W / 2 + 24 + i * 18, D - 12));
+  const kb0 = by('keyboard')[0], mx0 = kb0 ? W / 2 - 4 + fp.get(kb0.id)[0] / 2 + 6 : W / 2 + 18;
+  by('mouse').forEach((m, i) => put(m, mx0 + fp.get(m.id)[0] / 2 + i * 18, D - 12));
   by('dock').forEach((d, i) => put(d, W - 12, D * .4 + i * 12));
   by('charger').forEach((c, i) => put(c, -12, 18 + i * 14));      // 充電器は机の下・横
   let ry = D - 12;
@@ -2651,7 +2733,7 @@ function autoDesk(items, W, D, fixed) {
   const hit = (a, b) => a[0] < b[2] - .5 && b[0] < a[2] - .5 && a[1] < b[3] - .5 && b[1] < a[3] - .5;
   const placed = (fixed || []).map(f => box(f.it, f.p));
   for (const it of items) {
-    if (it.cat === 'camera' || it.cat === 'lighting') { placed.push(box(it, pos.get(it.id))); continue; }
+    if (/^(webcam|monbar|lightbar)$/.test(kindOf(it))) { placed.push(box(it, pos.get(it.id))); continue; }
     const p = pos.get(it.id);
     for (let n = 0; n < 80 && placed.some(b => hit(b, box(it, p))); n++) {
       p.y -= 3;
@@ -2749,16 +2831,17 @@ function deskSVG(C, forExport) {
     const onDesk = p.x - w / 2 >= -1 && p.x + w / 2 <= W + 1 && p.y - h / 2 >= -1 && p.y + h / 2 <= D + 1;
     const warn = sevOf(it, checks);
     const edge = warn ? (warn.sev === 'error' ? C.crit : C.warn) : it.cat === 'computer' ? C.fg : C.line;
-    const fill = it.cat === 'monitor' ? C.text : C.page;
-    const ink = it.cat === 'monitor' ? C.page : C.text;
-    const big = hh >= 70 && ww >= 90;
+    const mon = it.cat === 'monitor', fill = C.page, ink = C.text;
+    const big = !mon && hh >= 70 && ww >= 90;
     out.push(`<g class="dk-item" data-id="${esc2(it.id)}" tabindex="-1">`);
     out.push(`<rect class="box" x="${X.toFixed(1)}" y="${Y.toFixed(1)}" width="${ww.toFixed(1)}" height="${hh.toFixed(1)}" rx="${Math.min(8, hh / 3).toFixed(1)}" fill="${fill}" stroke="${edge}" stroke-width="${warn || it.cat === 'computer' ? 2 : 1.2}"${onDesk ? '' : ' stroke-dasharray="5 4"'}/>`);
-    const nameSize = Math.max(9, Math.min(13, hh * .38)), catSize = 9.5;
+    // モニターは、枠がスタンド込みの置き場所、塗った帯が画面
+    if (mon) { const ph = Math.max(5, 2.5 * S), py = oy + (p.y + body3d(it).pz) * S; out.push(`<rect x="${X.toFixed(1)}" y="${(py - ph / 2).toFixed(1)}" width="${ww.toFixed(1)}" height="${ph.toFixed(1)}" rx="2" fill="${C.text}"/>`); }
+    const nameSize = Math.max(9, Math.min(13, (mon ? hh * .5 : hh) * .38)), catSize = 9.5;
     const cx = X + ww / 2;
-    if (big) out.push(`<text x="${cx.toFixed(1)}" y="${(Y + hh / 2 - 4).toFixed(1)}" text-anchor="middle" fill="${it.cat === 'monitor' ? C.muted : C.muted}" font-family='${FM}' font-size="${catSize}">${esc2(CAT_LABEL[it.cat])}</text>`);
+    if (big) out.push(`<text x="${cx.toFixed(1)}" y="${(Y + hh / 2 - 4).toFixed(1)}" text-anchor="middle" fill="${C.muted}" font-family='${FM}' font-size="${catSize}">${esc2(CAT_LABEL[it.cat])}</text>`);
     const nm = cutTo(it.name, Math.max(ww, 70) - 10, nameSize * .62);
-    const ty = big ? Y + hh / 2 + 12 : Y + hh / 2 + nameSize * .35;
+    const ty = big ? Y + hh / 2 + 12 : mon ? Y + hh * .7 + nameSize * .35 : Y + hh / 2 + nameSize * .35;
     if (ww >= 70 || it.cat === 'monitor') out.push(`<text x="${cx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" fill="${ink}" font-family='${FS}' font-size="${nameSize.toFixed(1)}" font-weight="500">${esc2(nm)}</text>`);
     else out.push(`<text x="${cx.toFixed(1)}" y="${(Y + hh + 13).toFixed(1)}" text-anchor="middle" fill="${C.text}" font-family='${FS}' font-size="10.5" font-weight="500">${esc2(cutTo(it.name, 120, 6.8))}</text>`);
     out.push('</g>');
@@ -2849,26 +2932,13 @@ let THREE = null, three = null;
 
 // 高さ（cm）と見た目の大まかな種類
 function body3d(it) {
-  const [w, d] = footprint(it), n = it.name;
-  switch (it.cat) {
-    case 'monitor': { const r = it.spec.w / it.spec.h; return { kind: 'monitor', w, d, h: w / r }; }
-    case 'computer':
-      if (d === 45) return { kind: 'tower', w, d, h: 45 };
-      if (w <= 20) return { kind: 'box', w, d, h: /Studio/i.test(n) ? 9.5 : 5 };
-      return { kind: 'laptop', w, d, h: 1.6 };
-    case 'keyboard': return { kind: 'keyboard', w, d, h: 3 };
-    case 'mouse': return /trackpad|トラックパッド/i.test(n) ? { kind: 'slab', w, d, h: .8 } : { kind: 'mouse', w, d, h: 4 };
-    case 'audio':
-      if (w === 12) return { kind: 'speaker', w, d, h: 20 };
-      if (w === 18 && d === 9) return { kind: 'box', w, d, h: 8 };
-      return { kind: 'box', w, d, h: 5 };
-    case 'camera': return { kind: 'box', w, d, h: 4 };
-    case 'lighting': return w > 30 ? { kind: 'bar', w, d, h: 3 } : { kind: 'lamp', w, d, h: 35 };
-    case 'mobile': return /スタンド|3-in-1/i.test(n) ? { kind: 'box', w, d, h: 14 } : { kind: 'slab', w, d, h: .9 };
-    case 'dock': return { kind: 'box', w, d, h: 3 };
-    case 'charger': return { kind: 'box', w, d, h: 3 };
-    default: return { kind: 'box', w, d, h: 6 };
+  const [w, d, h] = dims(it), k = kindOf(it);
+  if (k === 'monitor' || k === 'portable') {
+    // 画面の高さは幅と縦横比から。残りがスタンドの高さ
+    const r = it.spec.w / it.spec.h, ph = Math.max(4, Math.min(h - .5, (w - 1.4) / r + 2.4));
+    return { kind: 'monitor', w, d, h, ph, stand: h - ph, pz: k === 'portable' ? 0 : -d * .2 };
   }
+  return { kind: k, w, d, h };
 }
 
 function screenTexture(C) {
@@ -2933,70 +3003,87 @@ function build3d(C, light) {
     const b = body3d(it), onDesk = p.x - b.w / 2 >= -2 && p.x + b.w / 2 <= W + 2 && p.y - b.d / 2 >= -2 && p.y + b.d / 2 <= D + 2;
     const base = onDesk ? DH : 0, X = p.x - W / 2, Z = p.y - D / 2;
     const g = new T.Group(); g.position.set(X, base, Z);
-    let topY = b.h;
+    let topY = b.h, mounted = false;
+    // モニターライトやWebカメラを載せるモニター（近くにあるもの）
+    const monNear = () => items.find(m => m.cat === 'monitor' && pos.get(m.id) && Math.abs(pos.get(m.id).x - p.x) < 40 && Math.abs(pos.get(m.id).y - p.y) < 14);
     if (b.kind === 'monitor') {
-      const standH = 11, sh = b.h;
-      const baseP = box(Math.min(26, b.w * .4), 1, 18, dark); baseP.position.set(0, .5, 2); g.add(baseP);
-      const neck = box(4, standH + sh * .4, 2.5, dark); neck.position.set(0, (standH + sh * .4) / 2, 3); g.add(neck);
-      const panel = box(b.w, sh, 2, dark); panel.position.set(0, standH + sh / 2, 0); g.add(panel);
-      const face = new T.Mesh(new T.PlaneGeometry(b.w - 1.6, sh - 1.6), new T.MeshBasicMaterial({ map: scr }));
-      face.position.set(0, standH + sh / 2, 1.02); g.add(face);
-      topY = standH + sh;
-      anchors.set(it.id, new T.Vector3(X, base + standH, Z));
+      const standH = b.stand, sh = b.ph;
+      const baseP = box(Math.min(26, b.w * .4), 1, b.d, dark); baseP.position.set(0, .5, 0); g.add(baseP);
+      const neck = box(4, standH + sh * .4, 2.5, dark); neck.position.set(0, (standH + sh * .4) / 2, b.pz + 2.3); g.add(neck);
+      const panel = box(b.w, sh, 2, dark); panel.position.set(0, standH + sh / 2, b.pz); g.add(panel);
+      const face = new T.Mesh(new T.PlaneGeometry(Math.max(1, b.w - 1.6), Math.max(1, sh - 1.6)), new T.MeshBasicMaterial({ map: scr }));
+      face.position.set(0, standH + sh / 2, b.pz + 1.02); g.add(face);
+      anchors.set(it.id, new T.Vector3(X, base + Math.max(2, standH), Z + b.pz));
     } else if (b.kind === 'laptop') {
-      const lap = box(b.w, 1.6, b.d, silver); lap.position.set(0, .8, 0); g.add(lap);
-      const lid = new T.Group(); lid.position.set(0, 1.6, -b.d / 2);
-      const lidM = box(b.w, b.d, .8, silver); lidM.position.set(0, b.d / 2, 0); lid.add(lidM);
-      const face = new T.Mesh(new T.PlaneGeometry(b.w - 2, b.d - 2), new T.MeshBasicMaterial({ map: scr })); face.position.set(0, b.d / 2, .41); lid.add(face);
+      const lap = box(b.w, b.h, b.d, silver); lap.position.set(0, b.h / 2, 0); g.add(lap);
+      const lid = new T.Group(); lid.position.set(0, b.h, -b.d / 2);
+      const lidM = box(b.w, b.d, .6, silver); lidM.position.set(0, b.d / 2, 0); lid.add(lidM);
+      const face = new T.Mesh(new T.PlaneGeometry(b.w - 2, b.d - 2), new T.MeshBasicMaterial({ map: scr })); face.position.set(0, b.d / 2, .31); lid.add(face);
       lid.rotation.x = -.28; g.add(lid);
-      topY = b.d * .95;
-      anchors.set(it.id, new T.Vector3(X, base + 1, Z));
+      topY = b.h + b.d * .95;
+      anchors.set(it.id, new T.Vector3(X, base + b.h / 2, Z));
     } else if (b.kind === 'keyboard') {
-      const kb = box(b.w, 2, b.d, pale); kb.position.set(0, 1, 0); kb.rotation.x = .05; g.add(kb);
-      const keys = box(b.w - 2, .8, b.d - 2, mat(light ? '#ffffff' : '#eeeeea')); keys.position.set(0, 2.2, 0); g.add(keys);
-      anchors.set(it.id, new T.Vector3(X, base + 1.5, Z));
+      const kb = box(b.w, b.h * .65, b.d, pale); kb.position.set(0, b.h * .325, 0); kb.rotation.x = .05; g.add(kb);
+      const keys = box(Math.max(1, b.w - 2), b.h * .3, Math.max(1, b.d - 2), mat(light ? '#ffffff' : '#eeeeea')); keys.position.set(0, b.h * .8, 0); g.add(keys);
+      anchors.set(it.id, new T.Vector3(X, base + b.h / 2, Z));
     } else if (b.kind === 'mouse') {
-      const m = new T.Mesh(new T.SphereGeometry(1, 24, 16), dark); m.scale.set(b.w / 2, 2, b.d / 2); m.position.set(0, 1.4, 0); m.castShadow = true; g.add(m);
-      anchors.set(it.id, new T.Vector3(X, base + 1.5, Z));
+      // 楕円の上半分が見える（下半分は天板の中）
+      const m = new T.Mesh(new T.SphereGeometry(1, 24, 16), dark); m.scale.set(b.w / 2, b.h, b.d / 2); m.castShadow = true; g.add(m);
+      anchors.set(it.id, new T.Vector3(X, base + b.h / 3, Z));
     } else if (b.kind === 'speaker') {
       const sp = box(b.w, b.h, b.d, pale); sp.position.set(0, b.h / 2, 0); g.add(sp);
-      const woof = new T.Mesh(new T.CircleGeometry(b.w * .32, 32), mat('#c46a3a', { metalness: .5, roughness: .35 })); woof.position.set(0, b.h * .38, b.d / 2 + .05); g.add(woof);
-      const tw = new T.Mesh(new T.CircleGeometry(b.w * .12, 24), dark); tw.position.set(0, b.h * .78, b.d / 2 + .05); g.add(tw);
+      const woof = new T.Mesh(new T.CircleGeometry(Math.min(b.w, b.h) * .32, 32), mat('#c46a3a', { metalness: .5, roughness: .35 })); woof.position.set(0, b.h * .38, b.d / 2 + .05); g.add(woof);
+      const tw = new T.Mesh(new T.CircleGeometry(Math.min(b.w, b.h) * .12, 24), dark); tw.position.set(0, b.h * .78, b.d / 2 + .05); g.add(tw);
       anchors.set(it.id, new T.Vector3(X, base + 3, Z));
     } else if (b.kind === 'tower') {
       const tw = box(b.w, b.h, b.d, dark); tw.position.set(0, b.h / 2, 0); g.add(tw);
       const glow = box(.5, b.h * .7, b.d * .6, mat(C.accent, { emissive: C.accent, emissiveIntensity: .8 })); glow.position.set(b.w / 2 + .2, b.h / 2, 0); g.add(glow);
       anchors.set(it.id, new T.Vector3(X, base + b.h * .6, Z));
-    } else if (b.kind === 'bar' || b.kind === 'lamp') {
-      // モニターライトはモニターの上に載せる
-      const mon = items.find(m => m.cat === 'monitor' && pos.get(m.id) && Math.abs(pos.get(m.id).x - p.x) < 40 && Math.abs(pos.get(m.id).y - p.y) < 14);
-      if (b.kind === 'bar' && mon) {
+    } else if (b.kind === 'monbar' || b.kind === 'webcam') {
+      // モニターの上に載せる（近くにモニターがなければ机に置く）
+      const mon = monNear();
+      if (mon) {
         const mb = body3d(mon), mp = pos.get(mon.id);
-        g.position.set(X, DH + 11 + mb.h + 1.5, mp.y - D / 2);
-        const bar = box(b.w, 2.5, 3, dark); g.add(bar);
-        const glowP = new T.Mesh(new T.PlaneGeometry(b.w - 2, 1.5), new T.MeshBasicMaterial({ color: '#fff6dc' })); glowP.rotation.x = Math.PI / 2; glowP.position.set(0, -1.3, 1); g.add(glowP);
-        const spot = new T.SpotLight('#fff3d6', 1.2, 140, .9, .6); spot.position.set(0, 0, 2); spot.target.position.set(0, -60, 30); g.add(spot); g.add(spot.target);
-        topY = 3;
-      } else if (b.kind === 'bar') { const bar = box(b.w, b.h, b.d, dark); bar.position.set(0, b.h / 2, 0); g.add(bar); }
-      else { const pole = box(1.5, b.h, 1.5, dark); pole.position.set(0, b.h / 2, 0); g.add(pole); const sh = new T.Mesh(new T.ConeGeometry(7, 8, 24, 1, true), dark); sh.position.set(0, b.h, 0); g.add(sh); }
-      anchors.set(it.id, new T.Vector3(g.position.x, g.position.y, g.position.z));
-    } else if (b.kind === 'slab') {
-      const sl = box(b.w, b.h, b.d, it.cat === 'mobile' ? dark : silver); sl.position.set(0, b.h / 2, 0); g.add(sl);
-      anchors.set(it.id, new T.Vector3(X, base + .5, Z));
-    } else {
-      const bx = box(b.w, b.h, b.d, it.cat === 'charger' || it.cat === 'camera' ? (it.cat === 'charger' ? pale : dark) : it.cat === 'dock' ? silver : dark);
-      bx.position.set(0, b.h / 2, 0); g.add(bx);
-      if (it.cat === 'camera') {
-        const mon = items.find(m => m.cat === 'monitor' && pos.get(m.id));
-        if (mon && Math.abs(pos.get(mon.id).y - p.y) < 14) { const mb = body3d(mon); g.position.y = DH + 11 + mb.h; }
-        const lens = new T.Mesh(new T.CircleGeometry(1.4, 20), mat('#0a0a0a', { metalness: .8, roughness: .2 })); lens.position.set(0, b.h / 2, b.d / 2 + .05); g.add(lens);
+        mounted = true;
+        g.position.set(X, DH + mb.h + (b.kind === 'monbar' ? 1.5 : 0), mp.y - D / 2 + mb.pz);
       }
-      anchors.set(it.id, new T.Vector3(g.position.x, g.position.y + b.h / 2, g.position.z));
+      if (b.kind === 'monbar') {
+        const bar = box(b.w, 2.5, 3, dark); bar.position.set(0, mounted ? 0 : 1.25, 0); g.add(bar);
+        const glowP = new T.Mesh(new T.PlaneGeometry(b.w - 2, 1.5), new T.MeshBasicMaterial({ color: '#fff6dc' })); glowP.rotation.x = Math.PI / 2; glowP.position.set(0, mounted ? -1.3 : 0, 1); g.add(glowP);
+        if (mounted) { const spot = new T.SpotLight('#fff3d6', 1.2, 140, .9, .6); spot.position.set(0, 0, 2); spot.target.position.set(0, -60, 30); g.add(spot); g.add(spot.target); }
+        topY = 3;
+      } else {
+        const cm = box(b.w, b.h, b.d, dark); cm.position.set(0, b.h / 2, 0); g.add(cm);
+        const lens = new T.Mesh(new T.CircleGeometry(Math.min(1.4, b.h * .35), 20), mat('#0a0a0a', { metalness: .8, roughness: .2 })); lens.position.set(0, b.h / 2, b.d / 2 + .05); g.add(lens);
+      }
+      anchors.set(it.id, new T.Vector3(g.position.x, g.position.y + 1, g.position.z));
+    } else if (b.kind === 'lightbar') {
+      const lb0 = box(b.w, b.h, b.d, dark); lb0.position.set(0, b.h / 2, 0); g.add(lb0);
+      const glowP = new T.Mesh(new T.PlaneGeometry(Math.max(.5, b.w - 1), b.h - 2), new T.MeshBasicMaterial({ color: C.accent })); glowP.position.set(0, b.h / 2, -b.d / 2 - .05); glowP.rotation.y = Math.PI; g.add(glowP);
+      anchors.set(it.id, new T.Vector3(X, base + 1, Z));
+    } else if (b.kind === 'lamp') {
+      const pole = box(1.5, b.h, 1.5, dark); pole.position.set(0, b.h / 2, 0); g.add(pole);
+      const sh = new T.Mesh(new T.ConeGeometry(Math.min(b.w, b.d) / 2, 8, 24, 1, true), dark); sh.position.set(0, b.h, 0); g.add(sh);
+      anchors.set(it.id, new T.Vector3(X, base + 1, Z));
+    } else if (b.kind === 'mic') {
+      const r = Math.min(b.w, b.d) / 2;
+      const foot = new T.Mesh(new T.CylinderGeometry(r, r, 1.2, 28), dark); foot.position.set(0, .6, 0); g.add(foot);
+      const pole = new T.Mesh(new T.CylinderGeometry(.5, .5, b.h * .5, 12), dark); pole.position.set(0, b.h * .25, 0); g.add(pole);
+      const cap = new T.Mesh(new T.CylinderGeometry(r * .45, r * .45, b.h * .5, 24), mat(light ? '#3a3f46' : '#2a2f36', { metalness: .4 })); cap.position.set(0, b.h * .75, 0); g.add(cap);
+      [foot, pole, cap].forEach(m => { m.castShadow = true; });
+      anchors.set(it.id, new T.Vector3(X, base + 1, Z));
+    } else if (b.kind === 'trackpad' || b.kind === 'tablet' || b.kind === 'phone') {
+      const sl = box(b.w, b.h, b.d, b.kind === 'trackpad' ? silver : dark); sl.position.set(0, b.h / 2, 0); g.add(sl);
+      anchors.set(it.id, new T.Vector3(X, base + b.h / 2, Z));
+    } else {
+      const bx = box(b.w, b.h, b.d, it.cat === 'charger' ? pale : it.cat === 'dock' || b.kind === 'smallpc' ? silver : dark);
+      bx.position.set(0, b.h / 2, 0); g.add(bx);
+      anchors.set(it.id, new T.Vector3(X, base + b.h / 2, Z));
     }
     g.userData.itemId = it.id;
     scene.add(g);
     const lb = textSprite(it.name, C); lb.position.set(g.position.x, g.position.y + topY + 7, g.position.z); scene.add(lb); labels.push(lb);
-    groups.set(it.id, { g, label: lb, dy: topY + 7, plain: !(b.kind === 'bar' || it.cat === 'camera') });
+    groups.set(it.id, { g, label: lb, dy: topY + 7, plain: !mounted });
   }
 
   // ケーブル（机の裏を回るように少し垂らす）
@@ -3161,7 +3248,7 @@ async function open3D(wrap) {
   const spread = () => { const [a, b] = [...ptrs.values()]; return Math.hypot(a[0] - b[0], a[1] - b[1]); };
   const endMove = () => { if (gest && gest.mode === 'move') { const moved = gest.moved; gest = null; if (moved) commit(); } };
   el.addEventListener('pointerdown', e => {
-    el.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+    try { el.setPointerCapture(e.pointerId); } catch (err) {} ptrs.set(e.pointerId, [e.clientX, e.clientY]);
     orbit.touched = true; orbit.goal = null;
     if (ptrs.size === 2) { endMove(); gest = { mode: 'two', c: centroid(), d: spread() }; return; }
     if (ptrs.size > 2) return;
