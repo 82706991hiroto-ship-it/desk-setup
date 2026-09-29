@@ -374,13 +374,14 @@
 
       <section class="card" aria-labelledby="annTitle">
         <h2 id="annTitle">置いたラベル <small id="annCount"></small></h2>
+        <button class="btn block" id="autoLayout" type="button" style="margin-bottom:10px">空いている場所に並べ直す</button>
         <div class="anns" id="annList"></div>
       </section>
 
       <section class="card" aria-labelledby="lookTitle">
         <h2 id="lookTitle">見た目</h2>
         <div class="opt-row"><span>文字</span><span class="seg" data-opt="font"><button type="button" data-v="hand">手書き風</button><button type="button" data-v="sans">ゴシック</button></span></div>
-        <div class="opt-row"><span>色</span><span class="seg" data-opt="color"><button type="button" data-v="light">白</button><button type="button" data-v="dark">黒</button></span></div>
+        <div class="opt-row"><span>色</span><span class="seg" data-opt="color"><button type="button" data-v="auto">自動</button><button type="button" data-v="light">白</button><button type="button" data-v="dark">黒</button></span></div>
         <div class="opt-row"><span>大きさ</span><input type="range" id="sizeRange" min="0.6" max="1.8" step="0.05" aria-label="文字の大きさ"></div>
       </section>
 
@@ -1255,7 +1256,7 @@ function loadSample() {
 const PHOTO_KEY = 'desk-setup:photo:v1';
 const PHOTO_IMG_KEY = 'desk-setup:photo-img:v1';
 const PHOTO_MAX = 2400;
-let photo = { anns: [], font: 'hand', color: 'light', size: 1, seq: 0 };
+let photo = { anns: [], font: 'hand', color: 'auto', size: 1, seq: 0 };
 let photoImg = null;
 let armed = null;       // { item: id } か { custom: true }
 let selAnn = null;
@@ -1342,19 +1343,94 @@ function arrowGeom(box, a) {
   return { s, c };
 }
 
+// 写真の画素（明るさの判定と、空いている場所さがしに使う）
+let pix = null;
+function pixels() {
+  if (pix && pix.img === photoImg) return pix;
+  const w = photoImg.naturalWidth, h = photoImg.naturalHeight;
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const x = c.getContext('2d', { willReadFrequently: true });
+  x.drawImage(photoImg, 0, 0);
+  pix = { img: photoImg, w, h, data: x.getImageData(0, 0, w, h).data };
+  return pix;
+}
+// 範囲の明るさの平均と、ばらつき（大きいほど物が多くてごちゃついている）
+function regionStats(x0, y0, w, h) {
+  let P;
+  try { P = pixels(); } catch (e) { return { mean: 0.5, sd: 0.2 }; }
+  const xa = Math.max(0, Math.floor(x0)), ya = Math.max(0, Math.floor(y0));
+  const xb = Math.min(P.w, Math.ceil(x0 + w)), yb = Math.min(P.h, Math.ceil(y0 + h));
+  if (xb <= xa || yb <= ya) return { mean: 0.5, sd: 0.2 };
+  const st = Math.max(1, Math.round(Math.min(xb - xa, yb - ya) / 12)), d = P.data;
+  let n = 0, s = 0, s2 = 0;
+  for (let y = ya; y < yb; y += st) for (let x = xa; x < xb; x += st) {
+    const i = (y * P.w + x) * 4, l = (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255;
+    s += l; s2 += l * l; n++;
+  }
+  const mean = s / n;
+  return { mean, sd: Math.sqrt(Math.max(0, s2 / n - mean * mean)) };
+}
+// ラベルの色。自動なら、ラベルの下の明るさで白か黒を選ぶ
+function inkFor(a, box) {
+  const mode = a.color || photo.color;
+  if (mode === 'light' || mode === 'dark') return mode;
+  const p = pBase() * 0.3;
+  return regionStats(box.x - p, box.y - p, box.w + p * 2, box.h + p * 2).mean > 0.55 ? 'dark' : 'light';
+}
+
+// 矢印の先のまわりで、ほかのラベルや矢印の先と重ならず、背景がすっきりした場所を探す
+function bestSpot(a, others) {
+  const ctx = $('#photoCanvas').getContext('2d');
+  const W = photoImg.naturalWidth, H = photoImg.naturalHeight, b = pBase(), m = b * 0.6;
+  const { w, h } = labelBox(ctx, a);
+  const pad = b * 0.4, tipPad = b * 0.9;
+  const tips = photo.anns.map(o => o === a ? { x: a.tx, y: a.ty } : { x: o.tx, y: o.ty });
+  const overlap = (x, y, r) => Math.max(0, Math.min(x + w, r.x + r.w + pad) - Math.max(x, r.x - pad)) * Math.max(0, Math.min(y + h, r.y + r.h + pad) - Math.max(y, r.y - pad));
+  let best = null;
+  for (const d of [1.8, 3, 4.5, 6.5]) for (let k = 0; k < 16; k++) {
+    const ang = k * Math.PI / 8, cs = Math.cos(ang), sn = Math.sin(ang);
+    const reach = d * b + Math.abs(cs) * w / 2 + Math.abs(sn) * h / 2;
+    const rx = a.tx + cs * reach - w / 2, ry = a.ty + sn * reach - h / 2;
+    const x = Math.min(W - w - m, Math.max(m, rx)), y = Math.min(H - h - m, Math.max(m, ry));
+    let score = d * 0.08 + Math.hypot(x - rx, y - ry) / b * 0.15;
+    // 真上・真横より斜めのほうが、矢印がカーブになって見やすい
+    if (k % 4 === 0) score += 0.25;
+    for (const r of others) score += overlap(x, y, r) / (w * h) * 8;
+    for (const t of tips) if (t.x > x - tipPad && t.x < x + w + tipPad && t.y > y - tipPad && t.y < y + h + tipPad) score += 4;
+    // 矢印がほかのラベルを横切らないように
+    for (let i = 1; i < 8; i++) {
+      const px = x + w / 2 + (a.tx - x - w / 2) * i / 8, py = y + h / 2 + (a.ty - y - h / 2) * i / 8;
+      for (const r of others) if (px > r.x && px < r.x + r.w && py > r.y && py < r.y + r.h) score += 0.4;
+    }
+    const st = regionStats(x - pad, y - pad, w + pad * 2, h + pad * 2);
+    score += st.sd * 6;
+    if (!best || score < best.score) best = { score, x, y };
+  }
+  return best;
+}
+function autoLayout(list) {
+  const ctx = $('#photoCanvas').getContext('2d'), done = [];
+  for (const a of list) {
+    const sp = bestSpot(a, done.map(o => labelBox(ctx, o)));
+    a.lx = sp.x; a.ly = sp.y; a.curve = 'a';
+    done.push(a);
+  }
+}
+
 function drawPhoto(ctx, forExport) {
   const W = photoImg.naturalWidth, H = photoImg.naturalHeight;
   ctx.clearRect(0, 0, W, H);
   ctx.drawImage(photoImg, 0, 0, W, H);
-  const b = pBase(), light = photo.color === 'light';
-  const ink = light ? '#ffffff' : '#1d1d1f';
-  const glow = light ? 'rgba(0,0,0,.5)' : 'rgba(255,255,255,.85)';
+  const b = pBase();
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
   const boxes = [];
   for (const a of photo.anns) {
     const box = labelBox(ctx, a);
     boxes.push(box);
+    const light = inkFor(a, box) === 'light';
+    const ink = light ? '#ffffff' : '#1d1d1f';
+    const glow = light ? 'rgba(0,0,0,.5)' : 'rgba(255,255,255,.85)';
     ctx.save();
     ctx.shadowColor = glow; ctx.shadowBlur = b * 0.22; ctx.shadowOffsetY = b * 0.03;
     ctx.fillStyle = ink; ctx.strokeStyle = ink;
@@ -1451,6 +1527,7 @@ function renderAnnList() {
   $('#annCount').textContent = photo.anns.length ? `${photo.anns.length}件` : '';
   if (!photo.anns.length) { $('#annList').innerHTML = `<span class="hint">まだありません。</span>`; return; }
   const curves = [['a', 'カーブ'], ['b', '逆カーブ'], ['s', 'まっすぐ']];
+  const colors = [['', '全体に合わせる'], ['light', '白'], ['dark', '黒']];
   $('#annList').innerHTML = photo.anns.map(a => `<div class="ann${a.id === selAnn ? ' sel' : ''}" data-ann="${a.id}">
     <div class="ann-grid">
       <input class="text" data-af="brand" value="${esc(a.brand)}" placeholder="ブランド" aria-label="ブランド" maxlength="40">
@@ -1458,8 +1535,12 @@ function renderAnnList() {
       <input class="text full" data-af="name" value="${esc(a.name)}" placeholder="機材名" aria-label="機材名" maxlength="60">
     </div>
     <div class="ann-foot">
-      <span class="seg" data-curve>${curves.map(([v, l]) => `<button type="button" data-v="${v}" aria-pressed="${(a.curve || 'a') === v}">${l}</button>`).join('')}</span>
+      <span class="seg" data-curve aria-label="矢印の形">${curves.map(([v, l]) => `<button type="button" data-v="${v}" aria-pressed="${(a.curve || 'a') === v}">${l}</button>`).join('')}</span>
       <button class="x" type="button" data-ann-remove aria-label="${esc(a.name)} のラベルを消す">×</button>
+    </div>
+    <div class="ann-foot">
+      <span class="hint">色</span>
+      <span class="seg" data-color aria-label="このラベルの色">${colors.map(([v, l]) => `<button type="button" data-v="${v}" aria-pressed="${(a.color || '') === v}">${l}</button>`).join('')}</span>
     </div>
   </div>`).join('');
 }
@@ -1468,15 +1549,10 @@ function placeAt(x, y) {
   const it = armed.item ? byId(armed.item) : null;
   const [brand, name] = it ? splitBrand(it.name) : ['', 'ラベル'];
   const a = { id: (photo.seq++).toString(36), item: it ? it.id : null, brand, name, price: it && it.price ? yen(it.price) : '', tx: x, ty: y, lx: 0, ly: 0, curve: 'a' };
-  const W = photoImg.naturalWidth, H = photoImg.naturalHeight, b = pBase();
-  const box = labelBox($('#photoCanvas').getContext('2d'), a);
-  const off = b * 3, m = b * 0.6;
-  // 横にずらして置くと、矢印がきれいなカーブになる
-  a.lx = x < W * 0.5 ? x + b * 1.2 : x - box.w - b * 1.2;
-  a.lx = Math.min(W - box.w - m, Math.max(m, a.lx));
-  a.ly = y > H * 0.35 ? y - off - box.h : y + off;
-  a.ly = Math.min(H - box.h - m, Math.max(m, a.ly));
   photo.anns.push(a);
+  const ctx = $('#photoCanvas').getContext('2d');
+  const sp = bestSpot(a, photo.anns.filter(o => o !== a).map(o => labelBox(ctx, o)));
+  a.lx = sp.x; a.ly = sp.y;
   selAnn = a.id; armed = null;
   savePhoto();
   renderPhoto();
@@ -1592,6 +1668,8 @@ function wirePhoto() {
     }
     const cb = e.target.closest('[data-curve] button');
     if (cb) { a.curve = cb.dataset.v; savePhoto(); renderAnnList(); selectAnn(a.id); }
+    const cc = e.target.closest('[data-color] button');
+    if (cc) { if (cc.dataset.v) a.color = cc.dataset.v; else delete a.color; savePhoto(); renderAnnList(); selectAnn(a.id); }
   });
 
   document.querySelectorAll('.seg[data-opt]').forEach(sg => sg.addEventListener('click', e => {
@@ -1602,6 +1680,11 @@ function wirePhoto() {
   $('#sizeRange').addEventListener('change', savePhoto);
 
   $('#photoSave').addEventListener('click', exportPhoto);
+  $('#autoLayout').addEventListener('click', () => {
+    if (!photoImg || !photo.anns.length) { toast('先にラベルを置いてください'); return; }
+    if (!confirm('ラベルの位置を自動で並べ直しますか？手で動かした位置は元に戻せません。')) return;
+    autoLayout(photo.anns); savePhoto(); renderPhoto();
+  });
   $('#photoClear').addEventListener('click', () => {
     if (!photoImg && !photo.anns.length) return;
     if (!confirm('写真と、置いたラベルをすべて消しますか？')) return;
