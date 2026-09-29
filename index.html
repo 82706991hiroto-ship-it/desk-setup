@@ -2895,7 +2895,7 @@ function build3d(C, light) {
   const beam = box(W - 26, 4, 3, legM); beam.position.set(0, DH - TH - 2, -D * .2); scene.add(beam);
 
   // 機材
-  const pos = deskPositions(), items = deskItems(), anchors = new Map(), labels = [];
+  const pos = deskPositions(), items = deskItems(), anchors = new Map(), labels = [], groups = new Map();
   const scr = screenTexture(C);
   for (const it of items) {
     const p = pos.get(it.id); if (!p) continue;
@@ -2962,8 +2962,10 @@ function build3d(C, light) {
       }
       anchors.set(it.id, new T.Vector3(g.position.x, g.position.y + b.h / 2, g.position.z));
     }
+    g.userData.itemId = it.id;
     scene.add(g);
     const lb = textSprite(it.name, C); lb.position.set(g.position.x, g.position.y + topY + 7, g.position.z); scene.add(lb); labels.push(lb);
+    groups.set(it.id, { g, label: lb, dy: topY + 7, plain: !(b.kind === 'bar' || it.cat === 'camera') });
   }
 
   // ケーブル（机の裏を回るように少し垂らす）
@@ -2996,7 +2998,11 @@ function build3d(C, light) {
       scene.add(dot); flows.push({ dot, curve, off: i / n, speed: kind === 'wireless' ? .12 : .22, rev });
     }
   }
-  return { scene, labels, flows, center: new T.Vector3(0, DH + 12, 0), W, D };
+  return { scene, labels, flows, groups, center: new T.Vector3(0, DH + 12, 0), W, D, DH };
+}
+
+function disposeScene(scene) {
+  scene.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } });
 }
 
 async function open3D(wrap) {
@@ -3012,13 +3018,14 @@ async function open3D(wrap) {
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  holder.innerHTML = '<div class="three-hint">ドラッグで回転 ・ ホイール / ピンチで拡大</div>';
+  holder.innerHTML = '<div class="three-hint">機材をドラッグで移動 ・ 何もない所をドラッグで回転 ・ ホイール / ピンチで拡大</div>';
   holder.prepend(renderer.domElement);
-  const world = build3d(C, light);
-  world.labels.forEach(l => { l.visible = $('#deskLabels').checked; });
+  const makeWorld = () => { const w = build3d(C, light); w.labels.forEach(l => { l.visible = $('#deskLabels').checked; }); return w; };
   const cam = new THREE.PerspectiveCamera(38, 1, 1, 3000);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const orbit = { theta: -.55, phi: 1.02, r: Math.max(world.W, world.D) * 1.9 + 60, target: world.center, touched: false };
+  three = { renderer, ro: null, raf: 0, world: makeWorld(), cam };
+  const W0 = three.world;
+  const orbit = { theta: -.55, phi: 1.02, r: Math.max(W0.W, W0.D) * 1.9 + 60, target: W0.center, touched: false };
   let rTarget = orbit.r; if (!reduce) orbit.r *= 1.6;       // 開いたときに寄っていく
   const place = () => {
     const { theta, phi, r, target } = orbit;
@@ -3030,23 +3037,78 @@ async function open3D(wrap) {
     renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
   };
   resize();
-  const ro = new ResizeObserver(resize); ro.observe(holder);
-  // 回転と拡大
-  const ptrs = new Map(); let pinch = 0;
-  const el = renderer.domElement;
-  el.addEventListener('pointerdown', e => { el.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); orbit.touched = true; });
+  three.ro = new ResizeObserver(resize); three.ro.observe(holder);
+
+  // 指した先の機材と、机の上（外なら床）の位置
+  const el = renderer.domElement, ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), hitPt = new THREE.Vector3();
+  const aim = e => { const r = el.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(ndc, cam); };
+  const itemAt = e => {
+    aim(e);
+    const hits = ray.intersectObjects([...three.world.groups.values()].map(x => x.g), true);
+    for (const h of hits) { let o = h.object; while (o && !o.userData.itemId) o = o.parent; if (o) return o.userData.itemId; }
+    return null;
+  };
+  const groundAt = e => {
+    aim(e);
+    const { W, D, DH } = three.world;
+    if (ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -DH), hitPt)) {
+      const x = hitPt.x + W / 2, y = hitPt.z + D / 2;
+      if (x >= 0 && x <= W && y >= 0 && y <= D) return { x, y, desk: true };
+    }
+    if (ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hitPt)) return { x: hitPt.x + W / 2, y: hitPt.z + D / 2, desk: false };
+    return null;
+  };
+
+  const ptrs = new Map(); let pinch = 0, drag3 = null;
+  el.addEventListener('pointerdown', e => {
+    el.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); orbit.touched = true;
+    if (ptrs.size !== 1) { drag3 = null; return; }
+    const id = itemAt(e), it = id && byId(id), p0 = it && groundAt(e);
+    if (!it || !p0) return;
+    // 最初に動かしたときに、全部の位置を固定する
+    const all = deskPositions();
+    for (const i of deskItems()) if (!i.pos && all.get(i.id)) i.pos = { ...all.get(i.id) };
+    drag3 = { it, dx: it.pos.x - p0.x, dy: it.pos.y - p0.y, moved: false };
+    el.style.cursor = 'grabbing';
+  });
   el.addEventListener('pointermove', e => {
-    if (!ptrs.has(e.pointerId)) return;
+    if (!ptrs.has(e.pointerId)) { el.style.cursor = itemAt(e) ? 'move' : 'grab'; return; }
     const [px, py] = ptrs.get(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]);
     if (ptrs.size === 2) {
       const [a, b] = [...ptrs.values()], dist = Math.hypot(a[0] - b[0], a[1] - b[1]);
       if (pinch) rTarget = Math.max(80, Math.min(900, rTarget * pinch / dist));
       pinch = dist; return;
     }
+    if (drag3) {
+      const p = groundAt(e); if (!p) return;
+      const { W, D, DH, groups } = three.world;
+      const x = Math.max(-30, Math.min(W + 30, Math.round((p.x + drag3.dx) * 2) / 2));
+      const y = Math.max(-18, Math.min(D + 24, Math.round((p.y + drag3.dy) * 2) / 2));
+      drag3.it.pos = { x, y }; drag3.moved = true;
+      const gr = groups.get(drag3.it.id);
+      if (gr) {
+        const [fw, fd] = footprint(drag3.it);
+        const onDesk = x - fw / 2 >= -2 && x + fw / 2 <= W + 2 && y - fd / 2 >= -2 && y + fd / 2 <= D + 2;
+        gr.g.position.x = x - W / 2; gr.g.position.z = y - D / 2;
+        if (gr.plain) gr.g.position.y = onDesk ? DH : 0;
+        gr.label.position.set(gr.g.position.x, gr.g.position.y + gr.dy, gr.g.position.z);
+      }
+      return;
+    }
     orbit.theta -= (e.clientX - px) * .006;
     orbit.phi = Math.max(.25, Math.min(1.45, orbit.phi - (e.clientY - py) * .006));
   });
-  const up = e => { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = 0; };
+  const up = e => {
+    ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = 0;
+    if (drag3 && !ptrs.size) {
+      const moved = drag3.moved; drag3 = null; el.style.cursor = 'grab';
+      if (moved) {
+        save();
+        // ケーブルや置き方（机の上か床か）をつくり直す
+        const old = three.world; three.world = makeWorld(); orbit.target = three.world.center; disposeScene(old.scene);
+      }
+    }
+  };
   el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
   el.addEventListener('wheel', e => { e.preventDefault(); orbit.touched = true; rTarget = Math.max(80, Math.min(900, rTarget * (1 + Math.sign(e.deltaY) * .12))); }, { passive: false });
   const clock = new THREE.Clock();
@@ -3055,22 +3117,21 @@ async function open3D(wrap) {
     if (!orbit.touched && !reduce) orbit.theta += dt * .12;   // 触るまでゆっくり回る
     orbit.r += (rTarget - orbit.r) * Math.min(1, dt * 3);
     place();
-    for (const f of world.flows) {
+    for (const f of three.world.flows) {
       let u = (f.off + t * f.speed) % 1; if (f.rev) u = 1 - u;
       f.dot.position.copy(f.curve.getPointAt(u));
       f.dot.visible = !reduce;
     }
-    renderer.render(world.scene, cam);
+    renderer.render(three.world.scene, cam);
     three.raf = requestAnimationFrame(loop);
   };
-  three = { renderer, ro, raf: 0, world, cam };
   loop();
   return true;
 }
 function stop3D() {
   if (!three) return;
-  cancelAnimationFrame(three.raf); three.ro.disconnect();
-  three.world.scene.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } });
+  cancelAnimationFrame(three.raf); if (three.ro) three.ro.disconnect();
+  disposeScene(three.world.scene);
   three.renderer.dispose(); three = null;
 }
 
@@ -3084,7 +3145,7 @@ async function openWiring() {
   if (wireMode !== '3d') stop3D();
   if (wireMode === '3d') {
     const d0 = $('#wireDlg'); if (!d0.open) d0.showModal();
-    $('#wireHint').textContent = '置き場所は「机の配置」で動かしたものを立体にしています。高さや形は目安です。';
+    $('#wireHint').textContent = '機材はドラッグで動かせます。天板の外まで動かすと床に置きます。置き場所は「机の配置」と共通です。高さや形は目安です。';
     if (!deskItems().length) { wrap.innerHTML = '<div class="wire-empty">机に置く機材がまだありません。構成リストで機材を追加してください。</div>'; $('#wireSave').disabled = true; return; }
     $('#wireSave').disabled = !(await open3D(wrap));
     return;
