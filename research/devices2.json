@@ -1,0 +1,1210 @@
+[
+ {
+  "id": "macmini-m2pro",
+  "rankingName": "Apple Mac mini (M2 Pro)",
+  "cat": "computer",
+  "name": "Mac mini (M2 Pro)",
+  "spec": {
+   "ports": {
+    "tb": 4,
+    "usba": 2,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp1.4",
+    "hdmi": null
+   },
+   "maxDisp": 3,
+   "chargeW": 0,
+   "magsafe": false
+  },
+  "dim": [
+   19.7,
+   19.7,
+   3.58
+  ],
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://support.apple.com/ja-jp/111837"
+  ],
+  "confidence": "high",
+  "notes": "2023年モデル。販売終了のため価格なし。Thunderbolt 4 ×4・USB-A（5Gb/s）×2・HDMI。外部ディスプレイは最大3台（TB 6K60 ×2 + HDMI 4K60）、2台なら HDMI 4K144。HDMI は 8K60 / 4K240 まで対応と記載があるが、HDMI のバージョン表記はない（null）。Thunderbolt の映像は「USB-C経由でDisplayPort出力」とだけあり、dp1.4 は既存カタログと同じ扱い。",
+  "mapsTo": null
+ },
+ {
+  "id": "mba-m1",
+  "rankingName": "Apple MacBook Air (M1)",
+  "cat": "computer",
+  "name": "MacBook Air (M1)",
+  "spec": {
+   "ports": {
+    "tb": 2
+   },
+   "out": {
+    "tb": "dp1.4"
+   },
+   "maxDisp": 1,
+   "chargeW": 30,
+   "magsafe": false
+  },
+  "dim": [
+   30.41,
+   21.24,
+   1.61
+  ],
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://support.apple.com/ja-jp/111883"
+  ],
+  "confidence": "high",
+  "notes": "2020年モデル。販売終了のため価格なし。Thunderbolt / USB 4 ×2（Thunderbolt 3）、外部ディスプレイ1台（6K60）。30W USB-C電源アダプタ付属。MagSafe なし（USB-C 充電）。高さは 0.41〜1.61cm（くさび形）の最大値。",
+  "mapsTo": null
+ },
+ {
+  "id": "mba-m2",
+  "rankingName": "Apple MacBook Air (M2)",
+  "cat": "computer",
+  "name": "MacBook Air 13\" (M2)",
+  "spec": {
+   "ports": {
+    "tb": 2
+   },
+   "out": {
+    "tb": "dp1.4"
+   },
+   "maxDisp": 1,
+   "chargeW": 30,
+   "magsafe": true
+  },
+  "dim": [
+   30.41,
+   21.5,
+   1.13
+  ],
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://support.apple.com/ja-jp/111867"
+  ],
+  "confidence": "high",
+  "notes": "ランキングの元の表記は「Apple MacBook Air M2」「M2 Macbook Air」でサイズの指定なし。15インチ(M2)は「15」と明記されるはずなので 13インチと判断し、既存の mba-m2 に対応させる（新規追加なし）。仕様と寸法は research/devices.json の mba-m2 と同じ。",
+  "mapsTo": "mba-m2"
+ },
+ {
+  "id": "mbp14-m1max",
+  "rankingName": "Apple MacBook Pro 14\" (M1 Max)",
+  "cat": "computer",
+  "name": "MacBook Pro 14\" (M1 Max)",
+  "spec": {
+   "ports": {
+    "tb": 3,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp1.4",
+    "hdmi": null
+   },
+   "maxDisp": 4,
+   "chargeW": 96,
+   "magsafe": true
+  },
+  "dim": [
+   31.26,
+   22.12,
+   1.55
+  ],
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://support.apple.com/ja-jp/111902"
+  ],
+  "confidence": "high",
+  "notes": "2021年モデル。販売終了のため価格なし。Thunderbolt 4 ×3・HDMI・SDXC・MagSafe 3。M1 Max は外部ディスプレイ最大4台（TB 6K ×3 + HDMI 4K60 ×1）。HDMI は「最大4K解像度、60Hz」（バージョン記載なし → null）。96W USB-C電源アダプタ付属（M1 Pro 8コアCPUは67W）。",
+  "mapsTo": null
+ },
+ {
+  "id": "mbp14-m3",
+  "rankingName": "Apple MacBook Pro 14\" (M3)",
+  "cat": "computer",
+  "name": "MacBook Pro 14\" (M3)",
+  "spec": {
+   "ports": {
+    "tb": 2,
+    "hdmi": 1
+   },
+   "out": {
+    "tb": "dp1.4",
+    "hdmi": null
+   },
+   "maxDisp": 1,
+   "chargeW": 70,
+   "magsafe": true
+  },
+  "dim": [
+   31.26,
+   22.12,
+   1.55
+  ],
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://support.apple.com/ja-jp/117735"
+  ],
+  "confidence": "high",
+  "notes": "2023年11月モデル（無印M3）。販売終了のため価格なし。Thunderbolt / USB 4 ×2（Thunderbolt 3）・HDMI・SDXC・MagSafe 3。外部ディスプレイ1台（TB 6K60、または HDMI 4K120）。HDMI のバージョン記載なし（null）。70W付属、96Wで高速充電。技術仕様ページには蓋を閉じたときの2台表示の記載がないため clamDisp は入れていない。ランキングの表記は「M3 MacBook Pro」でサイズ不明だが、M3 無印は14インチのみ。",
+  "mapsTo": null
+ },
+ {
+  "id": "u3223qe",
+  "rankingName": "Dell U3223QE",
+  "cat": "monitor",
+  "name": "Dell U3223QE",
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 60,
+   "in": {
+    "usbc": "dp1.4",
+    "hdmi": "hdmi2.0",
+    "dp": "dp1.4"
+   },
+   "pdW": 90,
+   "dsc": true,
+   "ports": {
+    "usba": 5,
+    "usbc": 1
+   }
+  },
+  "dim": [
+   71.26,
+   23.32,
+   46.93
+  ],
+  "dimMax": 61.88,
+  "panelDim": [
+   71.26,
+   5.58,
+   41.0
+  ],
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://dl.dell.com/content/manual12109242-dell-u2723qe-monitor-user-s-guide.pdf?language=en-us",
+   "https://kakaku.com/item/K0001435786/"
+  ],
+  "confidence": "high",
+  "notes": "U2723QE と共通の取扱説明書。USB-C（DP1.4 with DSC、PD 90W）・DP 1.4 with DSC・HDMI 2.0・DP出力・RJ45。USB-A ×5（背面4＋前面クイックアクセス1）、USB-C 下流 ×1（15W）。スタンド込み高さ 469.34〜618.77mm。Dell 日本ストアは販売ページなし、価格.comも価格登録なし（販売終了とみられる）。",
+  "mapsTo": null
+ },
+ {
+  "id": "u4021qw",
+  "rankingName": "Dell U4021QW",
+  "cat": "monitor",
+  "name": "Dell U4021QW",
+  "spec": {
+   "w": 5120,
+   "h": 2160,
+   "hz": 60,
+   "in": {
+    "tb": "dp1.4",
+    "hdmi": "hdmi2.0",
+    "dp": "dp1.4"
+   },
+   "pdW": 90,
+   "dsc": null,
+   "ports": {
+    "usba": 5,
+    "usbc": 1
+   }
+  },
+  "dim": [
+   94.66,
+   24.8,
+   45.78
+  ],
+  "dimMax": 57.73,
+  "panelDim": [
+   94.66,
+   5.96,
+   41.91
+  ],
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://dl.dell.com/manuals/all-products/esuprt_electronics_accessories/esuprt_electronics_accessories_monitors/dell-u4021qw-monitor_user's-guide_en-us.pdf",
+   "https://kakaku.com/item/K0001333946/"
+  ],
+  "confidence": "high",
+  "notes": "39.7インチ曲面 5K2K。上流は Thunderbolt 3（DP 1.4 Alt・PD 90W）、ほかに USB-B 上流あり。HDMI 2.0 は2系統だが 5120×2160 は 30Hz まで（取扱説明書の表）。DP 1.4 は 60Hz。DSC の記載なし（null）。USB-A 10Gbps ×5（うち1つ BC1.2）、USB-C 下流 ×1（15W）、RJ45。下流の Thunderbolt はなし。スタンド込み高さ 457.8〜577.3mm。価格.comは価格登録なし（販売終了とみられる）。",
+  "mapsTo": null
+ },
+ {
+  "id": "innocn-27d1u",
+  "rankingName": "INNOCN 27D1U",
+  "cat": "monitor",
+  "name": "INNOCN 27D1U",
+  "spec": {
+   "w": 3840,
+   "h": 2160,
+   "hz": 60,
+   "in": {
+    "usbc": null,
+    "hdmi": "hdmi2.0",
+    "dp": "dp1.4"
+   },
+   "pdW": 65,
+   "dsc": null,
+   "ports": {}
+  },
+  "dim": [
+   61.43,
+   19.53,
+   null
+  ],
+  "dimAsListed": [
+   61.43,
+   19.53,
+   51.3
+  ],
+  "price": 32500,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://jp.innocn.com/products/innocn-27d1u-27inch-4k-hdr-procolor-monitor",
+   "https://prtimes.jp/main/html/rd/p/000000315.000090223.html",
+   "https://www.hidetoshitwitt.com/innocn-27d1u-review/"
+  ],
+  "confidence": "medium",
+  "notes": "公式（INNOCN Japan）: 接続端子 HDMI2.0(60Hz)×1、DP1.4(60Hz)×1、Type-C（65W給電, 60Hz）。USB-C の DP のバージョン・DSC は記載なし。USB-A などのハブはない（公式の端子一覧に記載なし、レビューでも「USB-Aポートなどは非搭載」）。公式ストア価格 32,500円（確認時は売り切れ）。寸法は公式に記載がなく、レビュー記事の仕様表（Amazon の商品情報）「513 × 614.3 × 195.3mm」を使用。高さ 51.3cm が最低位置か最高位置か不明のため高さは null（dimAsListed に元の値。高さ調整幅は 100mm）。",
+  "mapsTo": null
+ },
+ {
+  "id": "benq-dp1310",
+  "rankingName": "BenQ beCreatus DP1310",
+  "cat": "dock",
+  "name": "BenQ beCreatus DP1310",
+  "spec": {
+   "up": "usbc",
+   "ports": {
+    "usbc": 1,
+    "usba": 5,
+    "hdmi": 2,
+    "dp": 1
+   },
+   "out": {
+    "hdmi": "hdmi2.0",
+    "dp": "dp1.2"
+   },
+   "pdW": 100
+  },
+  "dim": [
+   15.6,
+   10.3,
+   4.0
+  ],
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.benq.com/ja-jp/docks-hubs/becreatus-dock/dp1310/spec.html",
+   "https://www.atpress.ne.jp/news/378493",
+   "https://kakaku.com/item/K0001665772/"
+  ],
+  "confidence": "high",
+  "notes": "上流は USB-C（10Gbps・PD 100W）と HDMI 2.1 入力の2系統（ボタンで切替）。映像出力は HDMI 2.1（OUT1）・HDMI 2.0（OUT2）・DisplayPort 1.2（OUT3）。USB-C 入力からは3画面とも 4K60 まで（OUT1 の 8K60 / 4K120 は HDMI 2.1 入力のときだけ）なので out.hdmi は hdmi2.0 とした。USB-C 下流 ×1（10Gbps・PD 36W、前面）、USB-A 10Gbps ×3（7.5W）＋ USB 2.0 ×2、RJ45、3.5mm。180W ACアダプター付属。公式ストアの価格は動的表示で取得できず、価格.comも価格登録なし（発売時オープン価格）。",
+  "mapsTo": null
+ },
+ {
+  "id": "magic-kb-numpad",
+  "rankingName": "Apple Magic Keyboard（Touch ID・テンキー付き）",
+  "cat": "keyboard",
+  "name": "Apple Magic Keyboard（Touch ID・テンキー付き）",
+  "spec": {
+   "conn": [
+    "bt",
+    "usbc"
+   ]
+  },
+  "dim": [
+   41.87,
+   11.49,
+   1.09
+  ],
+  "price": 25800,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.apple.com/jp/shop/product/MXK73J/A",
+   "https://www.apple.com/jp/shop/product/MXK83J/A"
+  ],
+  "confidence": "high",
+  "notes": "Appleシリコン搭載Mac用、USB-C 版（JIS）。ホワイトキー 25,800円、ブラックキー 27,800円。高さ 0.41〜1.09cm。Bluetooth／USB-C（ケーブル接続でペアリング・充電）。",
+  "mapsTo": null
+ },
+ {
+  "id": "epomaker-ek21",
+  "rankingName": "EPOMAKER EK21",
+  "cat": "keyboard",
+  "name": "EPOMAKER EK21（テンキー）",
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver",
+    "usbc"
+   ]
+  },
+  "dim": [
+   9.3,
+   13.8,
+   2.9
+  ],
+  "price": 6600,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://epomaker.jp/products/epomaker-ek21",
+   "https://epomaker.com/products/epomaker-ek21",
+   "https://keeb-finder.com/keyboards/epomaker-ek21"
+  ],
+  "confidence": "medium",
+  "notes": "21キーのテンキーパッド。公式: 有線・Bluetooth・2.4GHz の3モード、1000mAh。価格は EPOMAKER 日本公式ストア 6,600円。寸法は公式ページに記載がなく、比較サイト keeb-finder の「29 x 138 x 93 mm」を W93 × D138 × H29 と解釈（向きは推定ではなく、小さい値を高さとした）。",
+  "mapsTo": null
+ },
+ {
+  "id": "keychron-k8-pro",
+  "rankingName": "Keychron K8 Pro",
+  "cat": "keyboard",
+  "name": "Keychron K8 Pro",
+  "spec": {
+   "conn": [
+    "bt",
+    "usbc"
+   ]
+  },
+  "dim": [
+   35.9,
+   12.7,
+   null
+  ],
+  "price": 18480,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.keychron.com/products/keychron-k8-pro-qmk-via-wireless-mechanical-keyboard-japan-jis-layout",
+   "https://www.keychron.com/products/keychron-k8-pro-qmk-via-wireless-mechanical-keyboard",
+   "https://kakaku.com/item/K0001472358/"
+  ],
+  "confidence": "medium",
+  "notes": "TKL（80%）。公式: Bluetooth（3台）＋有線 USB-C。2.4GHz レシーバーはなし。寸法は JIS 版 359 × 127mm（ANSI 版は 355 × 123mm）、高さは公式ページのテキストに記載なし。価格は価格.com最安（ANSI・White LED・ホットスワップモデル K8P-G2）。JIS 版は公式グローバルストアで US$89.99。",
+  "mapsTo": null
+ },
+ {
+  "id": "lofree-flow-lite",
+  "rankingName": "Lofree Flow Lite",
+  "cat": "keyboard",
+  "name": "Lofree Flow Lite (84)",
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver",
+    "usbc"
+   ]
+  },
+  "dim": [
+   31.68,
+   13.8,
+   2.35
+  ],
+  "price": 14394,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.lofree.co/products/flow-lite84-mechanical-keyboard",
+   "https://kakaku.com/item/K0001668702/",
+   "https://kakaku.com/item/K0001697131/"
+  ],
+  "confidence": "medium",
+  "notes": "公式: 2.4GHz・Bluetooth 5.4・USB-C 有線、2,000mAh、316.8 × 138 × 23.5mm（84キー）。価格は価格.com最安（84キー oe921w）。JIS 配列版（oe921wj）は 19,602円。フルサイズの Flow Lite100 もある。公式の日本語ページはなく英語ページを使用。",
+  "mapsTo": null
+ },
+ {
+  "id": "ergo-m575s",
+  "rankingName": "Logicool ERGO M575S",
+  "cat": "mouse",
+  "name": "Logicool ERGO M575SP（トラックボール）",
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver"
+   ]
+  },
+  "dim": [
+   10.0,
+   13.4,
+   4.8
+  ],
+  "price": 8470,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.logicool.co.jp/ja-jp/shop/p/ergo-m575s-wireless-trackball"
+  ],
+  "confidence": "high",
+  "notes": "公式ページの名称は M575SP（Logi Bolt レシーバー付属。M575S はその前の型番）。Bluetooth Low Energy または Logi Bolt。単三電池1本。寸法は公式の 高さ134 × 幅100 × 奥行48mm を W × D × H に読み替え（既存 MX Master 3S と同じ扱い）。ページに 7,700円 の表示もある（セールまたは色違い）。",
+  "mapsTo": null
+ },
+ {
+  "id": "g502x-lightspeed",
+  "rankingName": "Logicool G502 X LIGHTSPEED",
+  "cat": "mouse",
+  "name": "Logicool G G502 X LIGHTSPEED",
+  "spec": {
+   "conn": [
+    "receiver",
+    "usbc"
+   ]
+  },
+  "dim": [
+   7.92,
+   13.14,
+   4.11
+  ],
+  "price": 19360,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://gaming.logicool.co.jp/ja-jp/shop/p/g502-x-wireless-lightforce"
+  ],
+  "confidence": "high",
+  "notes": "LIGHTSPEED USB-A レシーバー＋USB-C 充電ケーブル付属（Bluetooth なし）。幅79.2 × 長さ131.4 × 高さ41.1mm。公式ページは現在 HERO 44K センサー版の説明になっている。",
+  "mapsTo": null
+ },
+ {
+  "id": "mx-ergo",
+  "rankingName": "Logicool MX ERGO",
+  "cat": "mouse",
+  "name": "Logicool MX ERGO（MXTB1s・初代）",
+  "spec": {
+   "conn": [
+    "bt",
+    "receiver"
+   ]
+  },
+  "dim": [
+   9.98,
+   13.25,
+   5.14
+  ],
+  "price": 15500,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://kakaku.com/item/K0000994765/",
+   "https://kakaku.com/item/K0000994765/spec/"
+  ],
+  "confidence": "medium",
+  "notes": "初代（2017年、Micro-USB 充電、Unifying レシーバー）。ロジクール公式の製品ページはなくなっていて（後継は MX ERGO S、既存 mx-ergo-s）、仕様・価格は価格.comを使用。Bluetooth＋無線2.4GHz（Unifying）、164g（プレートなし）。寸法 132.5 × 99.8 × 51.4mm。",
+  "mapsTo": null
+ },
+ {
+  "id": "airpods-4",
+  "rankingName": "Apple AirPods 4",
+  "cat": "audio",
+  "name": "Apple AirPods 4",
+  "spec": {
+   "conn": [
+    "bt"
+   ]
+  },
+  "dim": [
+   5.01,
+   2.12,
+   4.62
+  ],
+  "price": 17900,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://support.apple.com/ja-jp/121203",
+   "https://support.apple.com/ja-jp/121204",
+   "https://kakaku.com/item/K0001651423/"
+  ],
+  "confidence": "high",
+  "notes": "Bluetooth 5.3、ケースは USB-C。寸法は充電ケース（幅50.1 × 厚さ21.2 × 高さ46.2mm）。Apple Store では AirPods 5 に置き換わっていて販売なし。価格は価格.com最安（MXP63J/A）。ノイズキャンセリング搭載モデル（MXP93J/A）は 22,999円。",
+  "mapsTo": null
+ },
+ {
+  "id": "airpods-max",
+  "rankingName": "Apple AirPods Max",
+  "cat": "audio",
+  "name": "Apple AirPods Max（USB-C）",
+  "spec": {
+   "conn": [
+    "bt",
+    "usbc"
+   ]
+  },
+  "dim": [
+   16.86,
+   8.34,
+   18.73
+  ],
+  "price": 56000,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://support.apple.com/ja-jp/121205",
+   "https://support.apple.com/ja-jp/111858",
+   "https://kakaku.com/item/K0001651426/"
+  ],
+  "confidence": "high",
+  "notes": "ランキングに「AirPods Max（USB-C）」の表記があるため USB-C 版（2024年）を採用。Bluetooth 5.0、USB-C で充電・有線ロスレス再生。幅168.6 × 奥行83.4 × 高さ187.3mm、386.2g。Lightning 版（初代, 2020）は同寸法で 384.8g。Apple Store では AirPods Max 2 に置き換わっている。価格は価格.com最安（スターライト。ミッドナイトは 56,912円）。",
+  "mapsTo": null
+ },
+ {
+  "id": "airpods-pro-3",
+  "rankingName": "Apple AirPods Pro 3",
+  "cat": "audio",
+  "name": "Apple AirPods Pro 3",
+  "spec": {
+   "conn": [
+    "bt"
+   ]
+  },
+  "dim": [
+   6.22,
+   2.18,
+   4.72
+  ],
+  "price": 42800,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.apple.com/jp/airpods-pro/specs/",
+   "https://www.apple.com/jp/shop/buy-airpods/airpods-pro-3"
+  ],
+  "confidence": "high",
+  "notes": "現行品。ケースは USB-C／MagSafe／Qi。寸法は充電ケース（幅62.2 × 厚さ21.8 × 高さ47.2mm）。Bluetooth のバージョンは仕様ページで未確認。",
+  "mapsTo": null
+ },
+ {
+  "id": "earpods",
+  "rankingName": "Apple EarPods",
+  "cat": "audio",
+  "name": "Apple EarPods（USB-C）",
+  "spec": {
+   "conn": [
+    "usbc"
+   ]
+  },
+  "dim": null,
+  "price": 2980,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.apple.com/jp/shop/product/MYQY3FE/A",
+   "https://www.apple.com/jp/shop/product/MWU53FE/A"
+  ],
+  "confidence": "medium",
+  "notes": "有線イヤホン。USB-C 版・3.5mm ヘッドフォンプラグ版とも 2,980円（Apple Store）。ランキングの表記では端子が分からないため、現行の USB-C 版を入れた（3.5mm 版なら conn は []、Lightning 版は Apple Store で販売終了）。寸法の記載なし。",
+  "mapsTo": null
+ },
+ {
+  "id": "ath-hl7bt",
+  "rankingName": "Audio-Technica ATH-HL7BT",
+  "cat": "audio",
+  "name": "Audio-Technica ATH-HL7BT",
+  "spec": {
+   "conn": [
+    "bt"
+   ]
+  },
+  "dim": null,
+  "price": 13860,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.audio-technica.co.jp/product/ATH-HL7BT",
+   "https://kakaku.com/item/K0001397166/"
+  ],
+  "confidence": "high",
+  "notes": "開放型ワイヤレスヘッドホン。Bluetooth 5.0（マルチポイント）、充電は USB-C（30cm USB-A→C ケーブル付属）、3.5mm 有線コード付属。約220g。寸法の記載なし。価格は価格.com最安。",
+  "mapsTo": null
+ },
+ {
+  "id": "kanto-yu2",
+  "rankingName": "Kanto YU2",
+  "cat": "audio",
+  "name": "Kanto YU2",
+  "spec": {
+   "conn": null
+  },
+  "dim": [
+   10.0,
+   13.5,
+   15.0
+  ],
+  "price": 35613,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://kakaku.com/item/K0001594621/spec/",
+   "https://kakaku.com/item/K0001594622/"
+  ],
+  "confidence": "low",
+  "notes": "1台あたり 幅100 × 高さ150 × 奥行135mm（2台1組）。AC 電源、ミニプラグ入力・USB 音声入力・サブウーファー出力。USB の端子形状は確認できず conn は null。Kanto 公式サイトの製品一覧に YU2 が見当たらず（YU4 / YU6 のみ）、仕様・価格は価格.com（マットホワイト最安。マットブラック 44,634円）。",
+  "mapsTo": null
+ },
+ {
+  "id": "motu-m2",
+  "rankingName": "MOTU M2",
+  "cat": "audio",
+  "name": "MOTU M2（オーディオインターフェース）",
+  "spec": {
+   "conn": [
+    "usbc"
+   ]
+  },
+  "dim": [
+   19.05,
+   10.8,
+   4.5
+  ],
+  "price": 35970,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://motu.com/en-us/products/m-series/m2/specs/",
+   "https://kakaku.com/item/K0001214536/"
+  ],
+  "confidence": "high",
+  "notes": "2in/2out。USB-C（USB 2.0 オーディオクラス準拠）、USB バスパワー（消費電力の記載なし → chargeW なし）。寸法は筐体のみ W × D × H。XLR/TRS コンボ入力 ×2（48V ファンタム）、MIDI 入出力。価格は価格.com最安。",
+  "mapsTo": null
+ },
+ {
+  "id": "sm7b",
+  "rankingName": "Shure SM7B",
+  "cat": "camera",
+  "name": "Shure SM7B",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 59799,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://kanjitsu.com/product/sm7b/",
+   "https://pubs.shure.com/view/guide/SM7B/en-US.pdf",
+   "https://kakaku.com/item/K0000005405/"
+  ],
+  "confidence": "high",
+  "notes": "XLR 出力のダイナミックマイク（ファンタム電源不要）。PC に直接つなげないため、オーディオインターフェースが必要（conn は []）。298g（国内代理店の仕様。Shure のユーザーガイドは 0.764kg で食い違い）。デスクスタンドは付属せず（ヨーク付きでマイクスタンド／アームに取り付ける）ため dim は null。寸法図は PDF の画像のみ。価格は価格.com最安。",
+  "mapsTo": null
+ },
+ {
+  "id": "fifine-k688",
+  "rankingName": "FIFINE K688",
+  "cat": "camera",
+  "name": "FIFINE AmpliTank K688",
+  "spec": {
+   "conn": null
+  },
+  "dim": null,
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://fifinemicrophone.com/products/fifine-amplitank-k688-microphone"
+  ],
+  "confidence": "low",
+  "notes": "USB と XLR の両方で使えるダイナミックマイク。本体は USB-C 端子とされるが、付属ケーブルの PC 側の形状は公式ページのテキストで確認できず conn は null。XLR で使う場合はオーディオインターフェースが必要。単品はショックマウント付き・スタンドなし（デスクスタンド付きバンドルもある）ため dim は null。日本の公式価格・価格.comの登録なし（公式グローバルストア US$72.99）。ランキングの K688W は白色版とみられる。",
+  "mapsTo": null
+ },
+ {
+  "id": "at2020",
+  "rankingName": "Audio-Technica AT2020",
+  "cat": "camera",
+  "name": "Audio-Technica AT2020",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 13068,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.audio-technica.co.jp/product/AT2020",
+   "https://kakaku.com/item/K0000154602/",
+   "https://kakaku.com/item/K0001661980/"
+  ],
+  "confidence": "high",
+  "notes": "XLR（3ピンXLR-M）のコンデンサーマイク。48V ファンタム電源が必要なので、オーディオインターフェースが必要（conn は []）。長さ160mm・最大径52mm・345g。付属はスタンドマウント AT8466（デスクスタンドなし）のため dim は null。USB 版の AT2020USB-X は別製品。価格は価格.com最安（ランキングの「AT2020 CWH」は白の限定色で 22,000円）。",
+  "mapsTo": null
+ },
+ {
+  "id": "blue-yeti",
+  "rankingName": "Logicool G Blue Yeti",
+  "cat": "camera",
+  "name": "Logicool G Yeti（Blue Yeti）",
+  "spec": {
+   "conn": null
+  },
+  "dim": [
+   12.5,
+   12.0,
+   29.5
+  ],
+  "price": 24750,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://gaming.logicool.co.jp/ja-jp/shop/p/yeti-premium-usb-microphone",
+   "https://kakaku.com/item/K0001412411/"
+  ],
+  "confidence": "medium",
+  "notes": "USB マイク（デスクトップスタンド付属）。公式は「USBケーブル」とだけ書いていて、端子の形状（PC 側・マイク側）は確認できず conn は null。寸法は公式の 高さ29.5 × 幅12.5 × 長さ12cm を使用。公式ページには「スタンド」「マイクのみ」「スタンドに装着時」の3区分があるが寸法は1組しか出ていないため、スタンド装着時とみなした。重量は 0.5 / 0.88 / 1.4kg。公式ストア価格 24,750円（価格.com最安 22,418円）。",
+  "mapsTo": null
+ },
+ {
+  "id": "mv7",
+  "rankingName": "Shure MV7（初代）",
+  "cat": "camera",
+  "name": "Shure MV7（初代）",
+  "spec": {
+   "conn": [
+    "usbc",
+    "usba"
+   ]
+  },
+  "dim": null,
+  "price": 31980,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://pubs.shure.com/view/guide/MV7/en-US.pdf",
+   "https://kakaku.com/item/K0001309893/"
+  ],
+  "confidence": "medium",
+  "notes": "初代 MV7（2020年）。マイク側は Micro-B USB と XLR。Micro-B→USB-A と Micro-B→USB-C の2本のケーブルが付属（Shure ユーザーガイド）。USB バスパワー、ファンタム電源不要。0.55kg。デスクスタンドは付属しないため dim は null（ヨーク込みの寸法図は PDF の画像のみ）。後継は MV7+（既存 mv7plus）。価格は価格.com最安（MV7-K-J）。",
+  "mapsTo": null
+ },
+ {
+  "id": "cofo-arm-pro",
+  "rankingName": "COFO 無重力モニターアーム Pro",
+  "cat": "arm",
+  "name": "COFO Monitor Arm Pro（シングル）",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 21980,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://cofo.jp/products/monitorarm-pro"
+  ],
+  "confidence": "high",
+  "notes": "公式ストア価格 シングル 21,980円、デュアル 32,980円。耐荷重 約2.5〜14kg（各アーム）、推奨 17〜40インチ、VESA 75/100。全体寸法 シングル 567×115×592mm。クランプ 10〜50mm、グロメット 10〜55mm。",
+  "mapsTo": null
+ },
+ {
+  "id": "flo-arm",
+  "rankingName": "Herman Miller Flo モニターアーム",
+  "cat": "arm",
+  "name": "Herman Miller Flo モニターアーム",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 51700,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://hermanmiller.co.jp/products/flo-now-monitor-arm",
+   "https://www.casestudynagoya.jp/SHOP/cbs-flo-monitor-arms.html"
+  ],
+  "confidence": "medium",
+  "notes": "価格はハーマンミラーストアの現行「フローモニターアーム」（Flo Now）51,700円。現行品は 2〜7kg、最大32インチ（16:9）/34インチ（21:9）、VESA 75/100。旧 Flo（ランキングの「CBS Flo」）は 2025年4月の Flo Now 発売で在庫販売終了、耐荷重は 2.7〜9kg（正規販売店の情報）。",
+  "mapsTo": null
+ },
+ {
+  "id": "ergotron-hx",
+  "rankingName": "エルゴトロン HX モニターアーム",
+  "cat": "arm",
+  "name": "エルゴトロン HX デスクモニターアーム",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 43205,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://kakaku.com/item/K0000940923/",
+   "https://kakaku.com/item/K0001322422/",
+   "https://kakaku.com/item/K0000965619/",
+   "https://www.monotaro.com/g/04436745/"
+  ],
+  "confidence": "medium",
+  "notes": "エルゴトロン公式サイトはアクセスできず（403）、販売店の情報を使用。9.1〜19.1kg、49インチまで、クランプ 66mm 厚まで。価格は価格.com最安（ホワイト 45-475-216。アルミ 44,220円、マットブラック 46,500円）。",
+  "mapsTo": null
+ },
+ {
+  "id": "flexispot-e7h",
+  "rankingName": "FlexiSpot E7H",
+  "cat": "furniture",
+  "name": "FlexiSpot E7H 電動昇降デスク（脚のみ）",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 63800,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.flexispot.jp/e7h.html"
+  ],
+  "confidence": "high",
+  "notes": "公式ストア 63,800円（脚フレームのみ）。昇降範囲 63.5〜128.5cm、脚幅 110〜190cm、耐荷重 160kg、デュアルモーター・3段。対応天板 幅120〜200 × 奥行60〜80cm × 厚み2cm以上。",
+  "mapsTo": null
+ },
+ {
+  "id": "kanademono-top",
+  "rankingName": "KANADEMONO 天板",
+  "cat": "furniture",
+  "name": "KANADEMONO THE BOARD（天板）",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 35800,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://kanademono.design/products/tt-k03-un",
+   "https://kanademono.design/products/tt-k29-xl"
+  ],
+  "confidence": "medium",
+  "notes": "サイズ・素材を選ぶオーダー天板で価格は構成で大きく変わる。price は公式ストアの最安構成（THE BOARD / ラバーウッド 無塗装）。リノリウム（ランキングに「リノリウム天板」あり）は W161〜180cm で 92,000円。ランキングの例: 140×70cm、180×72cm。",
+  "mapsTo": null
+ },
+ {
+  "id": "flexispot-e8",
+  "rankingName": "FlexiSpot E8",
+  "cat": "furniture",
+  "name": "FlexiSpot E8 電動昇降デスク（脚のみ）",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 66000,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.flexispot.jp/e8-bamboo.html"
+  ],
+  "confidence": "high",
+  "notes": "公式ストア 66,000円（脚フレームのみ、天板「無し」を選んだ場合）。昇降範囲 60〜125cm、脚幅 110〜190cm、耐荷重 125kg、楕円形の支柱・3段。対応天板 幅120〜200 × 奥行60〜80cm × 厚み2cm以上。",
+  "mapsTo": null
+ },
+ {
+  "id": "sayl",
+  "rankingName": "Herman Miller セイルチェア",
+  "cat": "furniture",
+  "name": "Herman Miller セイルチェア",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 116600,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://hermanmiller.co.jp/products/sayl-chair"
+  ],
+  "confidence": "high",
+  "notes": "ハーマンミラーストアの最安構成（ブラックフレーム/ブラックベース）116,600円。フレーム・ベース・張地で 122,100〜145,200円、ゲーミングエディションは 134,200円。",
+  "mapsTo": null
+ },
+ {
+  "id": "breenhill-mat",
+  "rankingName": "BREENHILL フェルトデスクマット",
+  "cat": "furniture",
+  "name": "BREENHILL フェルトデスクマット",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.amazon.co.jp/dp/B0CGMXRFWF",
+   "https://www.amazon.co.jp/dp/B0C16R4SGF"
+  ],
+  "confidence": "low",
+  "notes": "Amazon 専売ブランド。ランキングの例は 120×50cm（ほかに 90×40×0.3cm など）。Amazon のページは取得できず、検索結果の抜粋では 120×50cm が 3,106円（未確認のため price は null）。",
+  "mapsTo": null
+ },
+ {
+  "id": "flexispot-c7-morpher",
+  "rankingName": "FlexiSpot C7 Morpher",
+  "cat": "furniture",
+  "name": "FlexiSpot C7 Morpher（オフィスチェア）",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 96800,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.flexispot.jp/c7-morpher.html"
+  ],
+  "confidence": "high",
+  "notes": "公式ストア 96,800円。幅70 × 奥行71.5 × 高さ108〜141.5cm、座面高 44.5〜53.4cm、リクライニング 90〜135°（最大160°）、耐荷重 136kg、26.6kg。",
+  "mapsTo": null
+ },
+ {
+  "id": "flexispot-e7-pro",
+  "rankingName": "FlexiSpot E7 Pro",
+  "cat": "furniture",
+  "name": "FlexiSpot E7 Pro 電動昇降デスク（脚のみ）",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 61600,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.flexispot.jp/e7-pro.html"
+  ],
+  "confidence": "high",
+  "notes": "公式ストア 61,600円（脚フレームのみ）。コの字型フレーム（支柱が奥）。昇降範囲 60〜125cm、脚幅 110〜190cm、耐荷重 100kg、デュアルモーター・3段。対応天板 幅120〜200 × 奥行60〜80cm × 厚み2cm以上。",
+  "mapsTo": null
+ },
+ {
+  "id": "flexispot-top",
+  "rankingName": "FlexiSpot 純正天板",
+  "cat": "furniture",
+  "name": "FlexiSpot 純正天板",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 9900,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.flexispot.jp/desktop-rectangle.html",
+   "https://www.flexispot.jp/solid-wood-tabletop.html",
+   "https://www.flexispot.jp/e7h.html"
+  ],
+  "confidence": "medium",
+  "notes": "price は公式ストアの長方形メラミン天板の最安（100×60×2.5cm）。サイズは 100×60 / 120×60 / 140×70 / 160×70 / 180×80cm（ランキングの「天板 160」は 160×70cm）。無垢材天板（140×70×2.5cm）は 56,800円。ランキングの「無垢材天板ウォールナット」の単品価格はページから取れなかった。",
+  "mapsTo": null
+ },
+ {
+  "id": "palmwork-chair",
+  "rankingName": "Palmwork パームワークチェア",
+  "cat": "furniture",
+  "name": "Palmwork パームワークチェア",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 79000,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://palmwork.jp/palmwork-chair"
+  ],
+  "confidence": "high",
+  "notes": "公式ストア 79,000円（税込。定価表示 99,000円）。ヘッドレストは別売 9,900円。120日間の返品・返金保証。",
+  "mapsTo": null
+ },
+ {
+  "id": "palmwork-desk",
+  "rankingName": "Palmwork 電動昇降デスク",
+  "cat": "furniture",
+  "name": "Palmwork パームワーク昇降デスク",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 99000,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://luminochrome.jp/archives/palmwork-desk.html"
+  ],
+  "confidence": "low",
+  "notes": "公式サイトの製品一覧から消えていて（https://palmwork.jp/palmwork-desk は現在ページなし）、販売終了とみられる。仕様・価格はレビュー記事に載っていた公式情報: 天板 120/140/160 × 60 × 2.5cm（無垢ラバーウッド）、昇降範囲 61〜125cm、積載 125kg、価格 120cm 99,000円・140cm 105,000円・160cm 111,000円。",
+  "mapsTo": null
+ },
+ {
+  "id": "growspica-elite",
+  "rankingName": "RASICAL Growspica Elite",
+  "cat": "furniture",
+  "name": "Rasical GrowSpica Elite",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 71840,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://kakaku.com/item/K0001639104/",
+   "https://www.rasical.com/products/growspica-workchair-elite"
+  ],
+  "confidence": "medium",
+  "notes": "RASICAL 公式ストアでは販売ページがトップへ転送され、交換パーツのみ掲載（後継は Rasical Chair Elite、79,999円）。価格は価格.com最安（ブラック）。",
+  "mapsTo": null
+ },
+ {
+  "id": "growspica-pro",
+  "rankingName": "RASICAL Growspica Pro",
+  "cat": "furniture",
+  "name": "Rasical GrowSpica Pro",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://store.shopping.yahoo.co.jp/seedsneeds/growspicapro-bai.html",
+   "https://no-review-no-life.com/rasical-growspica-compare-elite-pro/"
+  ],
+  "confidence": "low",
+  "notes": "公式ストアに販売ページなし（販売終了とみられる）、価格.comにも登録なし。価格は確認できず null。",
+  "mapsTo": null
+ },
+ {
+  "id": "sihoo-c300-pro",
+  "rankingName": "SIHOO Doro C300 Pro",
+  "cat": "furniture",
+  "name": "SIHOO Doro C300 Pro",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 74999,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://sihoooffice.co.jp/products/sihoo-c300-pro",
+   "https://sihoooffice.co.jp/products/sihoo-c300-pro-v2"
+  ],
+  "confidence": "high",
+  "notes": "SIHOO 日本公式ストアの通常価格 74,999円（セール 63,199円）。フットレスト付きは 83,999円。後継の C300 PRO V2 は 90,099円（セール 72,079円）。",
+  "mapsTo": null
+ },
+ {
+  "id": "ysagi-mat",
+  "rankingName": "YSAGi デスクマット",
+  "cat": "furniture",
+  "name": "YSAGi PUレザー デスクマット",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.amazon.co.jp/dp/B08CZ28H7K",
+   "https://www.amazon.co.jp/dp/B0BZYT4J7C"
+  ],
+  "confidence": "low",
+  "notes": "Amazon 専売ブランドの PU レザーマット。サイズは 60×35 / 80×40 / 90×43 / 100×55cm などがある。Amazon のページは取得できず、価格は未確認（null）。",
+  "mapsTo": null
+ },
+ {
+  "id": "sanwa-mat-6030",
+  "rankingName": "サンワサプライ デスクマット 600×300",
+  "cat": "furniture",
+  "name": "サンワサプライ フェルトデスクマット 600×300（MPD-FLT2BK）",
+  "spec": {
+   "conn": []
+  },
+  "dim": null,
+  "price": 1298,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.esupply.co.jp/ItemPage/MPD-FLT2BK"
+  ],
+  "confidence": "high",
+  "notes": "W600 × D300 × H4mm、約290g、表面フェルト・裏面天然ゴム。価格はサンワダイレクト（サンワサプライ直販）。グレーは MPD-FLT2GY。",
+  "mapsTo": null
+ },
+ {
+  "id": "anker-nano-station",
+  "rankingName": "Anker Nano Charging Station",
+  "cat": "charger",
+  "name": "Anker Nano Charging Station (6-in-1, 67W)",
+  "spec": {
+   "ports": {
+    "usbc": 2,
+    "usba": 2
+   },
+   "totalW": 65,
+   "portW": 67
+  },
+  "dim": [
+   10.0,
+   9.3,
+   1.9
+  ],
+  "price": 6990,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.ankerjapan.com/products/a9129"
+  ],
+  "confidence": "medium",
+  "notes": "AC差込口 ×2、USB-C ×2、USB-A ×2。製品名と説明は「最大67W」、仕様表の合計最大出力は「65W（USBポートのみ）」で食い違うため、そのまま totalW 65・portW 67 とした（ポートごとの出力表は画像のみで未確認）。約100 × 93 × 19mm、298g。",
+  "mapsTo": null
+ },
+ {
+  "id": "ipad-pro-m4",
+  "rankingName": "Apple iPad Pro (M4)",
+  "cat": "mobile",
+  "name": "iPad Pro (M4)",
+  "spec": {
+   "conn": [
+    "usbc"
+   ],
+   "chargeW": 20
+  },
+  "dim": null,
+  "price": null,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://support.apple.com/ja-jp/119892",
+   "https://support.apple.com/ja-jp/119891"
+  ],
+  "confidence": "high",
+  "notes": "2024年モデル。販売終了（現行は M5）のため価格なし。Thunderbolt / USB 4 ポート、20W USB-C電源アダプタ付属。ランキングの表記ではサイズが分からないため dim は null。11インチ: 幅177.5 × 高さ249.7 × 厚さ5.3mm、13インチ: 215.5 × 281.6 × 5.1mm。",
+  "mapsTo": null
+ },
+ {
+  "id": "ipad-pro11-m5",
+  "rankingName": "Apple iPad Pro 11\" (M5)",
+  "cat": "mobile",
+  "name": "iPad Pro 11\" (M5)",
+  "spec": {
+   "conn": [
+    "usbc"
+   ],
+   "chargeW": 20
+  },
+  "dim": [
+   17.75,
+   24.97,
+   0.53
+  ],
+  "price": 209800,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://www.apple.com/jp/ipad-pro/specs/",
+   "https://www.apple.com/jp/shop/buy-ipad/ipad-pro"
+  ],
+  "confidence": "high",
+  "notes": "現行品。20W USB-C電源アダプタ付属（別売 40W ダイナミック電源アダプタで高速充電）。寸法は机に平置きしたとき（幅177.5 × 高さ249.7 × 厚さ5.3mm）。Apple Store の最安構成 209,800円。",
+  "mapsTo": null
+ },
+ {
+  "id": "ipad-mini-a17pro",
+  "rankingName": "Apple iPad mini (A17 Pro)",
+  "cat": "mobile",
+  "name": "iPad mini (A17 Pro)",
+  "spec": {
+   "conn": [
+    "usbc"
+   ],
+   "chargeW": 20
+  },
+  "dim": [
+   13.48,
+   19.54,
+   0.63
+  ],
+  "price": 99800,
+  "priceDate": "2026-09",
+  "sources": [
+   "https://support.apple.com/ja-jp/121456",
+   "https://www.apple.com/jp/shop/buy-ipad/ipad-mini"
+  ],
+  "confidence": "high",
+  "notes": "現行品。USB-C、20W USB-C電源アダプタ付属。寸法は平置き（幅134.8 × 高さ195.4 × 厚さ6.3mm）。Apple Store の最安構成 99,800円。",
+  "mapsTo": null
+ }
+]
