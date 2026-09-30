@@ -1,0 +1,5305 @@
+{
+ "checked": "2026-09-30",
+ "posts": [
+  {
+   "creator": "ちから（ちからの作業部屋【インズノート】）",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=FpX3jBlGOcc",
+   "date": "2025-12-26",
+   "devices": [
+    {
+     "raw": "PREDUCTS DESK METRO DARK for FLEXISPOT",
+     "cat": "furniture",
+     "cid": null,
+     "name": "PREDUCTS DESK METRO",
+     "ambiguous": false
+    },
+    {
+     "raw": "FLEXISPOT E7Pro",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E7 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "Studio Display",
+     "cat": "monitor",
+     "cid": "studio-display",
+     "name": "Apple Studio Display（初代）",
+     "ambiguous": false
+    },
+    {
+     "raw": "iPad Pro 12.9インチ",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad Pro 12.9\"",
+     "ambiguous": false
+    },
+    {
+     "raw": "Anker Nano Charging Station",
+     "cat": "charger",
+     "cid": null,
+     "name": "Anker Nano Charging Station",
+     "ambiguous": false
+    },
+    {
+     "raw": "COFO モニターアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "COFO 無重力モニターアーム（無印／Pro 不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "iggy モニターアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "iggy モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "AIYIMA S400",
+     "cat": "audio",
+     "cid": null,
+     "name": "AIYIMA S400",
+     "ambiguous": false
+    },
+    {
+     "raw": "MOTU M2",
+     "cat": "audio",
+     "cid": null,
+     "name": "MOTU M2",
+     "ambiguous": false
+    },
+    {
+     "raw": "SHURE SM7dB",
+     "cat": "camera",
+     "cid": null,
+     "name": "Shure SM7dB",
+     "ambiguous": false
+    },
+    {
+     "raw": "AirPods Max",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple AirPods Max",
+     "ambiguous": false
+    },
+    {
+     "raw": "AirPods 4",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple AirPods 4",
+     "ambiguous": false
+    },
+    {
+     "raw": "AirPods Pro 3",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple AirPods Pro 3",
+     "ambiguous": false
+    },
+    {
+     "raw": "Nothing Headphone (1)",
+     "cat": "audio",
+     "cid": null,
+     "name": "Nothing Headphone (1)",
+     "ambiguous": false
+    },
+    {
+     "raw": "NAYA CREATE",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "NAYA Create",
+     "ambiguous": false
+    },
+    {
+     "raw": "LOFREE FLOW 2",
+     "cat": "keyboard",
+     "cid": "lofree-flow2",
+     "name": "Lofree Flow 2 (84)",
+     "ambiguous": false
+    },
+    {
+     "raw": "LiberNovo Omni",
+     "cat": "furniture",
+     "cid": null,
+     "name": "LiberNovo Omni",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "家活男子のススメ",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=KVc6mAZ22o0",
+   "date": "2025-03-07",
+   "devices": [
+    {
+     "raw": "PC M2 PRO Mac mini",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple Mac mini (M2 Pro)",
+     "ambiguous": false
+    },
+    {
+     "raw": "27インチ INNOCN 27M2U Lite",
+     "cat": "monitor",
+     "cid": null,
+     "name": "INNOCN 27M2U Lite",
+     "ambiguous": false
+    },
+    {
+     "raw": "アイケアモニター GW2790QT (27インチ）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "BenQ GW2790QT",
+     "ambiguous": true
+    },
+    {
+     "raw": "EHOMEWEI モバイルモニター 15.6インチ 有機EL 4K",
+     "cat": "monitor",
+     "cid": null,
+     "name": "EHOMEWEI 15.6\" 有機EL 4K モバイルモニター",
+     "ambiguous": false
+    },
+    {
+     "raw": "BenQ ScreenBar Halo",
+     "cat": "lighting",
+     "cid": "screenbar-halo",
+     "name": "BenQ ScreenBar Halo",
+     "ambiguous": false
+    },
+    {
+     "raw": "BenQ LaptopBar",
+     "cat": "lighting",
+     "cid": null,
+     "name": "BenQ LaptopBar",
+     "ambiguous": false
+    },
+    {
+     "raw": "HHKB Professional HYBRID Type-S 無刻印／白（英語配列）",
+     "cat": "keyboard",
+     "cid": "hhkb-hybrid",
+     "name": "HHKB Professional HYBRID Type-S",
+     "ambiguous": false
+    },
+    {
+     "raw": "Lofree Flow",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Lofree Flow（初代）",
+     "ambiguous": false
+    },
+    {
+     "raw": "Magic Trackpad",
+     "cat": "mouse",
+     "cid": "magic-trackpad",
+     "name": "Apple Magic Trackpad",
+     "ambiguous": false
+    },
+    {
+     "raw": "MX ERGO MXTB1s",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool MX ERGO",
+     "ambiguous": true
+    },
+    {
+     "raw": "SHURE SM7B",
+     "cat": "camera",
+     "cid": null,
+     "name": "Shure SM7B",
+     "ambiguous": false
+    },
+    {
+     "raw": "EVO４ オーディオインターフェース",
+     "cat": "audio",
+     "cid": null,
+     "name": "Audient EVO 4",
+     "ambiguous": false
+    },
+    {
+     "raw": "Genelec G Two",
+     "cat": "audio",
+     "cid": null,
+     "name": "Genelec G Two",
+     "ambiguous": false
+    },
+    {
+     "raw": "エルゴトロン LX デスク45-490-216",
+     "cat": "arm",
+     "cid": "ergotron-lx",
+     "name": "エルゴトロン LX モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "BenQ beCreatus DP1310 13-in-1",
+     "cat": "dock",
+     "cid": null,
+     "name": "BenQ beCreatus DP1310",
+     "ambiguous": false
+    },
+    {
+     "raw": "COLBOR CL60",
+     "cat": "lighting",
+     "cid": null,
+     "name": "COLBOR CL60",
+     "ambiguous": false
+    },
+    {
+     "raw": "COLBOR W100",
+     "cat": "lighting",
+     "cid": null,
+     "name": "COLBOR W100",
+     "ambiguous": false
+    },
+    {
+     "raw": "COLBOR CP30",
+     "cat": "lighting",
+     "cid": null,
+     "name": "COLBOR CP30",
+     "ambiguous": false
+    },
+    {
+     "raw": "M01 4-in-1 Folding MagSafe Charging Station",
+     "cat": "mobile",
+     "cid": null,
+     "name": "M01 4-in-1 MagSafe Charging Station",
+     "ambiguous": false
+    },
+    {
+     "raw": "Palmwork 電動昇降デスク",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Palmwork 電動昇降デスク",
+     "ambiguous": false
+    },
+    {
+     "raw": "IKEA エークバッケン",
+     "cat": "furniture",
+     "cid": null,
+     "name": "IKEA EKBACKEN 天板",
+     "ambiguous": false
+    },
+    {
+     "raw": "ラシカル Growspica Elite",
+     "cat": "furniture",
+     "cid": null,
+     "name": "RASICAL Growspica Elite",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスクマット フェルト 羊毛 … 330x830",
+     "cat": "furniture",
+     "cid": null,
+     "name": "フェルトデスクマット（ブランド不明）",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "すばる（Tigerwall）",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=RLtodiEdS_A",
+   "date": "2025-01-12",
+   "devices": [
+    {
+     "raw": "Flexispot E7",
+     "cat": "furniture",
+     "cid": "flexispot-e7",
+     "name": "FlexiSpot E7 電動昇降デスク",
+     "ambiguous": false
+    },
+    {
+     "raw": "Dell G3223Q",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell G3223Q",
+     "ambiguous": false
+    },
+    {
+     "raw": "VisionOwl モバイルモニター(14型)",
+     "cat": "monitor",
+     "cid": null,
+     "name": "VisionOwl 14\" モバイルモニター",
+     "ambiguous": false
+    },
+    {
+     "raw": "KRK Rokit RP5G4",
+     "cat": "audio",
+     "cid": null,
+     "name": "KRK ROKIT RP5 G4",
+     "ambiguous": false
+    },
+    {
+     "raw": "Xiaomi Mijia モニターライト",
+     "cat": "lighting",
+     "cid": "xiaomi-lightbar",
+     "name": "Xiaomi Mi モニター掛け式ライト",
+     "ambiguous": false
+    },
+    {
+     "raw": "Fifine K688",
+     "cat": "camera",
+     "cid": null,
+     "name": "FIFINE K688",
+     "ambiguous": false
+    },
+    {
+     "raw": "Arturia MiniFuse 2",
+     "cat": "audio",
+     "cid": null,
+     "name": "Arturia MiniFuse 2",
+     "ambiguous": false
+    },
+    {
+     "raw": "Audio Technica ATH-M50",
+     "cat": "audio",
+     "cid": null,
+     "name": "Audio-Technica ATH-M50",
+     "ambiguous": false
+    },
+    {
+     "raw": "Mode Encore",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Mode Designs Encore",
+     "ambiguous": false
+    },
+    {
+     "raw": "Razer Basilisk V3 Pro",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Razer Basilisk V3 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "Logicool MX Master 3S",
+     "cat": "mouse",
+     "cid": "mx-master-3s",
+     "name": "Logicool MX Master 3S",
+     "ambiguous": false
+    },
+    {
+     "raw": "Diverse System works.14 Deskmat",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Diverse System works.14 デスクマット",
+     "ambiguous": false
+    },
+    {
+     "raw": "CalDigit TS4",
+     "cat": "dock",
+     "cid": "caldigit-ts4",
+     "name": "CalDigit TS4",
+     "ambiguous": false
+    },
+    {
+     "raw": "IQUNIX ZX-1 + 自作PC（i5 12600K / RTX 3060Ti）",
+     "cat": "computer",
+     "cid": null,
+     "name": "自作PC",
+     "ambiguous": false
+    },
+    {
+     "raw": "COFO Chair Pro",
+     "cat": "furniture",
+     "cid": null,
+     "name": "COFO Chair Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "Cozyleigh Studios Zen MagSafe Charger Stand",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Cozyleigh Zen MagSafe Charger Stand",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "えふぃる（efiL）",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=qQU9XWh-rKQ",
+   "date": "2025-05-06",
+   "devices": [
+    {
+     "raw": "4Kモニター｜Dell U3225QE",
+     "cat": "monitor",
+     "cid": "u3225qe",
+     "name": "Dell U3225QE",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターライト｜BenQ ScreenBar Halo",
+     "cat": "lighting",
+     "cid": "screenbar-halo",
+     "name": "BenQ ScreenBar Halo",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターアーム｜Herman Miller Flo",
+     "cat": "arm",
+     "cid": null,
+     "name": "Herman Miller Flo モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "オーディオIF｜RME Babyface Pro FS",
+     "cat": "audio",
+     "cid": null,
+     "name": "RME Babyface Pro FS",
+     "ambiguous": false
+    },
+    {
+     "raw": "ノートPC｜Apple M3 MacBook Pro",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Pro 14\" (M3)",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード｜Lofree Flow Lite",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Lofree Flow Lite",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード｜Logicool MX Keys Mini",
+     "cat": "keyboard",
+     "cid": "mx-keys-mini",
+     "name": "Logicool MX Keys Mini",
+     "ambiguous": false
+    },
+    {
+     "raw": "トラックボールマウス｜Logicool ERGO M575SP",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool ERGO M575S",
+     "ambiguous": false
+    },
+    {
+     "raw": "スピーカー｜GENELEC 8010A",
+     "cat": "audio",
+     "cid": null,
+     "name": "Genelec 8010A",
+     "ambiguous": false
+    },
+    {
+     "raw": "ワイヤレスイヤホン｜Apple AirPods Pro",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple AirPods Pro（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "有線イヤホン｜audio-technica ATH-EQ300M",
+     "cat": "audio",
+     "cid": null,
+     "name": "Audio-Technica ATH-EQ300M",
+     "ambiguous": false
+    },
+    {
+     "raw": "サブ有線イヤホン｜final VR500",
+     "cat": "audio",
+     "cid": null,
+     "name": "final VR500",
+     "ambiguous": false
+    },
+    {
+     "raw": "コンデンサーマイク｜audio-technica AT2020 CWH",
+     "cat": "camera",
+     "cid": null,
+     "name": "Audio-Technica AT2020",
+     "ambiguous": false
+    },
+    {
+     "raw": "オフィスチェア｜Palmwork サニーチェア",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Palmwork サニーチェア",
+     "ambiguous": false
+    },
+    {
+     "raw": "オフィスチェア｜Palmwork パームワークチェア",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Palmwork パームワークチェア",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスク｜Palmwork パームワーク昇降デスク",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Palmwork 電動昇降デスク",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "さいちょう",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=r6V86-BGIt4",
+   "date": "2025-12-05",
+   "devices": [
+    {
+     "raw": "FLEXISPOT E7Q",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E7Q",
+     "ambiguous": false
+    },
+    {
+     "raw": "コクヨ ETHOS CRS-G1600NN",
+     "cat": "furniture",
+     "cid": null,
+     "name": "KOKUYO ETHOS",
+     "ambiguous": false
+    },
+    {
+     "raw": "NEEWER TL120C",
+     "cat": "lighting",
+     "cid": null,
+     "name": "NEEWER TL120C",
+     "ambiguous": false
+    },
+    {
+     "raw": "富士通 QUADERNO A4 (Gen.2)",
+     "cat": "mobile",
+     "cid": null,
+     "name": "富士通 QUADERNO A4 (Gen.2)",
+     "ambiguous": false
+    },
+    {
+     "raw": "Razer Naga Left-Handed Edition",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Razer Naga Left-Handed Edition",
+     "ambiguous": false
+    },
+    {
+     "raw": "Razer Huntsman Mini",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Razer Huntsman Mini",
+     "ambiguous": false
+    },
+    {
+     "raw": "IDOBAO ID42",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "IDOBAO ID42",
+     "ambiguous": false
+    },
+    {
+     "raw": "Keychron Q0 Max",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Keychron Q0 Max",
+     "ambiguous": false
+    },
+    {
+     "raw": "HUION Kamvas Pro24 (4K)",
+     "cat": "monitor",
+     "cid": null,
+     "name": "HUION Kamvas Pro 24 (4K)",
+     "ambiguous": false
+    },
+    {
+     "raw": "エルゴトロン LX デスクモニターアーム",
+     "cat": "arm",
+     "cid": "ergotron-lx",
+     "name": "エルゴトロン LX モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "FiiO K9 Pro ESS",
+     "cat": "audio",
+     "cid": null,
+     "name": "FiiO K9 Pro ESS",
+     "ambiguous": false
+    },
+    {
+     "raw": "SONY MDR-CD900ST",
+     "cat": "audio",
+     "cid": null,
+     "name": "Sony MDR-CD900ST",
+     "ambiguous": false
+    },
+    {
+     "raw": "Kuycon G27-X",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Kuycon G27X",
+     "ambiguous": false
+    },
+    {
+     "raw": "Dell U2723QE",
+     "cat": "monitor",
+     "cid": "u2723qe",
+     "name": "Dell U2723QE",
+     "ambiguous": false
+    },
+    {
+     "raw": "INNOCN 27D1U",
+     "cat": "monitor",
+     "cid": null,
+     "name": "INNOCN 27D1U",
+     "ambiguous": false
+    },
+    {
+     "raw": "BenQ ScreenBar Pro",
+     "cat": "lighting",
+     "cid": "screenbar-pro",
+     "name": "BenQ ScreenBar Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "HUANUO HNDS8",
+     "cat": "arm",
+     "cid": null,
+     "name": "HUANUO HNDS8",
+     "ambiguous": false
+    },
+    {
+     "raw": "UGREEN 7ポートUSBハブ",
+     "cat": "dock",
+     "cid": null,
+     "name": "UGREEN 7ポートUSBハブ",
+     "ambiguous": true
+    },
+    {
+     "raw": "Sennheiser BT T100",
+     "cat": "audio",
+     "cid": null,
+     "name": "Sennheiser BT T100",
+     "ambiguous": false
+    },
+    {
+     "raw": "Sennheiser HD 350BT",
+     "cat": "audio",
+     "cid": null,
+     "name": "Sennheiser HD 350BT",
+     "ambiguous": false
+    },
+    {
+     "raw": "Lenovo IdeaCentre Mini Gen 8",
+     "cat": "computer",
+     "cid": null,
+     "name": "Lenovo IdeaCentre Mini Gen 8",
+     "ambiguous": false
+    },
+    {
+     "raw": "iPhone 16e",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPhone 16e",
+     "ambiguous": false
+    },
+    {
+     "raw": "Anker Prime Charger (250W, 6 Ports, GaN)",
+     "cat": "charger",
+     "cid": null,
+     "name": "Anker Prime Charger (250W, 6 Ports, GaN)",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "しょうご（前略、物欲が止まりません。）",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=GBRuJ5txYYQ",
+   "date": "2025-01-25",
+   "devices": [
+    {
+     "raw": "電動式昇降デスク｜FlexiSpot E8",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E8",
+     "ambiguous": false
+    },
+    {
+     "raw": "電動式昇降デスク｜COFO Desk Premium",
+     "cat": "furniture",
+     "cid": null,
+     "name": "COFO Desk Premium",
+     "ambiguous": false
+    },
+    {
+     "raw": "ワークチェア｜Rasical GrowSpica Elite",
+     "cat": "furniture",
+     "cid": null,
+     "name": "RASICAL Growspica Elite",
+     "ambiguous": false
+    },
+    {
+     "raw": "外付けモニター｜LG 34WQ60C-B",
+     "cat": "monitor",
+     "cid": null,
+     "name": "LG 34WQ60C-B",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターライト｜Quntis L215",
+     "cat": "lighting",
+     "cid": null,
+     "name": "Quntis L215",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターアーム｜無重力モニターアームPro",
+     "cat": "arm",
+     "cid": null,
+     "name": "COFO 無重力モニターアーム Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "ドッキングステーション｜CalDigit TS3 Plus",
+     "cat": "dock",
+     "cid": null,
+     "name": "CalDigit TS3 Plus",
+     "ambiguous": false
+    },
+    {
+     "raw": "iPhoneホルダー（クリップ）｜NOMAD DESK",
+     "cat": "mobile",
+     "cid": null,
+     "name": "NOMAD DESK iPhoneホルダー",
+     "ambiguous": false
+    },
+    {
+     "raw": "充電器（充電スタンド）｜KUXIU X55",
+     "cat": "mobile",
+     "cid": null,
+     "name": "KUXIU X55",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード｜Arbiter Studio Polar 65 PRO",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Arbiter Studio Polar 65 PRO",
+     "ambiguous": false
+    },
+    {
+     "raw": "トラックボールマウス｜Logicool MX ERGO",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool MX ERGO（S か無印か不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Magic Trackpad｜Apple",
+     "cat": "mouse",
+     "cid": "magic-trackpad",
+     "name": "Apple Magic Trackpad",
+     "ambiguous": false
+    },
+    {
+     "raw": "スピーカー｜Kanto YU2",
+     "cat": "audio",
+     "cid": null,
+     "name": "Kanto YU2",
+     "ambiguous": false
+    },
+    {
+     "raw": "マイク｜Maono PD200X",
+     "cat": "camera",
+     "cid": null,
+     "name": "Maono PD200X",
+     "ambiguous": false
+    },
+    {
+     "raw": "電子ノート｜Supernote Nomad",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Supernote Nomad",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "さっさん / SASSAN",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=0Wq9YvkgUdI",
+   "date": "2025-12-24",
+   "devices": [
+    {
+     "raw": "FLEXISPOT … 電動式昇降デスク E7B",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E7B",
+     "ambiguous": false
+    },
+    {
+     "raw": "オカムラ オフィスチェア コンテッサ セコンダ",
+     "cat": "furniture",
+     "cid": null,
+     "name": "オカムラ コンテッサ セコンダ",
+     "ambiguous": false
+    },
+    {
+     "raw": "LG OLED ゲーミングモニター 45GX950A-B",
+     "cat": "monitor",
+     "cid": null,
+     "name": "LG UltraGear 45GX950A-B",
+     "ambiguous": false
+    },
+    {
+     "raw": "ERGOTRON エルゴトロン HX モニターアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "エルゴトロン HX モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "PC構成 自作Windows",
+     "cat": "computer",
+     "cid": null,
+     "name": "自作PC",
+     "ambiguous": false
+    },
+    {
+     "raw": "PC構成 … MacBook Pro",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Pro（モデル不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Apple 11インチiPad Pro(M5)",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad Pro 11\" (M5)",
+     "ambiguous": false
+    },
+    {
+     "raw": "Audioengine A2+ Next Gen",
+     "cat": "audio",
+     "cid": "audioengine-a2plus",
+     "name": "Audioengine A2+ Next Gen",
+     "ambiguous": false
+    },
+    {
+     "raw": "SHURE シュア ダイナミックマイク SM7B",
+     "cat": "camera",
+     "cid": null,
+     "name": "Shure SM7B",
+     "ambiguous": false
+    },
+    {
+     "raw": "オーディオテクニカ ATH-HL7BT",
+     "cat": "audio",
+     "cid": null,
+     "name": "Audio-Technica ATH-HL7BT",
+     "ambiguous": false
+    },
+    {
+     "raw": "Roland BRIDGE CAST X",
+     "cat": "audio",
+     "cid": null,
+     "name": "Roland BRIDGE CAST X",
+     "ambiguous": false
+    },
+    {
+     "raw": "CalDigit TS5 Plus",
+     "cat": "dock",
+     "cid": "caldigit-ts5plus",
+     "name": "CalDigit TS5 Plus",
+     "ambiguous": false
+    },
+    {
+     "raw": "Anker Nano Charging Station (7-in-1, 100W, 巻取り式 USB-C ケーブル)",
+     "cat": "charger",
+     "cid": null,
+     "name": "Anker Nano Charging Station (7-in-1, 100W)",
+     "ambiguous": false
+    },
+    {
+     "raw": "Apple MagSafe充電器（1m） 最大25W",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple MagSafe充電器 (25W)",
+     "ambiguous": false
+    },
+    {
+     "raw": "Touch ID搭載Magic Keyboard(テンキー付き)",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Apple Magic Keyboard（Touch ID・テンキー付き）",
+     "ambiguous": false
+    },
+    {
+     "raw": "Logicool G G502 X LIGHTSPEED",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool G502 X LIGHTSPEED",
+     "ambiguous": false
+    },
+    {
+     "raw": "LUMINKEY Magger 68 HE Ultra",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "LUMINKEY Magger 68 HE Ultra",
+     "ambiguous": false
+    },
+    {
+     "raw": "CORSAIR SABRE v2 PRO",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Corsair SABRE v2 PRO",
+     "ambiguous": false
+    },
+    {
+     "raw": "ARTISAN NINJA FX 99式 XSOFT L",
+     "cat": "furniture",
+     "cid": null,
+     "name": "ARTISAN NINJA FX 99式 マウスパッド",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "びえんガジェットPC",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=Q_b0PSfh8Rw",
+   "date": "2025-09-03",
+   "devices": [
+    {
+     "raw": "NearHub OD20",
+     "cat": "furniture",
+     "cid": null,
+     "name": "NearHub OD20",
+     "ambiguous": false
+    },
+    {
+     "raw": "Flexispot E7H",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E7H",
+     "ambiguous": false
+    },
+    {
+     "raw": "NearHub EC10",
+     "cat": "furniture",
+     "cid": null,
+     "name": "NearHub EC10",
+     "ambiguous": false
+    },
+    {
+     "raw": "Flexispot C2",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot C2",
+     "ambiguous": false
+    },
+    {
+     "raw": "リンディ ノートPCアーム/スタンド",
+     "cat": "arm",
+     "cid": null,
+     "name": "LINDY ノートPCアーム／スタンド",
+     "ambiguous": true
+    },
+    {
+     "raw": "Wavlink WL-UMD26",
+     "cat": "dock",
+     "cid": null,
+     "name": "Wavlink WL-UMD26",
+     "ambiguous": false
+    },
+    {
+     "raw": "BenQ DP1310",
+     "cat": "dock",
+     "cid": null,
+     "name": "BenQ beCreatus DP1310",
+     "ambiguous": false
+    },
+    {
+     "raw": "SoundblasterG8",
+     "cat": "audio",
+     "cid": null,
+     "name": "Creative Sound Blaster G8",
+     "ambiguous": false
+    },
+    {
+     "raw": "Edifier T5s サブウーファー",
+     "cat": "audio",
+     "cid": null,
+     "name": "Edifier T5s",
+     "ambiguous": false
+    },
+    {
+     "raw": "Creative Pebble V2",
+     "cat": "audio",
+     "cid": null,
+     "name": "Creative Pebble V2",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "東京タマスタイル（TOKYO Tamastyle）",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=09YBos_fsXc",
+   "date": "2025-01-13",
+   "devices": [
+    {
+     "raw": "GEEKOM A7 Series ミニPC",
+     "cat": "computer",
+     "cid": null,
+     "name": "GEEKOM A7",
+     "ambiguous": false
+    },
+    {
+     "raw": "EVICIV モバイルモニター 15.6インチ",
+     "cat": "monitor",
+     "cid": null,
+     "name": "EVICIV 15.6\" モバイルモニター",
+     "ambiguous": true
+    },
+    {
+     "raw": "Audioengine オーディオエンジン A2＋",
+     "cat": "audio",
+     "cid": null,
+     "name": "Audioengine A2+（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "BenQスクリーンバーPro",
+     "cat": "lighting",
+     "cid": "screenbar-pro",
+     "name": "BenQ ScreenBar Pro",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "DG Nexus",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=iv9LOwluyvs",
+   "date": "2026-01-11",
+   "devices": [
+    {
+     "raw": "【デスク】Rasical Desk ホームオフィスPremium",
+     "cat": "furniture",
+     "cid": null,
+     "name": "RASICAL Desk",
+     "ambiguous": false
+    },
+    {
+     "raw": "【モニター】（LGのウルトラワイドモニター「34WQ75…」）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "LG 34WQ75 系ウルトラワイド（型番末尾不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "【モニターライト】（BenQ ScreenBar…）",
+     "cat": "lighting",
+     "cid": null,
+     "name": "BenQ ScreenBar（モデル不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "【キーボード】Keychron K1 Max",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Keychron K1 Max",
+     "ambiguous": false
+    },
+    {
+     "raw": "【ヘッドホン】BOSE QuietComfort Ultra第2世代",
+     "cat": "audio",
+     "cid": null,
+     "name": "Bose QuietComfort Ultra Headphones（第2世代）",
+     "ambiguous": false
+    },
+    {
+     "raw": "【メインPC】M4 MacBook Air",
+     "cat": "computer",
+     "cid": "mba-m4",
+     "name": "MacBook Air (M4)",
+     "ambiguous": false
+    },
+    {
+     "raw": "【スピーカー】EDIFIER MP2…",
+     "cat": "audio",
+     "cid": null,
+     "name": "Edifier MP2xx（型番不明）",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "miDen",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=QN6f81qFe6g",
+   "date": "2026-03-11",
+   "devices": [
+    {
+     "raw": "相棒のMacBook Pro（販売終了品）",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Pro（モデル不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "高機能なハイエンドマウス（MX MASTER 3S）",
+     "cat": "mouse",
+     "cid": "mx-master-3s",
+     "name": "Logicool MX Master 3S",
+     "ambiguous": false
+    },
+    {
+     "raw": "左手デバイスとしてのiPad mini",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad mini（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "重量級対応のモニターアーム（エルゴトロン HX）",
+     "cat": "arm",
+     "cid": null,
+     "name": "エルゴトロン HX モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "プロの現場でも使われるマイク（SHURE SM7B）",
+     "cat": "camera",
+     "cid": null,
+     "name": "Shure SM7B",
+     "ambiguous": false
+    },
+    {
+     "raw": "定番オーディオインターフェース（AG03MK2）",
+     "cat": "audio",
+     "cid": null,
+     "name": "YAMAHA AG03MK2",
+     "ambiguous": false
+    },
+    {
+     "raw": "HomePod mini",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple HomePod mini",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ツヨシ（techyou）",
+   "platform": "youtube",
+   "url": "https://www.youtube.com/watch?v=PIhcwBZV5BE",
+   "date": "2025-04-18",
+   "devices": [
+    {
+     "raw": "DELL U4021QW",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell U4021QW",
+     "ambiguous": false
+    },
+    {
+     "raw": "COFO 無重力モニターアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "COFO 無重力モニターアーム（無印／Pro 不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "BenQ スクリーンバーHalo",
+     "cat": "lighting",
+     "cid": "screenbar-halo",
+     "name": "BenQ ScreenBar Halo",
+     "ambiguous": false
+    },
+    {
+     "raw": "M1MAX MacBook Pro",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Pro 14\" (M1 Max)",
+     "ambiguous": false
+    },
+    {
+     "raw": "HHKB（ブログ版で HHKB Professional HYBRID Type-S と明記）",
+     "cat": "keyboard",
+     "cid": "hhkb-hybrid",
+     "name": "HHKB Professional HYBRID Type-S",
+     "ambiguous": false
+    },
+    {
+     "raw": "Logicool MX Ergo S",
+     "cat": "mouse",
+     "cid": "mx-ergo-s",
+     "name": "Logicool MX ERGO S",
+     "ambiguous": false
+    },
+    {
+     "raw": "EPOMAKER EK21",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "EPOMAKER EK21",
+     "ambiguous": false
+    },
+    {
+     "raw": "KEF LSX Ⅱ LT",
+     "cat": "audio",
+     "cid": null,
+     "name": "KEF LSX II LT",
+     "ambiguous": false
+    },
+    {
+     "raw": "MOTU M2",
+     "cat": "audio",
+     "cid": null,
+     "name": "MOTU M2",
+     "ambiguous": false
+    },
+    {
+     "raw": "オーディオテクニカ ATH-R70xa",
+     "cat": "audio",
+     "cid": null,
+     "name": "Audio-Technica ATH-R70xa",
+     "ambiguous": false
+    },
+    {
+     "raw": "SHURE AONIC50 Gen2",
+     "cat": "audio",
+     "cid": null,
+     "name": "Shure AONIC 50 Gen 2",
+     "ambiguous": false
+    },
+    {
+     "raw": "ATH-HL7BT",
+     "cat": "audio",
+     "cid": null,
+     "name": "Audio-Technica ATH-HL7BT",
+     "ambiguous": false
+    },
+    {
+     "raw": "SHURE SM7B",
+     "cat": "camera",
+     "cid": null,
+     "name": "Shure SM7B",
+     "ambiguous": false
+    },
+    {
+     "raw": "Triton Audio FetHead マイクプリアンプ",
+     "cat": "audio",
+     "cid": null,
+     "name": "Triton Audio FetHead",
+     "ambiguous": false
+    },
+    {
+     "raw": "目線が合うWEBカメラ",
+     "cat": "camera",
+     "cid": null,
+     "name": "Webカメラ（モデル不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "FlexiSpot E7H",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E7H",
+     "ambiguous": false
+    },
+    {
+     "raw": "Steelcase Gesture",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Steelcase Gesture",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "Emu（EmuLog）",
+   "platform": "note",
+   "url": "https://note.com/emulog/n/ne413198d04d2",
+   "date": "2025-12-22",
+   "devices": [
+    {
+     "raw": "山善 L字デスク（確か山善だったと思います）",
+     "cat": "furniture",
+     "cid": null,
+     "name": "山善 L字デスク",
+     "ambiguous": true
+    },
+    {
+     "raw": "LG 29インチ ウルトラワイドモニター",
+     "cat": "monitor",
+     "cid": null,
+     "name": "LG 29\" ウルトラワイド（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "LG 24インチモニター",
+     "cat": "monitor",
+     "cid": null,
+     "name": "LG 24\" モニター（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Amazonベーシックのモニターアーム",
+     "cat": "arm",
+     "cid": "amazon-arm",
+     "name": "Amazonベーシック モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "Lenovo TAB8",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Lenovo TAB8",
+     "ambiguous": false
+    },
+    {
+     "raw": "iPad Pro 11インチ",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad Pro 11\"（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Quntis モニターライト",
+     "cat": "lighting",
+     "cid": null,
+     "name": "Quntis モニターライト（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "ProtoArc EC200 エルゴノミックチェア",
+     "cat": "furniture",
+     "cid": null,
+     "name": "ProtoArc EC200",
+     "ambiguous": false
+    },
+    {
+     "raw": "DELL OptiPlex 3050 Micro",
+     "cat": "computer",
+     "cid": null,
+     "name": "Dell OptiPlex 3050 Micro",
+     "ambiguous": false
+    },
+    {
+     "raw": "Anker Soundcore Wakey",
+     "cat": "audio",
+     "cid": null,
+     "name": "Anker Soundcore Wakey",
+     "ambiguous": false
+    },
+    {
+     "raw": "VisionOwl モバイルモニター（有機EL）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "VisionOwl 有機EL モバイルモニター",
+     "ambiguous": true
+    },
+    {
+     "raw": "Corne V4 Cherry 分割キーボード",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Corne V4 Cherry",
+     "ambiguous": false
+    },
+    {
+     "raw": "トラックパッド：Apple Magic Trackpad",
+     "cat": "mouse",
+     "cid": "magic-trackpad",
+     "name": "Apple Magic Trackpad",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスクマット：サンワサプライ 600 × 300mm",
+     "cat": "furniture",
+     "cid": null,
+     "name": "サンワサプライ デスクマット 600×300",
+     "ambiguous": false
+    },
+    {
+     "raw": "Antion MagSafe対応マグネットクリップ",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Antion MagSafe マグネットクリップ",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "shunsuke〔駿介〕",
+   "platform": "note",
+   "url": "https://note.com/brave_ixia3770/n/n2331caf75254",
+   "date": "2025-04-05",
+   "devices": [
+    {
+     "raw": "天板(LAGKAPTEN) ＋ デスク脚(ADILS)",
+     "cat": "furniture",
+     "cid": null,
+     "name": "IKEA LAGKAPTEN／ADILS",
+     "ambiguous": false
+    },
+    {
+     "raw": "メインマシン(Mac Book Pro 13インチ 2020 Intel Core i5)",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Pro 13\" (2020, Intel)",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード(Magic Keyboard)",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Apple Magic Keyboard（Touch ID 有無不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "トラックパッド(Magic Trackpad)",
+     "cat": "mouse",
+     "cid": "magic-trackpad",
+     "name": "Apple Magic Trackpad",
+     "ambiguous": false
+    },
+    {
+     "raw": "Satechi アルミニウム Pro USB ハブ Type-C 7-in-2",
+     "cat": "dock",
+     "cid": null,
+     "name": "Satechi Aluminum Pro Hub 7-in-2",
+     "ambiguous": false
+    },
+    {
+     "raw": "LENTION USB C ハブ 8in1",
+     "cat": "dock",
+     "cid": null,
+     "name": "LENTION USB-C ハブ 8in1",
+     "ambiguous": true
+    },
+    {
+     "raw": "DELL S2421H",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell S2421H",
+     "ambiguous": false
+    },
+    {
+     "raw": "DELL S2421HN",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell S2421HN",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターアーム(Pixio PS1S Wave White)",
+     "cat": "arm",
+     "cid": null,
+     "name": "Pixio PS1S Wave",
+     "ambiguous": false
+    },
+    {
+     "raw": "belkin 2in1充電スタンド",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Belkin 2in1 充電スタンド（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Creative Pebble ホワイトスピーカー",
+     "cat": "audio",
+     "cid": null,
+     "name": "Creative Pebble（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Anker Power Strip",
+     "cat": "charger",
+     "cid": null,
+     "name": "Anker Power Strip（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "iPad Pro 11インチ",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad Pro 11\"（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "カメラ(ZV-1) WEBカメラとして使用",
+     "cat": "camera",
+     "cid": null,
+     "name": "Sony ZV-1",
+     "ambiguous": false
+    },
+    {
+     "raw": "Logicool G Blue Yeti ゲーミングマイク",
+     "cat": "camera",
+     "cid": null,
+     "name": "Logicool G Blue Yeti",
+     "ambiguous": false
+    },
+    {
+     "raw": "有線イヤホン(EarPods)",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple EarPods",
+     "ambiguous": false
+    },
+    {
+     "raw": "無線イヤホン(AirPods Pro)",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple AirPods Pro（世代不明）",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "タカヒロ（ガジェットブログ・デジスタ）",
+   "platform": "blog",
+   "url": "https://digital-style.jp/desk-tour-2025",
+   "date": "2025-11-22",
+   "devices": [
+    {
+     "raw": "メインマシンは、M3チップ搭載のMacBook Air",
+     "cat": "computer",
+     "cid": "mba-m3",
+     "name": "MacBook Air (M3)",
+     "ambiguous": false
+    },
+    {
+     "raw": "ジャーナルスタンダードファニチャー JSF COMPASS LEG DESK",
+     "cat": "furniture",
+     "cid": null,
+     "name": "journal standard Furniture COMPASS LEG DESK",
+     "ambiguous": false
+    },
+    {
+     "raw": "PALLO（デスクチェア）コクヨファニチャー",
+     "cat": "furniture",
+     "cid": null,
+     "name": "KOKUYO PALLO",
+     "ambiguous": false
+    },
+    {
+     "raw": "ASUS ProArt PA27JCV（5Kモニター）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "ASUS ProArt PA27JCV",
+     "ambiguous": false
+    },
+    {
+     "raw": "BenQ ScreenBar Halo 2",
+     "cat": "lighting",
+     "cid": "screenbar-halo2",
+     "name": "BenQ ScreenBar Halo 2",
+     "ambiguous": false
+    },
+    {
+     "raw": "ERGO M575S（トラックボールマウス）",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool ERGO M575S",
+     "ambiguous": false
+    },
+    {
+     "raw": "MX KEYS mini for Mac（US配列キーボード）",
+     "cat": "keyboard",
+     "cid": "mx-keys-mini",
+     "name": "Logicool MX Keys Mini",
+     "ambiguous": false
+    },
+    {
+     "raw": "EARTHWORKS ICON",
+     "cat": "camera",
+     "cid": null,
+     "name": "Earthworks ICON",
+     "ambiguous": false
+    },
+    {
+     "raw": "CalDigit TS4（ドッキングステーション）",
+     "cat": "dock",
+     "cid": "caldigit-ts4",
+     "name": "CalDigit TS4",
+     "ambiguous": false
+    },
+    {
+     "raw": "Master&Dynamic MH40",
+     "cat": "audio",
+     "cid": null,
+     "name": "Master & Dynamic MH40",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "bingo+",
+   "platform": "note",
+   "url": "https://note.com/bingo10/n/nde9bd173692d",
+   "date": "2026-01-06",
+   "devices": [
+    {
+     "raw": "40インチのウルトラワイドモニター（5K2K）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "40\" 5K2K ウルトラワイド（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "18インチのモバイルモニター（タッチパネル）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "18\" タッチ モバイルモニター（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "キーボード（NuPhy Air75 V3）",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "NuPhy Air75 V3",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス（Logicool MX Master 3S）",
+     "cat": "mouse",
+     "cid": "mx-master-3s",
+     "name": "Logicool MX Master 3S",
+     "ambiguous": false
+    },
+    {
+     "raw": "マイク（JBL QUANTUM STREAM）",
+     "cat": "camera",
+     "cid": null,
+     "name": "JBL Quantum Stream",
+     "ambiguous": false
+    },
+    {
+     "raw": "イヤホン（Anker Soundcore AeroClip）",
+     "cat": "audio",
+     "cid": null,
+     "name": "Anker Soundcore AeroClip",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "Harushiro（ゆるっとデスクライフ）",
+   "platform": "blog",
+   "url": "https://yurutodesklife.jp/desk-tour-2025/",
+   "date": "2025-05-05",
+   "devices": [
+    {
+     "raw": "ニトリの組み合わせデスク（幅118cm）×2",
+     "cat": "furniture",
+     "cid": null,
+     "name": "ニトリ 組み合わせデスク",
+     "ambiguous": false
+    },
+    {
+     "raw": "Bauhutte ゲーミングチェア「G-571-BK」",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Bauhutte G-571",
+     "ambiguous": false
+    },
+    {
+     "raw": "PCは自作",
+     "cat": "computer",
+     "cid": null,
+     "name": "自作PC",
+     "ambiguous": false
+    },
+    {
+     "raw": "MSIの曲面モニター（24インチ）×3",
+     "cat": "monitor",
+     "cid": null,
+     "name": "MSI 24\" 曲面モニター（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Logicool G ゲーミングキーボード「G915 X」",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Logicool G915 X",
+     "ambiguous": false
+    },
+    {
+     "raw": "Logicool Superlight 2（ホワイト）",
+     "cat": "mouse",
+     "cid": "gpx-sl2",
+     "name": "Logicool G PRO X SUPERLIGHT 2",
+     "ambiguous": false
+    },
+    {
+     "raw": "ヘッドセット JBL QUANTUM ONE",
+     "cat": "audio",
+     "cid": null,
+     "name": "JBL Quantum ONE",
+     "ambiguous": false
+    },
+    {
+     "raw": "YAMAHA ZG01",
+     "cat": "audio",
+     "cid": null,
+     "name": "YAMAHA ZG01",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "トモ（トモウェブ）",
+   "platform": "blog",
+   "url": "https://tomo-web.jp/desk-tour-update/",
+   "date": "2026-06-12",
+   "devices": [
+    {
+     "raw": "Flexi Spot E7",
+     "cat": "furniture",
+     "cid": "flexispot-e7",
+     "name": "FlexiSpot E7 電動昇降デスク",
+     "ambiguous": false
+    },
+    {
+     "raw": "Kanademono 天板",
+     "cat": "furniture",
+     "cid": null,
+     "name": "KANADEMONO 天板",
+     "ambiguous": false
+    },
+    {
+     "raw": "Bauhutte BHD-670H-BK",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Bauhutte BHD-670H",
+     "ambiguous": false
+    },
+    {
+     "raw": "Aeron Chair（アーロンチェアリマスタード）",
+     "cat": "furniture",
+     "cid": "aeron",
+     "name": "Herman Miller アーロンチェア",
+     "ambiguous": false
+    },
+    {
+     "raw": "Grow Spica Pro（サブチェア）",
+     "cat": "furniture",
+     "cid": null,
+     "name": "RASICAL Growspica Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "Dell U4021QW",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell U4021QW",
+     "ambiguous": false
+    },
+    {
+     "raw": "仕事ではM3チップのMac Book Pro",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Pro 14\" (M3)",
+     "ambiguous": false
+    },
+    {
+     "raw": "M1チップ搭載 2021年の14インチモデル",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Pro 14\" (2021, M1 Pro/Max)",
+     "ambiguous": false
+    },
+    {
+     "raw": "Twelve South Book Arc",
+     "cat": "arm",
+     "cid": null,
+     "name": "Twelve South BookArc",
+     "ambiguous": false
+    },
+    {
+     "raw": "CBS Flo Black",
+     "cat": "arm",
+     "cid": null,
+     "name": "Herman Miller Flo モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "ERGOTORON LX",
+     "cat": "arm",
+     "cid": "ergotron-lx",
+     "name": "エルゴトロン LX モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "Belkin 3 in 1MagSafe",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Belkin 3in1 MagSafe 充電スタンド（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Magic Mouse",
+     "cat": "mouse",
+     "cid": "magic-mouse",
+     "name": "Apple Magic Mouse",
+     "ambiguous": false
+    },
+    {
+     "raw": "Magic Track Pad",
+     "cat": "mouse",
+     "cid": "magic-trackpad",
+     "name": "Apple Magic Trackpad",
+     "ambiguous": false
+    },
+    {
+     "raw": "Magic Keyboard",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Apple Magic Keyboard（Touch ID 有無不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "elgato Wave 3",
+     "cat": "camera",
+     "cid": "wave3",
+     "name": "Elgato Wave:3",
+     "ambiguous": false
+    },
+    {
+     "raw": "BenQ ScreenBar Pro",
+     "cat": "lighting",
+     "cid": "screenbar-pro",
+     "name": "BenQ ScreenBar Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "Knodelのデスクマット",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Knodel デスクマット",
+     "ambiguous": false
+    },
+    {
+     "raw": "iPad Pro",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad Pro（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "iPad Mini A17 Pro",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad mini (A17 Pro)",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "GOME（G-LABO）",
+   "platform": "note",
+   "url": "https://note.com/gome_web/n/ndab7caaf3bf5",
+   "date": "2026-05-06",
+   "devices": [
+    {
+     "raw": "オフィスチェア Steelcase Leapチェア",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Steelcase Leap",
+     "ambiguous": false
+    },
+    {
+     "raw": "Keychron M6 ワイヤレスマウス 1000hzモデル",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Keychron M6",
+     "ambiguous": false
+    },
+    {
+     "raw": "ワイヤレスキーボード Nuphy NODE75 (US配列)",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "NuPhy Node75",
+     "ambiguous": false
+    },
+    {
+     "raw": "UGREEN 充電器 30W (Type-C)",
+     "cat": "charger",
+     "cid": null,
+     "name": "UGREEN 30W USB-C 充電器",
+     "ambiguous": true
+    },
+    {
+     "raw": "Anker Zolo（MagSafe充電器）",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Anker Zolo MagSafe 充電器",
+     "ambiguous": true
+    },
+    {
+     "raw": "UGREEN MagFlow",
+     "cat": "mobile",
+     "cid": null,
+     "name": "UGREEN MagFlow MagSafe 充電器",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "みつ（ガジェット暮らしのnote）",
+   "platform": "note",
+   "url": "https://note.com/muramitsu/n/n3d1b73ed71e4",
+   "date": "2026-03-11",
+   "devices": [
+    {
+     "raw": "FlexiSpot 電動昇降デスク",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot 電動昇降デスク（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "パームワークチェア",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Palmwork パームワークチェア",
+     "ambiguous": false
+    },
+    {
+     "raw": "COFO Chair Pro 2",
+     "cat": "furniture",
+     "cid": null,
+     "name": "COFO Chair Pro 2",
+     "ambiguous": false
+    },
+    {
+     "raw": "エルゴトロン LX モニターアーム",
+     "cat": "arm",
+     "cid": "ergotron-lx",
+     "name": "エルゴトロン LX モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "COFO無重力モニターアームPro",
+     "cat": "arm",
+     "cid": null,
+     "name": "COFO 無重力モニターアーム Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "Dell U3223QE（メインモニター）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell U3223QE",
+     "ambiguous": false
+    },
+    {
+     "raw": "kksmartの4Kモバイルモニター",
+     "cat": "monitor",
+     "cid": null,
+     "name": "kksmart 4K モバイルモニター（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Mac mini M2 Pro",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple Mac mini (M2 Pro)",
+     "ambiguous": false
+    },
+    {
+     "raw": "MacBook Air",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Air（モデル不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "iPad Pro M4",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad Pro (M4)",
+     "ambiguous": false
+    },
+    {
+     "raw": "ロジクール MX KEYSシリーズ",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Logicool MX Keys シリーズ（モデル不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "ロジクール MX MASTER 3s",
+     "cat": "mouse",
+     "cid": "mx-master-3s",
+     "name": "Logicool MX Master 3S",
+     "ambiguous": false
+    },
+    {
+     "raw": "ロジクール MX ANYWHERE 3S",
+     "cat": "mouse",
+     "cid": "mx-anywhere-3s",
+     "name": "Logicool MX Anywhere 3S",
+     "ambiguous": false
+    },
+    {
+     "raw": "BenQ ScreenBarシリーズ",
+     "cat": "lighting",
+     "cid": null,
+     "name": "BenQ ScreenBar（モデル不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Anker Prime Charging Station (6-in-1, 140W)",
+     "cat": "charger",
+     "cid": null,
+     "name": "Anker Prime Charging Station (6-in-1, 140W)",
+     "ambiguous": false
+    },
+    {
+     "raw": "Belkin MagSafe 3 in 1 ワイヤレス充電器",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Belkin 3in1 MagSafe 充電スタンド（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Anker MagGo Wireless Charging Station (3-in-1 Stand)",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Anker MagGo Wireless Charging Station (3-in-1 Stand)",
+     "ambiguous": false
+    },
+    {
+     "raw": "Marshall EMBERTON III",
+     "cat": "audio",
+     "cid": null,
+     "name": "Marshall Emberton III",
+     "ambiguous": false
+    },
+    {
+     "raw": "JBL SOUNDGEAR SENSE",
+     "cat": "audio",
+     "cid": null,
+     "name": "JBL Soundgear Sense",
+     "ambiguous": false
+    },
+    {
+     "raw": "Bose QuietComfort Ultra Headphones",
+     "cat": "audio",
+     "cid": null,
+     "name": "Bose QuietComfort Ultra Headphones（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "YSAGi デスクマット",
+     "cat": "furniture",
+     "cid": null,
+     "name": "YSAGi デスクマット",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "るいとー（ルイデント）",
+   "platform": "blog",
+   "url": "https://ruidento.com/desk-tour-winter-2026/",
+   "date": "2026-01-09",
+   "devices": [
+    {
+     "raw": "140cmサイズのホワイトデスク",
+     "cat": "furniture",
+     "cid": null,
+     "name": "140cm ホワイトデスク（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "USB-Cハブ（14in1）",
+     "cat": "dock",
+     "cid": null,
+     "name": "USB-C ハブ 14in1（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "メインPCは変わらずGTUNEを使用",
+     "cat": "computer",
+     "cid": null,
+     "name": "マウスコンピューター G-Tune（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Pulsar X2H Mini",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Pulsar X2H Mini",
+     "ambiguous": false
+    },
+    {
+     "raw": "ロジクール K855",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Logicool K855",
+     "ambiguous": false
+    },
+    {
+     "raw": "Apple Magic Keyboard（有線接続）",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Apple Magic Keyboard（Touch ID 有無不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "ZEN DAC",
+     "cat": "audio",
+     "cid": null,
+     "name": "iFi audio ZEN DAC",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ロピログ",
+   "platform": "note",
+   "url": "https://note.com/tatu1014/n/n4f33f9f34ae2",
+   "date": "2026-07-10",
+   "devices": [
+    {
+     "raw": "FLEXISPOTの昇降脚（耐荷重160kg）",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot 電動昇降デスク（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "かなでもののオーダー天板（140cm × 70cm）",
+     "cat": "furniture",
+     "cid": null,
+     "name": "KANADEMONO 天板",
+     "ambiguous": false
+    },
+    {
+     "raw": "Herman Millerのセイルチェア",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Herman Miller セイルチェア",
+     "ambiguous": false
+    },
+    {
+     "raw": "BenQの5K27インチモニター",
+     "cat": "monitor",
+     "cid": null,
+     "name": "BenQ 5K 27\" モニター（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "エルゴトロンLX",
+     "cat": "arm",
+     "cid": "ergotron-lx",
+     "name": "エルゴトロン LX モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "M1 Max MacBook Pro 14インチ",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Pro 14\" (M1 Max)",
+     "ambiguous": false
+    },
+    {
+     "raw": "PCスタンドは、Almozというメーカーのもの",
+     "cat": "arm",
+     "cid": null,
+     "name": "Almoz ノートPCスタンド",
+     "ambiguous": true
+    },
+    {
+     "raw": "リアクターデスクアームライト",
+     "cat": "lighting",
+     "cid": null,
+     "name": "ARTWORKSTUDIO リアクター デスクアームライト",
+     "ambiguous": false
+    },
+    {
+     "raw": "カメラ｜Insta360 Link 2 Pro",
+     "cat": "camera",
+     "cid": null,
+     "name": "Insta360 Link 2 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "マイク｜SHURE MV7",
+     "cat": "camera",
+     "cid": null,
+     "name": "Shure MV7（初代）",
+     "ambiguous": false
+    },
+    {
+     "raw": "ドッキングステーション｜CalDigit TS4",
+     "cat": "dock",
+     "cid": "caldigit-ts4",
+     "name": "CalDigit TS4",
+     "ambiguous": false
+    },
+    {
+     "raw": "充電ステーション｜Belkin Qi2 25W（3-in-1）",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Belkin Qi2 25W 3-in-1 充電スタンド",
+     "ambiguous": false
+    },
+    {
+     "raw": "ノイキャンヘッドホン｜JBL TOUR ONE M3",
+     "cat": "audio",
+     "cid": null,
+     "name": "JBL Tour One M3",
+     "ambiguous": false
+    },
+    {
+     "raw": "Logicool MX Master 4",
+     "cat": "mouse",
+     "cid": "mx-master-4",
+     "name": "Logicool MX Master 4",
+     "ambiguous": false
+    },
+    {
+     "raw": "Work Louder Creator Micro",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Work Louder Creator Micro",
+     "ambiguous": false
+    },
+    {
+     "raw": "HHKB HYBRID Type-S",
+     "cat": "keyboard",
+     "cid": "hhkb-hybrid",
+     "name": "HHKB Professional HYBRID Type-S",
+     "ambiguous": false
+    },
+    {
+     "raw": "Razer BlackWidow V4 Pro 75%",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Razer BlackWidow V4 Pro 75%",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "よは（YOHAKU）",
+   "platform": "blog",
+   "url": "https://ryuforest.com/desk-tour-2026/",
+   "date": "2026-01-27",
+   "devices": [
+    {
+     "raw": "デスク｜FlexiSpot E7H",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E7H",
+     "ambiguous": false
+    },
+    {
+     "raw": "チェア｜FlexiSpot C7 Morpher",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot C7 Morpher",
+     "ambiguous": false
+    },
+    {
+     "raw": "ノートPC｜MacBook Air M3",
+     "cat": "computer",
+     "cid": "mba-m3",
+     "name": "MacBook Air (M3)",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニター｜BenQ MA270U Macモニター",
+     "cat": "monitor",
+     "cid": null,
+     "name": "BenQ MA270U",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターアーム｜COFO 無重力モニターアームPro",
+     "cat": "arm",
+     "cid": null,
+     "name": "COFO 無重力モニターアーム Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターライト｜BenQ ScreenBar Halo 2",
+     "cat": "lighting",
+     "cid": "screenbar-halo2",
+     "name": "BenQ ScreenBar Halo 2",
+     "ambiguous": false
+    },
+    {
+     "raw": "サブ機｜iPad Pro M5 11インチ",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad Pro 11\" (M5)",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード｜Keychron K2 HE",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Keychron K2 HE",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス｜Logicool MX MASTER 4",
+     "cat": "mouse",
+     "cid": "mx-master-4",
+     "name": "Logicool MX Master 4",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスクマット｜amesobaデスクマット",
+     "cat": "furniture",
+     "cid": null,
+     "name": "amesoba デスクマット",
+     "ambiguous": false
+    },
+    {
+     "raw": "ハブ｜TP-Link UH7020C USB Type-C 7in1ハブ",
+     "cat": "dock",
+     "cid": null,
+     "name": "TP-Link UH7020C",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "りんこ（りんこスタイル）",
+   "platform": "blog",
+   "url": "https://rincostyle.blog/desktour/",
+   "date": "2026-05-18",
+   "devices": [
+    {
+     "raw": "WALKINGDESK ETSFI21：電動昇降デスク",
+     "cat": "furniture",
+     "cid": null,
+     "name": "WALKINGDESK ETSFI21",
+     "ambiguous": false
+    },
+    {
+     "raw": "サブデスク：FlexiSpot E7",
+     "cat": "furniture",
+     "cid": "flexispot-e7",
+     "name": "FlexiSpot E7 電動昇降デスク",
+     "ambiguous": false
+    },
+    {
+     "raw": "YSAGi PUレザーデスクマット",
+     "cat": "furniture",
+     "cid": null,
+     "name": "YSAGi デスクマット",
+     "ambiguous": false
+    },
+    {
+     "raw": "メインPC：Apple Mac mini M4 Pro",
+     "cat": "computer",
+     "cid": "macmini-m4pro",
+     "name": "Mac mini (M4 Pro)",
+     "ambiguous": false
+    },
+    {
+     "raw": "サブPC：Apple MacBook Air M2",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Air (M2)",
+     "ambiguous": false
+    },
+    {
+     "raw": "メインモニター：Dell U2723QE-A",
+     "cat": "monitor",
+     "cid": "u2723qe",
+     "name": "Dell U2723QE",
+     "ambiguous": false
+    },
+    {
+     "raw": "サブモニター：INNOCN 27D1U",
+     "cat": "monitor",
+     "cid": null,
+     "name": "INNOCN 27D1U",
+     "ambiguous": false
+    },
+    {
+     "raw": "モバイルモニター①：KTC H15F9",
+     "cat": "monitor",
+     "cid": null,
+     "name": "KTC H15F9",
+     "ambiguous": false
+    },
+    {
+     "raw": "モバイルモニター②：GeChic On-Lap M141E",
+     "cat": "monitor",
+     "cid": null,
+     "name": "GeChic On-Lap M141E",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターアーム：Alterzone RGBゲーミングデュアルアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "Alterzone RGB デュアルモニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターライト：BenQ ScreenBar Halo 2",
+     "cat": "lighting",
+     "cid": "screenbar-halo2",
+     "name": "BenQ ScreenBar Halo 2",
+     "ambiguous": false
+    },
+    {
+     "raw": "メインキーボード：Keychron C3 Pro（茶軸）",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Keychron C3 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "サブキーボード①：REALFORCE RC1（70% / 30g）",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "REALFORCE RC1",
+     "ambiguous": false
+    },
+    {
+     "raw": "サブキーボード②：RK ROYAL KLUDGE R65",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "RK ROYAL KLUDGE R65",
+     "ambiguous": false
+    },
+    {
+     "raw": "テンキー：EPOMAKER EK21",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "EPOMAKER EK21",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス：ELECOM DEFT PRO",
+     "cat": "mouse",
+     "cid": null,
+     "name": "ELECOM DEFT PRO",
+     "ambiguous": false
+    },
+    {
+     "raw": "ヘッドホン：Anker Soundcore Space Q45",
+     "cat": "audio",
+     "cid": null,
+     "name": "Anker Soundcore Space Q45",
+     "ambiguous": false
+    },
+    {
+     "raw": "スピーカー：Creative Pebble V3",
+     "cat": "audio",
+     "cid": "pebble",
+     "name": "Creative Pebble V3",
+     "ambiguous": false
+    },
+    {
+     "raw": "ドッキングステーション：ORICO 20-in-1",
+     "cat": "dock",
+     "cid": null,
+     "name": "ORICO 20-in-1 ドッキングステーション",
+     "ambiguous": false
+    },
+    {
+     "raw": "充電器：TORRAS FlexLine 40W",
+     "cat": "charger",
+     "cid": null,
+     "name": "TORRAS FlexLine 40W",
+     "ambiguous": false
+    },
+    {
+     "raw": "オフィスチェア：SIHOO Doro C300 Pro",
+     "cat": "furniture",
+     "cid": null,
+     "name": "SIHOO Doro C300 Pro",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ブレイン・ラボ社員 H・Kさん（PdM）",
+   "platform": "company",
+   "url": "https://note.com/brainlab/n/nd9302e6dd467",
+   "date": "2025-01-17",
+   "devices": [
+    {
+     "raw": "マイク：HyperX",
+     "cat": "camera",
+     "cid": null,
+     "name": "HyperX マイク（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "キーボード：Razer OrnataV3",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Razer Ornata V3",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード：KT68 Pro",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "KT68 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス：手首の負担重視のエレコム",
+     "cat": "mouse",
+     "cid": null,
+     "name": "ELECOM マウス（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "モニター、モニターアーム：Pixio",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Pixio モニター（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "デスク：FlexispotE7H",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E7H",
+     "ambiguous": false
+    },
+    {
+     "raw": "チェア：AKRacing本田翼モデル",
+     "cat": "furniture",
+     "cid": null,
+     "name": "AKRacing 本田翼モデル",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ブレイン・ラボ社員 Y・Yさん（デザイナー）",
+   "platform": "company",
+   "url": "https://note.com/brainlab/n/nd9302e6dd467",
+   "date": "2025-01-17",
+   "devices": [
+    {
+     "raw": "デスク：VIRCO 4000 TABLE",
+     "cat": "furniture",
+     "cid": null,
+     "name": "VIRCO 4000 TABLE",
+     "ambiguous": false
+    },
+    {
+     "raw": "チェア：Herman Miller アーロンチェア",
+     "cat": "furniture",
+     "cid": "aeron",
+     "name": "Herman Miller アーロンチェア",
+     "ambiguous": false
+    },
+    {
+     "raw": "ライト：Louis Poulsen NJP テーブルランプ",
+     "cat": "lighting",
+     "cid": null,
+     "name": "Louis Poulsen NJP テーブルランプ",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニター：LG 34WK500-P",
+     "cat": "monitor",
+     "cid": null,
+     "name": "LG 34WK500-P",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターアーム：LOE デュアル モニターアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "LOE デュアルモニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "トラックパッド：Apple Magic Trackpad",
+     "cat": "mouse",
+     "cid": "magic-trackpad",
+     "name": "Apple Magic Trackpad",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード：Apple Wireless Keyboard A1314",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Apple Wireless Keyboard (A1314)",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス：ELECOM M-XGL10UBSBK",
+     "cat": "mouse",
+     "cid": null,
+     "name": "ELECOM M-XGL10UB",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ブレイン・ラボ社員 N・Rさん（人事）",
+   "platform": "company",
+   "url": "https://note.com/brainlab/n/nd9302e6dd467",
+   "date": "2025-01-17",
+   "devices": [
+    {
+     "raw": "キーボード：Logicool K295OW",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Logicool K295",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス：Logicool MR0087",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool MR0087（M750系）",
+     "ambiguous": true
+    },
+    {
+     "raw": "デスク：sandesk e150",
+     "cat": "furniture",
+     "cid": null,
+     "name": "sandesk e150",
+     "ambiguous": false
+    },
+    {
+     "raw": "チェア：GTPLAYER 829X",
+     "cat": "furniture",
+     "cid": null,
+     "name": "GTPLAYER 829X",
+     "ambiguous": false
+    },
+    {
+     "raw": "カメラ：EMEET C960",
+     "cat": "camera",
+     "cid": null,
+     "name": "EMEET C960",
+     "ambiguous": false
+    },
+    {
+     "raw": "充電スタンド：SPGUARD JH12-G",
+     "cat": "mobile",
+     "cid": null,
+     "name": "SPGUARD JH12-G",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ブレイン・ラボ社員 W・Yさん（エンジニア）",
+   "platform": "company",
+   "url": "https://note.com/brainlab/n/nd9302e6dd467",
+   "date": "2025-01-17",
+   "devices": [
+    {
+     "raw": "モニター：IODATA EX-GDQ271JA（中央）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "I-O DATA EX-GDQ271JA",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニター：BenQ EX2510S（左右）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "BenQ MOBIUZ EX2510S",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターアーム：エルゴトロンLXをカスタマイズ",
+     "cat": "arm",
+     "cid": "ergotron-lx",
+     "name": "エルゴトロン LX モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード：Logicool MX MECHANICAL（茶軸）",
+     "cat": "keyboard",
+     "cid": "mx-mechanical",
+     "name": "Logicool MX Mechanical",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス：Logicool MX Master 3S",
+     "cat": "mouse",
+     "cid": "mx-master-3s",
+     "name": "Logicool MX Master 3S",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスク：Flexispot E7",
+     "cat": "furniture",
+     "cid": "flexispot-e7",
+     "name": "FlexiSpot E7 電動昇降デスク",
+     "ambiguous": false
+    },
+    {
+     "raw": "チェア：オカムラ バロンチェア",
+     "cat": "furniture",
+     "cid": null,
+     "name": "オカムラ バロン",
+     "ambiguous": false
+    },
+    {
+     "raw": "ドッキングステーション：Anker 564",
+     "cat": "dock",
+     "cid": null,
+     "name": "Anker 564 USB-C ドッキングステーション",
+     "ambiguous": false
+    },
+    {
+     "raw": "カメラ：Anker PowerConf C200",
+     "cat": "camera",
+     "cid": null,
+     "name": "Anker PowerConf C200",
+     "ambiguous": false
+    },
+    {
+     "raw": "ヘッドセット：Anker PowerConf H700",
+     "cat": "audio",
+     "cid": null,
+     "name": "Anker PowerConf H700",
+     "ambiguous": false
+    },
+    {
+     "raw": "マイク：audio-technica AT2020",
+     "cat": "camera",
+     "cid": null,
+     "name": "Audio-Technica AT2020",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ブレイン・ラボ社員 Y・Yさん（エンジニア）",
+   "platform": "company",
+   "url": "https://note.com/brainlab/n/nd9302e6dd467",
+   "date": "2025-01-17",
+   "devices": [
+    {
+     "raw": "モニター：Dell S3422DWG（中央）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell S3422DWG",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニター：Dell S2721DGF（左縦）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell S2721DGF",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード：Razer BlackWidow V3 Tenkeyless",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Razer BlackWidow V3 Tenkeyless",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス：Logicool G502 X LIGHTSPEED",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool G502 X LIGHTSPEED",
+     "ambiguous": false
+    },
+    {
+     "raw": "チェア：KARNOX",
+     "cat": "furniture",
+     "cid": null,
+     "name": "KARNOX チェア（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "カメラ：エレコム",
+     "cat": "camera",
+     "cid": null,
+     "name": "ELECOM Webカメラ（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "ヘッドセット：SteelSeries Arctis Nova 5",
+     "cat": "audio",
+     "cid": null,
+     "name": "SteelSeries Arctis Nova 5",
+     "ambiguous": false
+    },
+    {
+     "raw": "スピーカー：SONY SRS-XB23",
+     "cat": "audio",
+     "cid": null,
+     "name": "Sony SRS-XB23",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ブレイン・ラボ社員 C・Sさん（デザイナー）",
+   "platform": "company",
+   "url": "https://note.com/brainlab/n/nd9302e6dd467",
+   "date": "2025-01-17",
+   "devices": [
+    {
+     "raw": "PC：MacBook Pro（16inch,2019）",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Pro 16\" (2019)",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニター：iPad Pro（11inch）",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad Pro 11\"（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "マウス：ロジクール M590",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool M590",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ブレイン・ラボ社員 H・Mさん（人事）",
+   "platform": "company",
+   "url": "https://note.com/brainlab/n/nd9302e6dd467",
+   "date": "2025-01-17",
+   "devices": [
+    {
+     "raw": "モニター：Dell S2319",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell S2319",
+     "ambiguous": true
+    },
+    {
+     "raw": "マウス：Logicool MR0087",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool MR0087（M750系）",
+     "ambiguous": true
+    },
+    {
+     "raw": "デスク：DOMY HOME l字デスク",
+     "cat": "furniture",
+     "cid": null,
+     "name": "DOMY HOME L字デスク",
+     "ambiguous": false
+    },
+    {
+     "raw": "チェア：GTXMAN オフィスチェア",
+     "cat": "furniture",
+     "cid": null,
+     "name": "GTXMAN オフィスチェア",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "ブレイン・ラボ社員 U・Kさん（エンジニア）",
+   "platform": "company",
+   "url": "https://note.com/brainlab/n/nd9302e6dd467",
+   "date": "2025-01-17",
+   "devices": [
+    {
+     "raw": "モニター：LGウルトラワイド",
+     "cat": "monitor",
+     "cid": null,
+     "name": "LG ウルトラワイド（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "デスク：FlexiSpotの昇降式",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot 電動昇降デスク（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "マイク：AKG Lyra-Y3",
+     "cat": "camera",
+     "cid": null,
+     "name": "AKG Lyra (C44-USB)",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード：REALFORCE",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "REALFORCE（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "マウス：MX ERGO",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool MX ERGO（S か無印か不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "マウス：G402",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool G402",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ヒューマンテクノロジーズ社員（2016年入社エンジニア・バランス派）",
+   "platform": "company",
+   "url": "https://recruit.h-t.co.jp/blog/2025-10-08",
+   "date": "2025-10-08",
+   "devices": [
+    {
+     "raw": "オカムラの椅子",
+     "cat": "furniture",
+     "cid": null,
+     "name": "オカムラ チェア（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "サンワダイレクトシンプルデスク",
+     "cat": "furniture",
+     "cid": null,
+     "name": "サンワダイレクト シンプルデスク（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Marantz Professional コンデンサマイク",
+     "cat": "camera",
+     "cid": null,
+     "name": "Marantz Professional マイク（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "ロジクールG304マウス",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool G304",
+     "ambiguous": false
+    },
+    {
+     "raw": "リアルフォースキーボード",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "REALFORCE（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "DELLウルトラワイドモニター",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell ウルトラワイド（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Apple Magic Track Pad",
+     "cat": "mouse",
+     "cid": "magic-trackpad",
+     "name": "Apple Magic Trackpad",
+     "ambiguous": false
+    },
+    {
+     "raw": "Macmini",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple Mac mini（モデル不明）",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "ヒューマンテクノロジーズ社員（2022年入社エンジニア）",
+   "platform": "company",
+   "url": "https://recruit.h-t.co.jp/blog/2025-10-08",
+   "date": "2025-10-08",
+   "devices": [
+    {
+     "raw": "ベルメゾン デスク",
+     "cat": "furniture",
+     "cid": null,
+     "name": "ベルメゾン デスク（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "オカムラのシルフィー（中古）",
+     "cat": "furniture",
+     "cid": null,
+     "name": "オカムラ シルフィー",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "鳴海シロウ",
+   "platform": "note",
+   "url": "https://note.com/hearty_sloth9552/n/n9da075ff7bf7",
+   "date": "2025-12-31",
+   "devices": [
+    {
+     "raw": "デスク： XINYF 「PCデスク」",
+     "cat": "furniture",
+     "cid": null,
+     "name": "XINYF PCデスク",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスクチェア： ハーマンミラー「セイルチェア」",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Herman Miller セイルチェア",
+     "ambiguous": false
+    },
+    {
+     "raw": "ノートパソコン： HP「ELITEBOOK Dragonfly」",
+     "cat": "computer",
+     "cid": null,
+     "name": "HP Elite Dragonfly",
+     "ambiguous": false
+    },
+    {
+     "raw": "HP純正Thunderboltドック",
+     "cat": "dock",
+     "cid": null,
+     "name": "HP Thunderbolt ドック（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "メインモニター： LG「OLED42C2PJA」",
+     "cat": "monitor",
+     "cid": null,
+     "name": "LG OLED42C2PJA",
+     "ambiguous": false
+    },
+    {
+     "raw": "サブモニター： 中華製「15.6インチ モバイルモニター」",
+     "cat": "monitor",
+     "cid": null,
+     "name": "15.6\" モバイルモニター（ノーブランド）",
+     "ambiguous": true
+    },
+    {
+     "raw": "モニターアーム： ACCURTEK「49インチ対応モニターアーム」",
+     "cat": "arm",
+     "cid": null,
+     "name": "ACCURTEK 49インチ対応モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス： KASOTT「MouseMaster V8」",
+     "cat": "mouse",
+     "cid": null,
+     "name": "KASOTT MouseMaster V8",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード： Arteck「HB-305-3B」",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Arteck HB-305-3B",
+     "ambiguous": false
+    },
+    {
+     "raw": "スピーカー： SONY「LSPX-S3」",
+     "cat": "audio",
+     "cid": null,
+     "name": "Sony LSPX-S3",
+     "ambiguous": false
+    },
+    {
+     "raw": "ダイナミックマイク： FIFNE「AmpliTank K688」",
+     "cat": "camera",
+     "cid": null,
+     "name": "FIFINE K688",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "4.5room（資料室）",
+   "platform": "note",
+   "url": "https://note.com/4_5room/n/n7e4b09295971",
+   "date": "2025-03-27",
+   "devices": [
+    {
+     "raw": "椅子：SIHOO C300 Pro",
+     "cat": "furniture",
+     "cid": null,
+     "name": "SIHOO Doro C300 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスク：Maidesite 電動昇降デスク",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Maidesite 電動昇降デスク（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "UGREENのUSBハブ",
+     "cat": "dock",
+     "cid": null,
+     "name": "UGREEN USB-C ハブ（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "MAONOのマイク＆アーム",
+     "cat": "camera",
+     "cid": null,
+     "name": "MAONO マイク（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "BenQのアイケアモニター",
+     "cat": "monitor",
+     "cid": null,
+     "name": "BenQ アイケアモニター（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "エルゴトロンのアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "エルゴトロン モニターアーム（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "MacBook Air",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Air（モデル不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "ロボロビンのノートパソコンアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "ロボロビン ノートPCアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "QCYヘッドホン",
+     "cat": "audio",
+     "cid": null,
+     "name": "QCY ヘッドホン（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "ロジクール MX ERGO S",
+     "cat": "mouse",
+     "cid": "mx-ergo-s",
+     "name": "Logicool MX ERGO S",
+     "ambiguous": false
+    },
+    {
+     "raw": "EPOMAKER F75",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "EPOMAKER F75",
+     "ambiguous": false
+    },
+    {
+     "raw": "TRUEFREE O1",
+     "cat": "audio",
+     "cid": null,
+     "name": "TRUEFREE O1",
+     "ambiguous": false
+    },
+    {
+     "raw": "Rorryの充電ステーション",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Rorry 充電ステーション（型番不明）",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "くまンモ",
+   "platform": "note",
+   "url": "https://note.com/kumanmoo/n/nabb568fb8cc4",
+   "date": "2025-05-11",
+   "devices": [
+    {
+     "raw": "FlexispotのE7W",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E7W",
+     "ambiguous": false
+    },
+    {
+     "raw": "HHKB Professional HYBRID Type-S US配列/墨",
+     "cat": "keyboard",
+     "cid": "hhkb-hybrid",
+     "name": "HHKB Professional HYBRID Type-S",
+     "ambiguous": false
+    },
+    {
+     "raw": "ノートPC用ガス式アーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "ノートPC用ガス式アーム（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "M4 MacBookPro",
+     "cat": "computer",
+     "cid": "mbp14-m4",
+     "name": "MacBook Pro 14\" (M4)",
+     "ambiguous": false
+    },
+    {
+     "raw": "ASUSのPC",
+     "cat": "computer",
+     "cid": null,
+     "name": "ASUS ノートPC（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Universal AudioのApollo Solo USB Heritage Edition",
+     "cat": "audio",
+     "cid": null,
+     "name": "Universal Audio Apollo Solo USB",
+     "ambiguous": false
+    },
+    {
+     "raw": "エルゴトロンのモニターアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "エルゴトロン モニターアーム（型番不明）",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "たつ",
+   "platform": "note",
+   "url": "https://note.com/tatsu_life/n/n79fb38888361",
+   "date": "2025-03-24",
+   "devices": [
+    {
+     "raw": "会社用PC Lenovo ThinkPad",
+     "cat": "computer",
+     "cid": null,
+     "name": "Lenovo ThinkPad（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "個人用PC M2 Macbook Air",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Air (M2)",
+     "ambiguous": false
+    },
+    {
+     "raw": "34インチ湾曲モニター",
+     "cat": "monitor",
+     "cid": null,
+     "name": "34\" 曲面モニター（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "エルゴトロンのモニターアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "エルゴトロン モニターアーム（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "FLEXISPOTのデスク（昇降デスク）",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot 電動昇降デスク（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Realforce",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "REALFORCE（型番不明）",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "MESI（コラボスタイル）",
+   "platform": "company",
+   "url": "https://zenn.dev/collabostyle/articles/f7ec387e0096b4",
+   "date": "2025-12-06",
+   "devices": [
+    {
+     "raw": "デスクはKANADEMONOで注文（180 × 72 cm）",
+     "cat": "furniture",
+     "cid": null,
+     "name": "KANADEMONO 天板",
+     "ambiguous": false
+    },
+    {
+     "raw": "27インチ4Kモニターを3枚",
+     "cat": "monitor",
+     "cid": null,
+     "name": "27\" 4K モニター（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "エルゴヒューマン プロ",
+     "cat": "furniture",
+     "cid": null,
+     "name": "エルゴヒューマン プロ（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Blue Yeti",
+     "cat": "camera",
+     "cid": null,
+     "name": "Logicool G Blue Yeti",
+     "ambiguous": false
+    },
+    {
+     "raw": "ドッキングステーション（DisplayLink対応）",
+     "cat": "dock",
+     "cid": null,
+     "name": "DisplayLink ドック（型番不明）",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "OVR.",
+   "platform": "note",
+   "url": "https://note.com/over50gg/n/n5e08456a6f57",
+   "date": "2025-07-05",
+   "devices": [
+    {
+     "raw": "M4 MacBook Air 15\"",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Air 15\" (M4)",
+     "ambiguous": false
+    },
+    {
+     "raw": "Apple Magic Mouse",
+     "cat": "mouse",
+     "cid": "magic-mouse",
+     "name": "Apple Magic Mouse",
+     "ambiguous": false
+    },
+    {
+     "raw": "Apple Magic Keyboard（ブラック・フルキーボード・Touch ID）",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Apple Magic Keyboard（Touch ID・テンキー付き）",
+     "ambiguous": false
+    },
+    {
+     "raw": "AirPods Max（USB-C）",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple AirPods Max",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスクトップオーディオ：Genelec8030",
+     "cat": "audio",
+     "cid": null,
+     "name": "Genelec 8030",
+     "ambiguous": false
+    },
+    {
+     "raw": "EarPods",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple EarPods",
+     "ambiguous": false
+    },
+    {
+     "raw": "AirPods4",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple AirPods 4",
+     "ambiguous": false
+    },
+    {
+     "raw": "AirPods Pro",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple AirPods Pro（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Beyerdynamic DT990PRO",
+     "cat": "audio",
+     "cid": null,
+     "name": "beyerdynamic DT 990 PRO",
+     "ambiguous": false
+    },
+    {
+     "raw": "techyou ノートPCスタンド",
+     "cat": "arm",
+     "cid": null,
+     "name": "techyou DESK UNDER PC STAND",
+     "ambiguous": false
+    },
+    {
+     "raw": "iPad mini A17Pro",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad mini (A17 Pro)",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "tk（がじぇぷら！Gadget Life +）",
+   "platform": "blog",
+   "url": "https://gadget-life.blog/desk-tour-gadget-worker-2025/",
+   "date": "2025-05-03",
+   "devices": [
+    {
+     "raw": "FLEXISPOT E7（電動昇降デスク）",
+     "cat": "furniture",
+     "cid": "flexispot-e7",
+     "name": "FlexiSpot E7 電動昇降デスク",
+     "ambiguous": false
+    },
+    {
+     "raw": "FLEXISPOT 天板 160",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot 純正天板",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニター上：LG 34SR65QC",
+     "cat": "monitor",
+     "cid": null,
+     "name": "LG 34SR65QC",
+     "ambiguous": false
+    },
+    {
+     "raw": "cocopar モバイルモニター（4K 15.6インチ）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "cocopar 4K 15.6\" モバイルモニター",
+     "ambiguous": true
+    },
+    {
+     "raw": "モニター右下：M4 iPad Pro",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad Pro (M4)",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターアーム：Amazonベーシック",
+     "cat": "arm",
+     "cid": "amazon-arm",
+     "name": "Amazonベーシック モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "エルゴトロン LX（商品一覧のみ記載）",
+     "cat": "arm",
+     "cid": "ergotron-lx",
+     "name": "エルゴトロン LX モニターアーム",
+     "ambiguous": true
+    },
+    {
+     "raw": "HUANUO PCモニターアーム デュアル",
+     "cat": "arm",
+     "cid": null,
+     "name": "HUANUO デュアルモニターアーム",
+     "ambiguous": true
+    },
+    {
+     "raw": "Windows：Surface Pro 4",
+     "cat": "computer",
+     "cid": null,
+     "name": "Microsoft Surface Pro 4",
+     "ambiguous": false
+    },
+    {
+     "raw": "Mac：Mac mini late 2012",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple Mac mini (Late 2012)",
+     "ambiguous": false
+    },
+    {
+     "raw": "MacBook Air mid 2011",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Air (Mid 2011)",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード：Keychron K2 V2（商品一覧では K2 Max）",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Keychron K2（V2 / Max 表記ゆれ）",
+     "ambiguous": true
+    },
+    {
+     "raw": "Keychron B1 Pro",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Keychron B1 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "トラックボールマウス：ロジクール MX Ergo（無印）",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool MX ERGO",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスクマット：サンワサプライ フェルト 60cm×30cm",
+     "cat": "furniture",
+     "cid": null,
+     "name": "サンワサプライ デスクマット 600×300",
+     "ambiguous": false
+    },
+    {
+     "raw": "Shokz OpenFit Air",
+     "cat": "audio",
+     "cid": null,
+     "name": "Shokz OpenFit Air",
+     "ambiguous": false
+    },
+    {
+     "raw": "UGREEN HiTune S3",
+     "cat": "audio",
+     "cid": null,
+     "name": "UGREEN HiTune S3",
+     "ambiguous": false
+    },
+    {
+     "raw": "Shokz OpenMove",
+     "cat": "audio",
+     "cid": null,
+     "name": "Shokz OpenMove",
+     "ambiguous": false
+    },
+    {
+     "raw": "AirPods Pro",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple AirPods Pro（世代不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "ドッキングステーション：UGREEN Revodok Pro 210",
+     "cat": "dock",
+     "cid": null,
+     "name": "UGREEN Revodok Pro 210",
+     "ambiguous": false
+    },
+    {
+     "raw": "オフィスチェア：GrowSpica Pro（Rasical）",
+     "cat": "furniture",
+     "cid": null,
+     "name": "RASICAL Growspica Pro",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ささやん（HUGBLO）",
+   "platform": "blog",
+   "url": "https://hugblo.com/desk-tour/",
+   "date": "2025-05-07",
+   "devices": [
+    {
+     "raw": "デスク：IKEA HUVUDSPELARE",
+     "cat": "furniture",
+     "cid": null,
+     "name": "IKEA HUVUDSPELARE",
+     "ambiguous": false
+    },
+    {
+     "raw": "ワークチェア：オカムラ VCメッシュチェア",
+     "cat": "furniture",
+     "cid": null,
+     "name": "オカムラ VC メッシュチェア",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニター：HUAWEI MateView GT 34-inch Standard Edition",
+     "cat": "monitor",
+     "cid": null,
+     "name": "HUAWEI MateView GT 34 Standard Edition",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターアーム：ERGOTRON エルゴトロン LX",
+     "cat": "arm",
+     "cid": "ergotron-lx",
+     "name": "エルゴトロン LX モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード：アーキサイト Progres touch RETRO TKL",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Archisite Progres Touch RETRO TKL",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス：Logicool MX Anywhere 3S",
+     "cat": "mouse",
+     "cid": "mx-anywhere-3s",
+     "name": "Logicool MX Anywhere 3S",
+     "ambiguous": false
+    },
+    {
+     "raw": "MacBook Air M3",
+     "cat": "computer",
+     "cid": "mba-m3",
+     "name": "MacBook Air (M3)",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスクマット：BREENHILL フェルト 120×50",
+     "cat": "furniture",
+     "cid": null,
+     "name": "BREENHILL フェルトデスクマット",
+     "ambiguous": false
+    },
+    {
+     "raw": "スピーカー：Amazon Echo Dot（第3世代）",
+     "cat": "audio",
+     "cid": null,
+     "name": "Amazon Echo Dot（第3世代）",
+     "ambiguous": false
+    },
+    {
+     "raw": "iPhone充電器：Anker MagGo",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Anker MagGo 充電器（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "iPad充電器：Anker 511 Power Bank",
+     "cat": "charger",
+     "cid": null,
+     "name": "Anker 511 Power Bank",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "maipyon（ぴょんガジェ）",
+   "platform": "blog",
+   "url": "https://maipyon.jp/desk-tours-2025/",
+   "date": "2025-11-22",
+   "devices": [
+    {
+     "raw": "デスク本体脚：FlexiSpot E8",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E8",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスク本体天板：マルトクショップのハードメープル",
+     "cat": "furniture",
+     "cid": null,
+     "name": "マルトクショップ 天板",
+     "ambiguous": false
+    },
+    {
+     "raw": "チェア：ハーマンミラー ミラ2チェア",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Herman Miller ミラ2チェア",
+     "ambiguous": false
+    },
+    {
+     "raw": "PC本体：Windows（自作）",
+     "cat": "computer",
+     "cid": null,
+     "name": "自作PC",
+     "ambiguous": false
+    },
+    {
+     "raw": "PC本体：MacBook Air M4",
+     "cat": "computer",
+     "cid": "mba-m4",
+     "name": "MacBook Air (M4)",
+     "ambiguous": false
+    },
+    {
+     "raw": "UGREEN ハブ 6-in-1",
+     "cat": "dock",
+     "cid": null,
+     "name": "UGREEN USB-C ハブ 6-in-1",
+     "ambiguous": true
+    },
+    {
+     "raw": "Dell P3421W ウルトラワイドディスプレイ",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell P3421W",
+     "ambiguous": false
+    },
+    {
+     "raw": "Flo Monitor Arm",
+     "cat": "arm",
+     "cid": null,
+     "name": "Herman Miller Flo モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "BenQ ScreenBar Pro",
+     "cat": "lighting",
+     "cid": "screenbar-pro",
+     "name": "BenQ ScreenBar Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "Lofree Flow Lite",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Lofree Flow Lite",
+     "ambiguous": false
+    },
+    {
+     "raw": "Logicool M575SP",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool ERGO M575S",
+     "ambiguous": false
+    },
+    {
+     "raw": "マイク「SM7B」",
+     "cat": "camera",
+     "cid": null,
+     "name": "Shure SM7B",
+     "ambiguous": false
+    },
+    {
+     "raw": "Elgato WAVE XLR",
+     "cat": "audio",
+     "cid": null,
+     "name": "Elgato Wave XLR",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ささき｜デザイナー",
+   "platform": "note",
+   "url": "https://note.com/hakumai_0kcal/n/n4975f602193b",
+   "date": "2025-09-12",
+   "devices": [
+    {
+     "raw": "モニター：DellのU3223QE",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell U3223QE",
+     "ambiguous": false
+    },
+    {
+     "raw": "2021年の14インチMacBookPro(M1Pro)",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Pro 14\" (2021, M1 Pro)",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード：Magic Keyboard（Lightning）",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Apple Magic Keyboard（Touch ID 有無不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "トラックパッド：Magic Trackpad（Lightning）",
+     "cat": "mouse",
+     "cid": "magic-trackpad",
+     "name": "Apple Magic Trackpad",
+     "ambiguous": false
+    },
+    {
+     "raw": "Logicool MX Master 3S",
+     "cat": "mouse",
+     "cid": "mx-master-3s",
+     "name": "Logicool MX Master 3S",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターライト：BenQ ScreenBar",
+     "cat": "lighting",
+     "cid": null,
+     "name": "BenQ ScreenBar（モデル不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "マイク：FIFINE K688W",
+     "cat": "camera",
+     "cid": null,
+     "name": "FIFINE K688",
+     "ambiguous": false
+    },
+    {
+     "raw": "Xiaomi デスクトップスピーカー",
+     "cat": "audio",
+     "cid": null,
+     "name": "Xiaomi デスクトップスピーカー（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "スマホスタンド：UGREEN スマホスタンド",
+     "cat": "mobile",
+     "cid": null,
+     "name": "UGREEN スマホスタンド（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "電動昇降デスクのFLEXISPOT EF1",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot EF1",
+     "ambiguous": false
+    },
+    {
+     "raw": "エルゴトロン LX デスク モニターアーム",
+     "cat": "arm",
+     "cid": "ergotron-lx",
+     "name": "エルゴトロン LX モニターアーム",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "Padobure（東京生まれHOUSE MUSIC育ち）",
+   "platform": "blog",
+   "url": "https://nomusicnolife.hatenablog.com/entry/2025/01/05/%E5%B9%B4%E9%A0%83%E7%94%B7%E5%AD%90%E3%81%AE%E3%83%87%E3%82%B9%E3%82%AF%E3%83%84%E3%82%A2%E3%83%BC%EF%BC%882025%E5%B9%B41%E6%9C%88%EF%BC%89",
+   "date": "2025-01-05",
+   "devices": [
+    {
+     "raw": "マイクはSHUREのMV7+",
+     "cat": "camera",
+     "cid": "mv7plus",
+     "name": "Shure MV7+",
+     "ambiguous": false
+    },
+    {
+     "raw": "ディスプレイはDellの27インチの4Kモニター",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell 27\" 4K（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "モニターライトはxiaomiのモニターライト",
+     "cat": "lighting",
+     "cid": "xiaomi-lightbar",
+     "name": "Xiaomi Mi モニター掛け式ライト",
+     "ambiguous": false
+    },
+    {
+     "raw": "M1のMacBookAir",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Air (M1)",
+     "ambiguous": false
+    },
+    {
+     "raw": "M4のMac mini",
+     "cat": "computer",
+     "cid": "macmini-m4",
+     "name": "Mac mini (M4)",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボードはKeychron社のK8 PRO（茶軸）",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Keychron K8 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "トラックパッド",
+     "cat": "mouse",
+     "cid": null,
+     "name": "トラックパッド（モデル不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "トラックボールマウスのMX ERGO（Micro-USB版）",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool MX ERGO",
+     "ambiguous": false
+    },
+    {
+     "raw": "Audioengine社のA2+Wireless",
+     "cat": "audio",
+     "cid": null,
+     "name": "Audioengine A2+ Wireless",
+     "ambiguous": false
+    },
+    {
+     "raw": "オーディオテクニカATH-M50x",
+     "cat": "audio",
+     "cid": null,
+     "name": "Audio-Technica ATH-M50x",
+     "ambiguous": false
+    },
+    {
+     "raw": "SonyのLinkBuds S",
+     "cat": "audio",
+     "cid": null,
+     "name": "Sony LinkBuds S",
+     "ambiguous": false
+    },
+    {
+     "raw": "Anker Soundcore AeroFit 2",
+     "cat": "audio",
+     "cid": null,
+     "name": "Anker Soundcore AeroFit 2",
+     "ambiguous": false
+    },
+    {
+     "raw": "オーディオインターフェイスのMOTU M4",
+     "cat": "audio",
+     "cid": null,
+     "name": "MOTU M4",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "しぶや",
+   "platform": "note",
+   "url": "https://note.com/setoshohei/n/nb384de81058e",
+   "date": "2025-11-24",
+   "devices": [
+    {
+     "raw": "デスク：FlexiSpot E8",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E8",
+     "ambiguous": false
+    },
+    {
+     "raw": "LOE ノートパソコンアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "LOE ノートPCアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "XREAL One",
+     "cat": "monitor",
+     "cid": null,
+     "name": "XREAL One",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード：Logicool MX Keys Mini",
+     "cat": "keyboard",
+     "cid": "mx-keys-mini",
+     "name": "Logicool MX Keys Mini",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス：Logicool MX Master 3S",
+     "cat": "mouse",
+     "cid": "mx-master-3s",
+     "name": "Logicool MX Master 3S",
+     "ambiguous": false
+    },
+    {
+     "raw": "チェア：ニトリ",
+     "cat": "furniture",
+     "cid": null,
+     "name": "ニトリ チェア（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "イヤホン：HUAWEI Freeclip",
+     "cat": "audio",
+     "cid": null,
+     "name": "HUAWEI FreeClip",
+     "ambiguous": false
+    },
+    {
+     "raw": "MacBook",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook（モデル不明）",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "まち",
+   "platform": "note",
+   "url": "https://note.com/machi11/n/n58e0d602c470",
+   "date": "2026-03-06",
+   "devices": [
+    {
+     "raw": "デスク｜KANADEMONO リノリウム天板（Mashroom）",
+     "cat": "furniture",
+     "cid": null,
+     "name": "KANADEMONO 天板",
+     "ambiguous": false
+    },
+    {
+     "raw": "チェア｜ハーマンミラー セイルチェア",
+     "cat": "furniture",
+     "cid": null,
+     "name": "Herman Miller セイルチェア",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニター｜MSI MRG321URXW",
+     "cat": "monitor",
+     "cid": null,
+     "name": "MSI MRG321URXW（表記どおり）",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターライト｜BenQ WiT LED",
+     "cat": "lighting",
+     "cid": null,
+     "name": "BenQ WiT",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード｜Cornix",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Cornix 分割キーボード",
+     "ambiguous": false
+    },
+    {
+     "raw": "ゲーミングキーボード｜Wooting 80HE",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Wooting 80HE",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス｜MX master 4",
+     "cat": "mouse",
+     "cid": "mx-master-4",
+     "name": "Logicool MX Master 4",
+     "ambiguous": false
+    },
+    {
+     "raw": "ゲーミングマウス｜Razer Viper V3 Pro",
+     "cat": "mouse",
+     "cid": "razer-viper-v3-pro",
+     "name": "Razer Viper V3 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウスパッド｜REJECT FENON",
+     "cat": "furniture",
+     "cid": null,
+     "name": "REJECT FENON マウスパッド",
+     "ambiguous": false
+    },
+    {
+     "raw": "左手デバイス｜Elgato Streamdeck ＋",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Elgato Stream Deck +",
+     "ambiguous": false
+    },
+    {
+     "raw": "マイク｜EJoy D10 Pro",
+     "cat": "camera",
+     "cid": null,
+     "name": "EJoy D10 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "スピーカー｜Kanto YU2",
+     "cat": "audio",
+     "cid": null,
+     "name": "Kanto YU2",
+     "ambiguous": false
+    },
+    {
+     "raw": "Anker 巻取り式充電ステーション",
+     "cat": "charger",
+     "cid": null,
+     "name": "Anker 巻取り式充電ステーション（型番不明）",
+     "ambiguous": true
+    }
+   ]
+  },
+  {
+   "creator": "Gadge（Gadge310）",
+   "platform": "note",
+   "url": "https://note.com/1031310/n/n88ab0b1d407e",
+   "date": "2026-01-17",
+   "devices": [
+    {
+     "raw": "Dell S3423DWC 34インチ WQHD 曲面",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell S3423DWC",
+     "ambiguous": false
+    },
+    {
+     "raw": "ERGOTRON エルゴトロン LX デスク モニターアーム マットブラック",
+     "cat": "arm",
+     "cid": "ergotron-lx",
+     "name": "エルゴトロン LX モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "HUANUO (ファーノー) モニターアーム HNSS8",
+     "cat": "arm",
+     "cid": null,
+     "name": "HUANUO HNSS8",
+     "ambiguous": false
+    },
+    {
+     "raw": "ErGear ノートパソコントレイ",
+     "cat": "arm",
+     "cid": null,
+     "name": "ErGear ノートPCトレイ",
+     "ambiguous": false
+    },
+    {
+     "raw": "OROW PC スピーカー S207",
+     "cat": "audio",
+     "cid": null,
+     "name": "OROW S207",
+     "ambiguous": false
+    },
+    {
+     "raw": "Threekey 4in1（MFi・Qi2）",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Threekey 4in1 Qi2 充電スタンド",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスクマット フェルト 羊毛 330x830 5mm (グレー)",
+     "cat": "furniture",
+     "cid": null,
+     "name": "フェルトデスクマット（ブランド不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "REALFORCE R3S キーボード 有線 フル 30g 日本語配列 R3SA13",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "REALFORCE R3S フルサイズ 30g（R3SA13）",
+     "ambiguous": false
+    },
+    {
+     "raw": "ロジクール 静音 ワイヤレスマウス M240GR",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool M240",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ばるき",
+   "platform": "note",
+   "url": "https://note.com/kakinoke/n/nfc483d7aeb56",
+   "date": "2026-07-09",
+   "devices": [
+    {
+     "raw": "デスクIKEA GERTON & ADILS",
+     "cat": "furniture",
+     "cid": null,
+     "name": "IKEA GERTON／ADILS",
+     "ambiguous": false
+    },
+    {
+     "raw": "M5 MacBook Air",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Air (M5・サイズ不明)",
+     "ambiguous": false
+    },
+    {
+     "raw": "4Kモニター DELL U3219Q",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell U3219Q",
+     "ambiguous": false
+    },
+    {
+     "raw": "BenQ ScreenBar",
+     "cat": "lighting",
+     "cid": null,
+     "name": "BenQ ScreenBar（モデル不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "キーボード Geonix Rev.2",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Geonix Rev.2",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス Logicool MX Anywhere 3",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool MX Anywhere 3",
+     "ambiguous": false
+    },
+    {
+     "raw": "Xiaomi デスクトップスピーカー",
+     "cat": "audio",
+     "cid": null,
+     "name": "Xiaomi デスクトップスピーカー（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "デスクチャージャー Anker Nano Charging Station",
+     "cat": "charger",
+     "cid": null,
+     "name": "Anker Nano Charging Station",
+     "ambiguous": false
+    },
+    {
+     "raw": "BREENHILL フェルトデスクマット",
+     "cat": "furniture",
+     "cid": null,
+     "name": "BREENHILL フェルトデスクマット",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "藤井翔太",
+   "platform": "note",
+   "url": "https://note.com/f_bby__shota/n/n7b9856650ee9",
+   "date": "2026-01-21",
+   "devices": [
+    {
+     "raw": "Macbook Air(M3) 13インチ",
+     "cat": "computer",
+     "cid": "mba-m3",
+     "name": "MacBook Air (M3)",
+     "ambiguous": false
+    },
+    {
+     "raw": "Macbook Air(M1) 13インチ",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Air (M1)",
+     "ambiguous": false
+    },
+    {
+     "raw": "iPad Air(M2) 13インチ",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Apple iPad Air 13\" (M2)",
+     "ambiguous": false
+    },
+    {
+     "raw": "Dell Pro Plus P3425WE",
+     "cat": "monitor",
+     "cid": null,
+     "name": "Dell P3425WE",
+     "ambiguous": false
+    },
+    {
+     "raw": "Quntis モニターライト",
+     "cat": "lighting",
+     "cid": null,
+     "name": "Quntis モニターライト（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "ERGOTRON モニターアーム",
+     "cat": "arm",
+     "cid": null,
+     "name": "エルゴトロン モニターアーム（型番不明）",
+     "ambiguous": true
+    },
+    {
+     "raw": "SHURE シュア MV7+",
+     "cat": "camera",
+     "cid": "mv7plus",
+     "name": "Shure MV7+",
+     "ambiguous": false
+    },
+    {
+     "raw": "Dell スリム サウンドバー SB521A",
+     "cat": "audio",
+     "cid": null,
+     "name": "Dell SB521A",
+     "ambiguous": false
+    },
+    {
+     "raw": "Marshall Acton III",
+     "cat": "audio",
+     "cid": null,
+     "name": "Marshall Acton III",
+     "ambiguous": false
+    },
+    {
+     "raw": "ソニー(SONY)WH-1000XM6",
+     "cat": "audio",
+     "cid": "wh1000xm6",
+     "name": "Sony WH-1000XM6",
+     "ambiguous": false
+    },
+    {
+     "raw": "OBSBOT TINY 2 webカメラ",
+     "cat": "camera",
+     "cid": "obsbot-tiny2",
+     "name": "OBSBOT Tiny 2",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "浪凪ゆらる",
+   "platform": "note",
+   "url": "https://note.com/tttrk/n/n8339dea4f66d",
+   "date": "2025-07-20",
+   "devices": [
+    {
+     "raw": "XP-PENのArtist 24 pro（液晶タブレット）",
+     "cat": "monitor",
+     "cid": null,
+     "name": "XP-PEN Artist 24 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "FRONTIER FRGAH670/WS209/NTK",
+     "cat": "computer",
+     "cid": null,
+     "name": "FRONTIER FRGAH670（BTOデスクトップ）",
+     "ambiguous": false
+    },
+    {
+     "raw": "Keychron K8 Pro QMK/VIA (JIS) 赤軸",
+     "cat": "keyboard",
+     "cid": null,
+     "name": "Keychron K8 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "Logicool Signature M750MGR",
+     "cat": "mouse",
+     "cid": null,
+     "name": "Logicool Signature M750",
+     "ambiguous": false
+    },
+    {
+     "raw": "FOCUSRITE Scarlett 2i2 Studio Pack (gen. 3)",
+     "cat": "audio",
+     "cid": null,
+     "name": "Focusrite Scarlett 2i2 Studio (3rd Gen)",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "東京ぱぱ",
+   "platform": "note",
+   "url": "https://note.com/good_tapir1455/n/n846d25f0ab8d",
+   "date": "2026-05-04",
+   "devices": [
+    {
+     "raw": "Lenovo Legion 5i Gen 10（15.1型OLEDノート）",
+     "cat": "computer",
+     "cid": null,
+     "name": "Lenovo Legion 5i Gen 10",
+     "ambiguous": false
+    },
+    {
+     "raw": "SODI 折りたたみPCスタンド",
+     "cat": "arm",
+     "cid": null,
+     "name": "SODI 折りたたみPCスタンド",
+     "ambiguous": false
+    },
+    {
+     "raw": "JBL TOUR PRO 2",
+     "cat": "audio",
+     "cid": null,
+     "name": "JBL Tour Pro 2",
+     "ambiguous": false
+    },
+    {
+     "raw": "MOFT MagSafe対応スマホスタンド",
+     "cat": "mobile",
+     "cid": null,
+     "name": "MOFT MagSafe スマホスタンド",
+     "ambiguous": false
+    },
+    {
+     "raw": "Belkin WIZ009",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Belkin BoostCharge Pro 3-in-1 (WIZ009)",
+     "ambiguous": false
+    }
+   ]
+  },
+  {
+   "creator": "ゆう（INDOOR HEART）",
+   "platform": "blog",
+   "url": "https://indoorheart.com/desk-gadget-goods",
+   "date": "2026-05-14",
+   "devices": [
+    {
+     "raw": "電動昇降デスク：FlexiSpot「E7 Pro」",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot E7 Pro",
+     "ambiguous": false
+    },
+    {
+     "raw": "デスク天板：FlexiSpot 無垢材天板ウォールナット",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot 純正天板",
+     "ambiguous": false
+    },
+    {
+     "raw": "オフィスチェア：FlexiSpot「C7 Morpher」",
+     "cat": "furniture",
+     "cid": null,
+     "name": "FlexiSpot C7 Morpher",
+     "ambiguous": false
+    },
+    {
+     "raw": "メインPC：M2 Pro MacBook Pro",
+     "cat": "computer",
+     "cid": null,
+     "name": "Apple MacBook Pro (M2 Pro・サイズ不明)",
+     "ambiguous": false
+    },
+    {
+     "raw": "メインモニター：27インチ5Kモニター KTC「H27P3」",
+     "cat": "monitor",
+     "cid": null,
+     "name": "KTC H27P3",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターアーム：Amazonベーシック",
+     "cat": "arm",
+     "cid": "amazon-arm",
+     "name": "Amazonベーシック モニターアーム",
+     "ambiguous": false
+    },
+    {
+     "raw": "ノートPCマウントトレー：Amazonベーシック",
+     "cat": "arm",
+     "cid": null,
+     "name": "Amazonベーシック ノートPCトレー",
+     "ambiguous": false
+    },
+    {
+     "raw": "モニターライト：BenQ「ScreenBar Halo 2」",
+     "cat": "lighting",
+     "cid": "screenbar-halo2",
+     "name": "BenQ ScreenBar Halo 2",
+     "ambiguous": false
+    },
+    {
+     "raw": "マイク：SHURE MV7",
+     "cat": "camera",
+     "cid": null,
+     "name": "Shure MV7（初代）",
+     "ambiguous": false
+    },
+    {
+     "raw": "ドッキングステーション：Anker「PowerExpand Elite 13-in-1 Thunderbolt 3 Dock」",
+     "cat": "dock",
+     "cid": null,
+     "name": "Anker PowerExpand Elite 13-in-1 Thunderbolt 3 Dock",
+     "ambiguous": false
+    },
+    {
+     "raw": "マウス：ロジクール「MX Master 3S」",
+     "cat": "mouse",
+     "cid": "mx-master-3s",
+     "name": "Logicool MX Master 3S",
+     "ambiguous": false
+    },
+    {
+     "raw": "キーボード：ロジクール「MX KEYS mini」",
+     "cat": "keyboard",
+     "cid": "mx-keys-mini",
+     "name": "Logicool MX Keys Mini",
+     "ambiguous": false
+    },
+    {
+     "raw": "充電ステーション：Anker「PowerWave+ 3 in 1 stand with Watch Holder」",
+     "cat": "mobile",
+     "cid": null,
+     "name": "Anker PowerWave+ 3 in 1 Stand",
+     "ambiguous": false
+    },
+    {
+     "raw": "ノイズキャンセリングイヤホン：Apple「AirPods Pro 3」",
+     "cat": "audio",
+     "cid": null,
+     "name": "Apple AirPods Pro 3",
+     "ambiguous": false
+    },
+    {
+     "raw": "ノイズキャンセリングヘッドホン：QCY「H3」",
+     "cat": "audio",
+     "cid": null,
+     "name": "QCY H3",
+     "ambiguous": false
+    }
+   ]
+  }
+ ],
+ "ranking": {
+  "computer": [
+   {
+    "cid": "mba-m3",
+    "name": "MacBook Air (M3)",
+    "count": 4,
+    "posts": [
+     "https://digital-style.jp/desk-tour-2025",
+     "https://ryuforest.com/desk-tour-2026/",
+     "https://hugblo.com/desk-tour/",
+     "https://note.com/f_bby__shota/n/n7b9856650ee9"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "自作PC",
+    "count": 4,
+    "posts": [
+     "https://www.youtube.com/watch?v=RLtodiEdS_A",
+     "https://www.youtube.com/watch?v=0Wq9YvkgUdI",
+     "https://yurutodesklife.jp/desk-tour-2025/",
+     "https://maipyon.jp/desk-tours-2025/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Apple Mac mini (M2 Pro)",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=KVc6mAZ22o0",
+     "https://note.com/muramitsu/n/n3d1b73ed71e4"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Apple MacBook Air (M1)",
+    "count": 2,
+    "posts": [
+     "https://nomusicnolife.hatenablog.com/entry/2025/01/05/%E5%B9%B4%E9%A0%83%E7%94%B7%E5%AD%90%E3%81%AE%E3%83%87%E3%82%B9%E3%82%AF%E3%83%84%E3%82%A2%E3%83%BC%EF%BC%882025%E5%B9%B41%E6%9C%88%EF%BC%89",
+     "https://note.com/f_bby__shota/n/n7b9856650ee9"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Apple MacBook Air (M2)",
+    "count": 2,
+    "posts": [
+     "https://rincostyle.blog/desktour/",
+     "https://note.com/tatsu_life/n/n79fb38888361"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Apple MacBook Pro 14\" (M1 Max)",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=PIhcwBZV5BE",
+     "https://note.com/tatu1014/n/n4f33f9f34ae2"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Apple MacBook Pro 14\" (M3)",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=qQU9XWh-rKQ",
+     "https://tomo-web.jp/desk-tour-update/"
+    ]
+   },
+   {
+    "cid": "mba-m4",
+    "name": "MacBook Air (M4)",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=iv9LOwluyvs",
+     "https://maipyon.jp/desk-tours-2025/"
+    ]
+   }
+  ],
+  "monitor": [
+   {
+    "cid": "u2723qe",
+    "name": "Dell U2723QE",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=r6V86-BGIt4",
+     "https://rincostyle.blog/desktour/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Dell U3223QE",
+    "count": 2,
+    "posts": [
+     "https://note.com/muramitsu/n/n3d1b73ed71e4",
+     "https://note.com/hakumai_0kcal/n/n4975f602193b"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Dell U4021QW",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=PIhcwBZV5BE",
+     "https://tomo-web.jp/desk-tour-update/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "INNOCN 27D1U",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=r6V86-BGIt4",
+     "https://rincostyle.blog/desktour/"
+    ]
+   }
+  ],
+  "dock": [
+   {
+    "cid": "caldigit-ts4",
+    "name": "CalDigit TS4",
+    "count": 3,
+    "posts": [
+     "https://www.youtube.com/watch?v=RLtodiEdS_A",
+     "https://digital-style.jp/desk-tour-2025",
+     "https://note.com/tatu1014/n/n4f33f9f34ae2"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "BenQ beCreatus DP1310",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=KVc6mAZ22o0",
+     "https://www.youtube.com/watch?v=Q_b0PSfh8Rw"
+    ]
+   }
+  ],
+  "keyboard": [
+   {
+    "cid": "hhkb-hybrid",
+    "name": "HHKB Professional HYBRID Type-S",
+    "count": 4,
+    "posts": [
+     "https://www.youtube.com/watch?v=KVc6mAZ22o0",
+     "https://www.youtube.com/watch?v=PIhcwBZV5BE",
+     "https://note.com/tatu1014/n/n4f33f9f34ae2",
+     "https://note.com/kumanmoo/n/nabb568fb8cc4"
+    ]
+   },
+   {
+    "cid": "mx-keys-mini",
+    "name": "Logicool MX Keys Mini",
+    "count": 4,
+    "posts": [
+     "https://www.youtube.com/watch?v=qQU9XWh-rKQ",
+     "https://digital-style.jp/desk-tour-2025",
+     "https://note.com/setoshohei/n/nb384de81058e",
+     "https://indoorheart.com/desk-gadget-goods"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Apple Magic Keyboard（Touch ID・テンキー付き）",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=0Wq9YvkgUdI",
+     "https://note.com/over50gg/n/n5e08456a6f57"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "EPOMAKER EK21",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=PIhcwBZV5BE",
+     "https://rincostyle.blog/desktour/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Keychron K8 Pro",
+    "count": 2,
+    "posts": [
+     "https://nomusicnolife.hatenablog.com/entry/2025/01/05/%E5%B9%B4%E9%A0%83%E7%94%B7%E5%AD%90%E3%81%AE%E3%83%87%E3%82%B9%E3%82%AF%E3%83%84%E3%82%A2%E3%83%BC%EF%BC%882025%E5%B9%B41%E6%9C%88%EF%BC%89",
+     "https://note.com/tttrk/n/n8339dea4f66d"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Lofree Flow Lite",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=qQU9XWh-rKQ",
+     "https://maipyon.jp/desk-tours-2025/"
+    ]
+   }
+  ],
+  "mouse": [
+   {
+    "cid": "magic-trackpad",
+    "name": "Apple Magic Trackpad",
+    "count": 8,
+    "posts": [
+     "https://www.youtube.com/watch?v=KVc6mAZ22o0",
+     "https://www.youtube.com/watch?v=GBRuJ5txYYQ",
+     "https://note.com/emulog/n/ne413198d04d2",
+     "https://note.com/brave_ixia3770/n/n2331caf75254",
+     "https://tomo-web.jp/desk-tour-update/",
+     "https://note.com/brainlab/n/nd9302e6dd467",
+     "https://recruit.h-t.co.jp/blog/2025-10-08",
+     "https://note.com/hakumai_0kcal/n/n4975f602193b"
+    ]
+   },
+   {
+    "cid": "mx-master-3s",
+    "name": "Logicool MX Master 3S",
+    "count": 8,
+    "posts": [
+     "https://www.youtube.com/watch?v=RLtodiEdS_A",
+     "https://www.youtube.com/watch?v=QN6f81qFe6g",
+     "https://note.com/bingo10/n/nde9bd173692d",
+     "https://note.com/muramitsu/n/n3d1b73ed71e4",
+     "https://note.com/brainlab/n/nd9302e6dd467",
+     "https://note.com/hakumai_0kcal/n/n4975f602193b",
+     "https://note.com/setoshohei/n/nb384de81058e",
+     "https://indoorheart.com/desk-gadget-goods"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Logicool ERGO M575S",
+    "count": 3,
+    "posts": [
+     "https://www.youtube.com/watch?v=qQU9XWh-rKQ",
+     "https://digital-style.jp/desk-tour-2025",
+     "https://maipyon.jp/desk-tours-2025/"
+    ]
+   },
+   {
+    "cid": "mx-master-4",
+    "name": "Logicool MX Master 4",
+    "count": 3,
+    "posts": [
+     "https://note.com/tatu1014/n/n4f33f9f34ae2",
+     "https://ryuforest.com/desk-tour-2026/",
+     "https://note.com/machi11/n/n58e0d602c470"
+    ]
+   },
+   {
+    "cid": "magic-mouse",
+    "name": "Apple Magic Mouse",
+    "count": 2,
+    "posts": [
+     "https://tomo-web.jp/desk-tour-update/",
+     "https://note.com/over50gg/n/n5e08456a6f57"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Logicool G502 X LIGHTSPEED",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=0Wq9YvkgUdI",
+     "https://note.com/brainlab/n/nd9302e6dd467"
+    ]
+   },
+   {
+    "cid": "mx-anywhere-3s",
+    "name": "Logicool MX Anywhere 3S",
+    "count": 2,
+    "posts": [
+     "https://note.com/muramitsu/n/n3d1b73ed71e4",
+     "https://hugblo.com/desk-tour/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Logicool MX ERGO",
+    "count": 2,
+    "posts": [
+     "https://gadget-life.blog/desk-tour-gadget-worker-2025/",
+     "https://nomusicnolife.hatenablog.com/entry/2025/01/05/%E5%B9%B4%E9%A0%83%E7%94%B7%E5%AD%90%E3%81%AE%E3%83%87%E3%82%B9%E3%82%AF%E3%83%84%E3%82%A2%E3%83%BC%EF%BC%882025%E5%B9%B41%E6%9C%88%EF%BC%89"
+    ]
+   },
+   {
+    "cid": "mx-ergo-s",
+    "name": "Logicool MX ERGO S",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=PIhcwBZV5BE",
+     "https://note.com/4_5room/n/n7e4b09295971"
+    ]
+   }
+  ],
+  "audio": [
+   {
+    "cid": null,
+    "name": "Apple AirPods 4",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=FpX3jBlGOcc",
+     "https://note.com/over50gg/n/n5e08456a6f57"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Apple AirPods Max",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=FpX3jBlGOcc",
+     "https://note.com/over50gg/n/n5e08456a6f57"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Apple AirPods Pro 3",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=FpX3jBlGOcc",
+     "https://indoorheart.com/desk-gadget-goods"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Apple EarPods",
+    "count": 2,
+    "posts": [
+     "https://note.com/brave_ixia3770/n/n2331caf75254",
+     "https://note.com/over50gg/n/n5e08456a6f57"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Audio-Technica ATH-HL7BT",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=0Wq9YvkgUdI",
+     "https://www.youtube.com/watch?v=PIhcwBZV5BE"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Kanto YU2",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=GBRuJ5txYYQ",
+     "https://note.com/machi11/n/n58e0d602c470"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "MOTU M2",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=FpX3jBlGOcc",
+     "https://www.youtube.com/watch?v=PIhcwBZV5BE"
+    ]
+   }
+  ],
+  "camera": [
+   {
+    "cid": null,
+    "name": "Shure SM7B",
+    "count": 5,
+    "posts": [
+     "https://www.youtube.com/watch?v=KVc6mAZ22o0",
+     "https://www.youtube.com/watch?v=0Wq9YvkgUdI",
+     "https://www.youtube.com/watch?v=QN6f81qFe6g",
+     "https://www.youtube.com/watch?v=PIhcwBZV5BE",
+     "https://maipyon.jp/desk-tours-2025/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "FIFINE K688",
+    "count": 3,
+    "posts": [
+     "https://www.youtube.com/watch?v=RLtodiEdS_A",
+     "https://note.com/hearty_sloth9552/n/n9da075ff7bf7",
+     "https://note.com/hakumai_0kcal/n/n4975f602193b"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Audio-Technica AT2020",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=qQU9XWh-rKQ",
+     "https://note.com/brainlab/n/nd9302e6dd467"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Logicool G Blue Yeti",
+    "count": 2,
+    "posts": [
+     "https://note.com/brave_ixia3770/n/n2331caf75254",
+     "https://zenn.dev/collabostyle/articles/f7ec387e0096b4"
+    ]
+   },
+   {
+    "cid": "mv7plus",
+    "name": "Shure MV7+",
+    "count": 2,
+    "posts": [
+     "https://nomusicnolife.hatenablog.com/entry/2025/01/05/%E5%B9%B4%E9%A0%83%E7%94%B7%E5%AD%90%E3%81%AE%E3%83%87%E3%82%B9%E3%82%AF%E3%83%84%E3%82%A2%E3%83%BC%EF%BC%882025%E5%B9%B41%E6%9C%88%EF%BC%89",
+     "https://note.com/f_bby__shota/n/n7b9856650ee9"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Shure MV7（初代）",
+    "count": 2,
+    "posts": [
+     "https://note.com/tatu1014/n/n4f33f9f34ae2",
+     "https://indoorheart.com/desk-gadget-goods"
+    ]
+   }
+  ],
+  "lighting": [
+   {
+    "cid": "screenbar-halo2",
+    "name": "BenQ ScreenBar Halo 2",
+    "count": 4,
+    "posts": [
+     "https://digital-style.jp/desk-tour-2025",
+     "https://ryuforest.com/desk-tour-2026/",
+     "https://rincostyle.blog/desktour/",
+     "https://indoorheart.com/desk-gadget-goods"
+    ]
+   },
+   {
+    "cid": "screenbar-pro",
+    "name": "BenQ ScreenBar Pro",
+    "count": 4,
+    "posts": [
+     "https://www.youtube.com/watch?v=r6V86-BGIt4",
+     "https://www.youtube.com/watch?v=09YBos_fsXc",
+     "https://tomo-web.jp/desk-tour-update/",
+     "https://maipyon.jp/desk-tours-2025/"
+    ]
+   },
+   {
+    "cid": "screenbar-halo",
+    "name": "BenQ ScreenBar Halo",
+    "count": 3,
+    "posts": [
+     "https://www.youtube.com/watch?v=KVc6mAZ22o0",
+     "https://www.youtube.com/watch?v=qQU9XWh-rKQ",
+     "https://www.youtube.com/watch?v=PIhcwBZV5BE"
+    ]
+   },
+   {
+    "cid": "xiaomi-lightbar",
+    "name": "Xiaomi Mi モニター掛け式ライト",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=RLtodiEdS_A",
+     "https://nomusicnolife.hatenablog.com/entry/2025/01/05/%E5%B9%B4%E9%A0%83%E7%94%B7%E5%AD%90%E3%81%AE%E3%83%87%E3%82%B9%E3%82%AF%E3%83%84%E3%82%A2%E3%83%BC%EF%BC%882025%E5%B9%B41%E6%9C%88%EF%BC%89"
+    ]
+   }
+  ],
+  "arm": [
+   {
+    "cid": "ergotron-lx",
+    "name": "エルゴトロン LX モニターアーム",
+    "count": 9,
+    "posts": [
+     "https://www.youtube.com/watch?v=KVc6mAZ22o0",
+     "https://www.youtube.com/watch?v=r6V86-BGIt4",
+     "https://tomo-web.jp/desk-tour-update/",
+     "https://note.com/muramitsu/n/n3d1b73ed71e4",
+     "https://note.com/tatu1014/n/n4f33f9f34ae2",
+     "https://note.com/brainlab/n/nd9302e6dd467",
+     "https://hugblo.com/desk-tour/",
+     "https://note.com/hakumai_0kcal/n/n4975f602193b",
+     "https://note.com/1031310/n/n88ab0b1d407e"
+    ]
+   },
+   {
+    "cid": "amazon-arm",
+    "name": "Amazonベーシック モニターアーム",
+    "count": 3,
+    "posts": [
+     "https://note.com/emulog/n/ne413198d04d2",
+     "https://gadget-life.blog/desk-tour-gadget-worker-2025/",
+     "https://indoorheart.com/desk-gadget-goods"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "COFO 無重力モニターアーム Pro",
+    "count": 3,
+    "posts": [
+     "https://www.youtube.com/watch?v=GBRuJ5txYYQ",
+     "https://note.com/muramitsu/n/n3d1b73ed71e4",
+     "https://ryuforest.com/desk-tour-2026/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Herman Miller Flo モニターアーム",
+    "count": 3,
+    "posts": [
+     "https://www.youtube.com/watch?v=qQU9XWh-rKQ",
+     "https://tomo-web.jp/desk-tour-update/",
+     "https://maipyon.jp/desk-tours-2025/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "エルゴトロン HX モニターアーム",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=0Wq9YvkgUdI",
+     "https://www.youtube.com/watch?v=QN6f81qFe6g"
+    ]
+   }
+  ],
+  "furniture": [
+   {
+    "cid": "flexispot-e7",
+    "name": "FlexiSpot E7 電動昇降デスク",
+    "count": 5,
+    "posts": [
+     "https://www.youtube.com/watch?v=RLtodiEdS_A",
+     "https://tomo-web.jp/desk-tour-update/",
+     "https://rincostyle.blog/desktour/",
+     "https://note.com/brainlab/n/nd9302e6dd467",
+     "https://gadget-life.blog/desk-tour-gadget-worker-2025/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "FlexiSpot E7H",
+    "count": 4,
+    "posts": [
+     "https://www.youtube.com/watch?v=Q_b0PSfh8Rw",
+     "https://www.youtube.com/watch?v=PIhcwBZV5BE",
+     "https://ryuforest.com/desk-tour-2026/",
+     "https://note.com/brainlab/n/nd9302e6dd467"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "KANADEMONO 天板",
+    "count": 4,
+    "posts": [
+     "https://tomo-web.jp/desk-tour-update/",
+     "https://note.com/tatu1014/n/n4f33f9f34ae2",
+     "https://zenn.dev/collabostyle/articles/f7ec387e0096b4",
+     "https://note.com/machi11/n/n58e0d602c470"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "FlexiSpot E8",
+    "count": 3,
+    "posts": [
+     "https://www.youtube.com/watch?v=GBRuJ5txYYQ",
+     "https://maipyon.jp/desk-tours-2025/",
+     "https://note.com/setoshohei/n/nb384de81058e"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Herman Miller セイルチェア",
+    "count": 3,
+    "posts": [
+     "https://note.com/tatu1014/n/n4f33f9f34ae2",
+     "https://note.com/hearty_sloth9552/n/n9da075ff7bf7",
+     "https://note.com/machi11/n/n58e0d602c470"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "BREENHILL フェルトデスクマット",
+    "count": 2,
+    "posts": [
+     "https://hugblo.com/desk-tour/",
+     "https://note.com/kakinoke/n/nfc483d7aeb56"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "FlexiSpot C7 Morpher",
+    "count": 2,
+    "posts": [
+     "https://ryuforest.com/desk-tour-2026/",
+     "https://indoorheart.com/desk-gadget-goods"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "FlexiSpot E7 Pro",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=FpX3jBlGOcc",
+     "https://indoorheart.com/desk-gadget-goods"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "FlexiSpot 純正天板",
+    "count": 2,
+    "posts": [
+     "https://gadget-life.blog/desk-tour-gadget-worker-2025/",
+     "https://indoorheart.com/desk-gadget-goods"
+    ]
+   },
+   {
+    "cid": "aeron",
+    "name": "Herman Miller アーロンチェア",
+    "count": 2,
+    "posts": [
+     "https://tomo-web.jp/desk-tour-update/",
+     "https://note.com/brainlab/n/nd9302e6dd467"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Palmwork パームワークチェア",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=qQU9XWh-rKQ",
+     "https://note.com/muramitsu/n/n3d1b73ed71e4"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Palmwork 電動昇降デスク",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=KVc6mAZ22o0",
+     "https://www.youtube.com/watch?v=qQU9XWh-rKQ"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "RASICAL Growspica Elite",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=KVc6mAZ22o0",
+     "https://www.youtube.com/watch?v=GBRuJ5txYYQ"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "RASICAL Growspica Pro",
+    "count": 2,
+    "posts": [
+     "https://tomo-web.jp/desk-tour-update/",
+     "https://gadget-life.blog/desk-tour-gadget-worker-2025/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "SIHOO Doro C300 Pro",
+    "count": 2,
+    "posts": [
+     "https://rincostyle.blog/desktour/",
+     "https://note.com/4_5room/n/n7e4b09295971"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "YSAGi デスクマット",
+    "count": 2,
+    "posts": [
+     "https://note.com/muramitsu/n/n3d1b73ed71e4",
+     "https://rincostyle.blog/desktour/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "サンワサプライ デスクマット 600×300",
+    "count": 2,
+    "posts": [
+     "https://note.com/emulog/n/ne413198d04d2",
+     "https://gadget-life.blog/desk-tour-gadget-worker-2025/"
+    ]
+   }
+  ],
+  "charger": [
+   {
+    "cid": null,
+    "name": "Anker Nano Charging Station",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=FpX3jBlGOcc",
+     "https://note.com/kakinoke/n/nfc483d7aeb56"
+    ]
+   }
+  ],
+  "mobile": [
+   {
+    "cid": null,
+    "name": "Apple iPad Pro (M4)",
+    "count": 2,
+    "posts": [
+     "https://note.com/muramitsu/n/n3d1b73ed71e4",
+     "https://gadget-life.blog/desk-tour-gadget-worker-2025/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Apple iPad Pro 11\" (M5)",
+    "count": 2,
+    "posts": [
+     "https://www.youtube.com/watch?v=0Wq9YvkgUdI",
+     "https://ryuforest.com/desk-tour-2026/"
+    ]
+   },
+   {
+    "cid": null,
+    "name": "Apple iPad mini (A17 Pro)",
+    "count": 2,
+    "posts": [
+     "https://tomo-web.jp/desk-tour-update/",
+     "https://note.com/over50gg/n/n5e08456a6f57"
+    ]
+   }
+  ]
+ }
+}
