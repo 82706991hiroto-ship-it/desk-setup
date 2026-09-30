@@ -245,9 +245,10 @@
   .result b { font-weight: 500; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .result small { color: var(--muted); font-size: 12px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .result .plus { color: var(--accent-fg); font-weight: 700; font-size: 18px; line-height: 1; }
-  .custom { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); display: grid; grid-template-columns: 150px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+  .custom { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); display: grid; grid-template-columns: 130px minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: center; }
   .custom-label { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
-  @media (max-width: 560px) { .custom { grid-template-columns: 1fr auto; } .custom select { grid-column: 1 / -1; } }
+  @media (max-width: 760px) { .custom { grid-template-columns: 1fr auto; } .custom select { grid-column: 1 / -1; } }
+  .conn-row { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--text); }
   select.text { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 28px; }
 
   /* 機材リスト */
@@ -521,6 +522,7 @@
         <div class="custom">
           <span class="custom-label">カタログにないとき</span>
           <select class="text" id="customCat" aria-label="カテゴリ"></select>
+          <select class="text" id="customBase" aria-label="元にする機材"></select>
           <input class="text" id="customName" placeholder="機材名" maxlength="60" aria-label="機材名">
           <button class="btn primary" id="customAdd" type="button">追加</button>
         </div>
@@ -890,6 +892,15 @@ function addFromCatalog(cid) {
   const c = catalogById(cid);
   const it = newItem(c.cat, c.name, c.spec, cid);
   if (c.ref) { it.price = c.ref; it.pkind = 'ref'; it.pdate = CATALOG_PRICE_DATE; }
+  state.items.push(it);
+  autoLink(it);
+  commit(true);
+  flashItem(it.id);
+}
+// カタログの機材を元に、名前だけ変えて追加する（仕様・大きさはそのまま、価格は入れない）
+function addBasedOn(cid, name) {
+  const c = catalogById(cid);
+  const it = newItem(c.cat, name || c.name, c.spec, cid);
   state.items.push(it);
   autoLink(it);
   commit(true);
@@ -1307,6 +1318,8 @@ function itemHTML(it, checks) {
       <span class="hint full">空欄のところは${src}（${bd.map(nf).join(' × ')} cm）を使います。${note}</span>
     </div></details>`);
   }
+  const ed = specEditor(it);
+  if (ed) parts.push(`<details class="more"${it._open ? ' open' : ''} data-open="${it.id}"><summary>スペックを編集</summary><div class="spec-grid">${ed}</div></details>`);
   if (it.cat === 'monitor') {
     const s = it.spec;
     const resOpts = Object.entries(RES_NAME).map(([k, v]) => `<option value="${k}"${k === `${s.w}x${s.h}` ? ' selected' : ''}>${v}（${k.replace('x', '×')}）</option>`).join('')
@@ -1323,6 +1336,32 @@ function itemHTML(it, checks) {
     </div></details>`);
   }
   return `<div class="item${worst ? ' sev-' + worst.sev : ''}" data-id="${it.id}">${parts.join('')}</div>`;
+}
+
+// モニター以外のスペック編集欄（カタログにない機材を実物に合わせるため）
+const CONN_LABEL = { bt: 'Bluetooth', receiver: 'USB レシーバー', usbc: 'USB-C', usba: 'USB-A' };
+function specEditor(it) {
+  if (it.cat === 'monitor') return '';   // モニターは下の専用の欄
+  const s = it.spec, P = s.ports || {}, O = s.out || {};
+  const num = (f, label, v, step = 1) => `<label>${label}<input class="text" data-f="${f}" inputmode="${step < 1 ? 'decimal' : 'numeric'}" value="${v ?? 0}"></label>`;
+  const sel = (f, label, cur, list) => `<label>${label}<select class="text" data-f="${f}">${list.map(([v, l]) => `<option value="${v}"${(cur || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>`;
+  const tog = (f, label, on) => `<label style="align-self:end"><span class="toggle"><input type="checkbox" data-f="${f}"${on ? ' checked' : ''}> ${label}</span></label>`;
+  const ports = keys => keys.map(k => num('ports.' + k, `${PORT_LABEL[k]} の数`, P[k] || 0)).join('');
+  const DPV = [['', 'なし'], ['dp1.2', 'DP 1.2'], ['dp1.4', 'DP 1.4'], ['dp2.1', 'DP 2.1']];
+  const HDV = [['', 'なし'], ['hdmi1.4', 'HDMI 1.4'], ['hdmi2.0', 'HDMI 2.0'], ['hdmi2.1', 'HDMI 2.1']];
+  const outs = () => sel('out.tb', 'Thunderbolt の映像', O.tb, DPV) + sel('out.usbc', 'USB-C の映像', O.usbc, DPV) + sel('out.hdmi', 'HDMI の映像', O.hdmi, HDV) + sel('out.dp', 'DisplayPort の映像', O.dp, DPV);
+  if (it.cat === 'computer') return ports(['tb', 'usbc', 'usba', 'hdmi', 'dp']) + outs()
+    + num('maxDisp', '外部ディスプレイ（台）', s.maxDisp || 1) + num('chargeW', '推奨の給電 (W)', s.chargeW || 0)
+    + tog('magsafe', 'MagSafe などで充電', s.magsafe) + tog('dsc', 'DSC 対応', s.dsc !== false)
+    + `<span class="hint full">映像の欄は、そのポートから出せる映像の規格です。USB-C で映像が出ないなら「なし」にします。</span>`;
+  if (it.cat === 'dock') return sel('up', 'PC とのつなぎ方', s.up, [['tb', 'Thunderbolt'], ['usbc', 'USB-C']]) + num('pdW', 'PC への給電 (W)', s.pdW || 0)
+    + ports(['tb', 'usbc', 'usba', 'hdmi', 'dp']) + outs();
+  if (it.cat === 'charger') return ports(['usbc', 'usba']) + num('totalW', '合計の出力 (W)', s.totalW || 0) + num('portW', '1ポートの最大 (W)', s.portW || 0);
+  if (DESK_SKIP.has(it.cat)) return '';
+  const conn = s.conn || [];
+  return `<div class="full conn-row">${Object.entries(CONN_LABEL).map(([k, l]) => `<span class="toggle"><input type="checkbox" data-f="conn.${k}"${conn.includes(k) ? ' checked' : ''}> ${l}</span>`).join('')}</div>`
+    + num('chargeW', 'USB から取る電力 (W)', s.chargeW || 0, .5)
+    + `<span class="hint full">つなぎ方は、この機材が対応している方法です。USB 給電の機材は、電力を入れると充電器の合計に入ります。</span>`;
 }
 
 function renderList() {
@@ -1604,6 +1643,13 @@ async function drawCard() {
 function wire() {
   const cs = $('#customCat');
   cs.innerHTML = CATS.map(c => `<option value="${c.id}">${esc(c.label)}</option>`).join('');
+  // 元にする機材: 選ぶと、その機材の仕様と大きさで名前だけ変えて追加できる
+  const fillBase = () => {
+    const list = CATALOG.filter(c => c.cat === cs.value);
+    $('#customBase').innerHTML = `<option value="">元にする機材: なし（標準の仕様）</option>` + list.map(c => `<option value="${c.id}">元にする: ${esc(c.name)}</option>`).join('');
+    $('#customBase').disabled = !list.length;
+  };
+  fillBase(); cs.addEventListener('change', fillBase);
 
   $('#q').addEventListener('input', renderResults);
   $('#chips').addEventListener('click', e => {
@@ -1615,7 +1661,8 @@ function wire() {
     const b = e.target.closest('[data-add]'); if (b) addFromCatalog(b.dataset.add);
   });
   $('#customAdd').addEventListener('click', () => {
-    addCustom(cs.value, $('#customName').value.trim());
+    const base = $('#customBase').value, name = $('#customName').value.trim();
+    if (base) addBasedOn(base, name); else addCustom(cs.value, name);
     $('#customName').value = '';
   });
   $('#customName').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) $('#customAdd').click(); });
@@ -1699,7 +1746,23 @@ function wire() {
     if (f === 'res') { const [w, h] = v.split('x').map(Number); s.w = w; s.h = h; }
     if (f === 'hz') { const n = parseInt(v, 10); if (n > 0 && n <= 1000) s.hz = n; }
     if (f === 'pdW') { const n = parseInt(v, 10); s.pdW = n > 0 && n <= 240 ? n : 0; }
+    if (['maxDisp', 'chargeW', 'totalW', 'portW', 'pdW', 'magsafe', 'dsc'].includes(f)) it._open = true;
     if (f === 'dsc') s.dsc = e.target.checked;
+    const int = (lo, hi) => { const n = parseInt(v, 10); return n >= lo && n <= hi ? n : lo; };
+    if (f.startsWith('ports.')) { s.ports = s.ports || {}; const n = int(0, 12); if (n) s.ports[f.slice(6)] = n; else delete s.ports[f.slice(6)]; }
+    if (f.startsWith('out.')) { s.out = s.out || {}; if (v) s.out[f.slice(4)] = v; else delete s.out[f.slice(4)]; }
+    if (f === 'maxDisp') s.maxDisp = int(1, 16);
+    if (f === 'chargeW') { const n = parseFloat(v); s.chargeW = n > 0 && n <= 300 ? n : 0; }
+    if (f === 'magsafe') s.magsafe = e.target.checked;
+    if (f === 'up') s.up = v === 'usbc' ? 'usbc' : 'tb';
+    if (f === 'totalW') s.totalW = int(0, 500);
+    if (f === 'portW') s.portW = int(0, 300);
+    if (f.startsWith('conn.')) {
+      const k = f.slice(5), on = e.target.checked, cur = new Set(s.conn || []);
+      if (on) cur.add(k); else cur.delete(k);
+      s.conn = Object.keys(CONN_LABEL).filter(c => cur.has(c));
+    }
+    if (f.startsWith('ports.') || f.startsWith('out.') || f.startsWith('conn.') || f === 'up') it._open = true;
     if (f.startsWith('in.')) { const k = f.slice(3); if (v) s.in[k] = v; else delete s.in[k]; }
     commit(true);
   });
