@@ -915,15 +915,39 @@ function addCustom(cat, name) {
   flashItem(it.id);
 }
 // 追加した直後にいちばん自然な接続先を選んでおく
+// 追加した機材のつなぎ先を自動で選ぶ。空いているポートを優先し、モニターは出せるリフレッシュレート、
+// 同じならドック・ハブ（PC のポートを空けておく）を選ぶ
 function autoLink(it) {
   const opts = linkOptions(it);
   if (!opts.length) return;
-  const pick =
-    opts.find(o => o.v === 'bt') ||
-    opts.find(o => o.v === 'tb' || o.v === 'usbc' && o.host.cat !== 'charger' && it.cat !== 'mobile' && it.cat !== 'lighting') ||
-    opts.find(o => (it.cat === 'mobile' || it.cat === 'lighting') && o.host.cat === 'charger') ||
-    opts[0];
-  it.link = { h: pick.h, p: pick.p, v: pick.v };
+  const used = (hid, p) => state.items.filter(i => i !== it && i.link && i.link.h === hid && i.link.p === p).length;
+  // 充電に使うポート（MagSafe がなく、モニターやドックから給電されていない PC）
+  const reserved = (h, p) => h.cat === 'computer' && h.spec.chargeW && !h.spec.magsafe && !pdSources(h).length && p === (h.spec.ports.tb ? 'tb' : 'usbc') ? 1 : 0;
+  const free = o => o.p === 'bt' || used(o.h, o.p) + reserved(o.host, o.p) < ((o.host.spec.ports || {})[o.p] || 0);
+  const score = o => {
+    let sc = free(o) ? 0 : -1000;
+    if (it.cat === 'monitor') {
+      it.link = { h: o.h, p: o.p, v: o.v };   // 仮につないで、出せる Hz を見る
+      const r = reachHz(it);
+      sc += r ? Math.min(1, r.hz / it.spec.hz) * 100 : 0;
+      if (o.host.cat === 'dock') sc += 10;
+      if (o.v === 'tb' || o.v === 'usbc') sc += 5;   // ケーブル1本で済む
+      // Mac の USB-C ハブに2台目をつなぐとミラーになる
+      if (o.host.cat === 'dock' && o.host.spec.up === 'usbc' && isMac(rootOf(o.host)) && state.items.some(i => i !== it && i.cat === 'monitor' && i.link && i.link.h === o.h)) sc -= 60;
+    } else if (it.cat === 'dock') {
+      if (o.host.cat === 'computer') sc += 10;
+      if (o.v === 'tb') sc += 5;
+    } else {
+      if (o.v === 'bt') sc += 20;
+      if ((it.cat === 'mobile' || it.cat === 'lighting') && o.host.cat === 'charger') sc += 15;
+      else if (o.host.cat !== 'charger' && (o.v === 'usbc' || o.v === 'tb')) sc += 10;
+      if (o.host.cat === 'dock') sc += 3;
+    }
+    return sc;
+  };
+  let best = opts[0], bestSc = -Infinity;
+  for (const o of opts) { const sc = score(o); if (sc > bestSc) { best = o; bestSc = sc; } }
+  it.link = { h: best.h, p: best.p, v: best.v };
 }
 
 // ---- 接続グラフ ----
@@ -937,6 +961,8 @@ function ancestors(it) {
   }
   return out;
 }
+// Mac（MST 非対応）かどうか。カタログの Mac を元にした機材も含む
+function isMac(pc) { return pc.cat === 'computer' && (/\bMac/.test(pc.name) || /^(mba|mbp|macmini|macstudio)/.test(pc.cid || '')); }
 function rootOf(it) { const a = ancestors(it); return a.length ? a[a.length - 1] : it; }
 function hostCandidates(it) {
   return state.items.filter(h => h !== it && isHost(h) && !ancestors(h).includes(it));
@@ -1095,6 +1121,14 @@ function runChecks() {
     } else {
       push('ok', `${c.name}: 外部ディスプレイ ${mons.length} / ${lim}台`, c.clam ? 'クラムシェルモード' : '', [c.id]);
     }
+  }
+
+  // Mac は MST に対応していないので、USB-C ハブ（Thunderbolt ではないもの）で広げられるのは1台だけ
+  for (const d of state.items.filter(i => i.cat === 'dock' && i.spec.up === 'usbc')) {
+    const pc = rootOf(d); if (pc === d || !isMac(pc)) continue;
+    const mons = monitors.filter(m => m.link && m.link.h === d.id);
+    if (mons.length > 1) push('error', `${d.name}: Mac では2台目以降が同じ画面（ミラー）になります`,
+      `Mac は USB-C ハブの複数画面出力（MST）に対応していないため、このハブにつないだモニターは1台分の画面しか広げられません。2台目は PC の Thunderbolt / USB-C ポートに直接つなぐか、Thunderbolt ドックを使ってください。`, [d.id, ...mons.map(m => m.id)]);
   }
 
   // モニターごとの帯域と、PC側ポートの出力上限
