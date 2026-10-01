@@ -967,7 +967,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 
 function newItem(cat, name, spec, cid) {
   return { id: (state.seq++).toString(36), cid: cid || null, cat, name, price: null, spec: clone(spec), link: null, power: 'auto', clam: false,
-    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null };
+    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '' };
 }
 function addFromCatalog(cid) {
   const c = catalogById(cid);
@@ -1428,10 +1428,16 @@ function itemHTML(it, checks) {
     const k = kindOf(it);
     const note = k === 'monitor' || k === 'portable' ? 'モニターはスタンド込みの大きさで、高さは机から画面の上端まで（一番低くしたとき）です。'
       : k === 'laptop' ? 'ノートPCの高さは閉じたときの厚さです。' : '';
-    parts.push(`<details class="more"${it._open3 ? ' open' : ''} data-open3="${it.id}"><summary>大きさ（配置図・3D）${it.dim ? ' ・ 入力済み' : ''}</summary><div class="spec-grid dim-grid">
+    const ac = autoColor(it), ml = monLook(it), isMon = it.cat === 'monitor';
+    const colorSel = `<label>色（3D）<select class="text" data-look="color"><option value="">自動（${ac ? LOOK_COLORS[ac] + '・名前から' : '種類の標準'}）</option>${Object.entries(LOOK_COLORS).map(([v, l]) => `<option value="${v}"${it.color === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>`;
+    const monRow = isMon ? `<label>向き<select class="text" data-look="mon.v"><option value="">横置き</option><option value="1"${ml.v ? ' selected' : ''}>縦置き</option></select></label>
+      <label style="align-self:end"><span class="toggle"><input type="checkbox" data-look="mon.c"${ml.c ? ' checked' : ''}${ml.v ? ' disabled' : ''}> 曲面</span></label>
+      <label style="align-self:end"><span class="toggle"><input type="checkbox" data-look="mon.a"${ml.a ? ' checked' : ''}> モニターアーム</span></label>` : '';
+    const looks = (it.color ? 1 : 0) + (it.mon ? 1 : 0);
+    parts.push(`<details class="more"${it._open3 ? ' open' : ''} data-open3="${it.id}"><summary>${isMon ? '大きさ・色・置き方' : '大きさ・色'}（配置図・3D）${it.dim || looks ? ' ・ 入力済み' : ''}</summary><div class="spec-grid dim-grid">
       ${['幅', '奥行', '高さ'].map((l, i) => `<label>${l} (cm)<input class="text" data-dim="${i}" inputmode="decimal" value="${u[i] > 0 ? nf(u[i]) : ''}" placeholder="${nf(bd[i])}"></label>`).join('')}
       <span class="hint full">空欄のところは${src}（${bd.map(nf).join(' × ')} cm）を使います。${note}</span>
-    </div></details>`);
+    </div><div class="spec-grid" style="margin-top:8px">${colorSel}${monRow}</div></details>`);
   }
   const ed = specEditor(it);
   if (ed) parts.push(`<details class="more"${it._open ? ' open' : ''} data-open="${it.id}"><summary>スペックを編集</summary><div class="spec-grid">${ed}</div></details>`);
@@ -1580,6 +1586,8 @@ function serialize(forShare = false) {
       if (it.memo) o.me = it.memo;
       if (it.pos) o.ps = [Math.round(it.pos.x * 10) / 10, Math.round(it.pos.y * 10) / 10];
       if (it.dim) o.sz = it.dim;
+      if (it.color) o.co = it.color;
+      if (it.mon) o.mo = it.mon;
       if (!forShare && it.links && it.links.length) o.ln = it.links.map(l => [l.s, l.u]);
       return o;
     }),
@@ -1609,6 +1617,7 @@ function deserialize(o) {
       links: cleanLinks(Array.isArray(x.ln) ? x.ln.map(l => ({ s: l && l[0], u: l && l[1] })) : []),
       pos: Array.isArray(x.ps) && x.ps.every(Number.isFinite) ? { x: x.ps[0], y: x.ps[1] } : null,
       dim: cleanDim(x.sz),
+      color: LOOK_COLORS[x.co] ? x.co : '', mon: typeof x.mo === 'string' ? [...new Set(x.mo.replace(/[^vca]/g, ''))].join('') : '',
     });
   }
   st.seq = max + 1;
@@ -1840,6 +1849,18 @@ function wire() {
       commit(true); return;
     }
     if (e.target.dataset.f === 'memo') { commit(true); return; }
+    if (e.target.dataset.look) {
+      const it = byId(e.target.closest('.item').dataset.id); if (!it) return;
+      const k = e.target.dataset.look;
+      if (k === 'color') it.color = LOOK_COLORS[e.target.value] ? e.target.value : '';
+      else {
+        const f = k.slice(4), on = e.target.type === 'checkbox' ? e.target.checked : !!e.target.value;
+        const set = new Set(it.mon || ''); if (on) set.add(f); else set.delete(f);
+        if (set.has('v')) set.delete('c');   // 縦置きの曲面は扱わない
+        it.mon = ['v', 'c', 'a'].filter(x => set.has(x)).join('');
+      }
+      it._open3 = true; commit(true); return;
+    }
     if (e.target.dataset.dim) {
       const it = byId(e.target.closest('.item').dataset.id); if (!it) return;
       const n = parseFloat(e.target.value.replace(/[^\d.]/g, '')), d = (it.dim || [null, null, null]).slice();
@@ -3133,7 +3154,17 @@ function guessDims(it) {
 // 自分で入れた値がないときに使う大きさ
 function baseDims(it) { const g = guessDims(it), c = it.cid && CATALOG_DIM[it.cid]; return g.map((v, i) => c && c[i] > 0 ? c[i] : v); }
 function dims(it) { const b = baseDims(it), u = it.dim || []; return b.map((v, i) => u[i] > 0 ? u[i] : v); }
-function footprint(it) { const [w, d] = dims(it); return [w, d]; }
+function footprint(it) {
+  if (it.cat === 'monitor') { const b = body3d(it); return [b.w, b.d]; }   // 縦置き・アームで変わる
+  const [w, d] = dims(it);
+  return kindOf(it) === 'monbar' ? [w, Math.min(d, 5)] : [w, d];   // モニターライトはモニターの上なので、配置図では細い帯
+}
+// 3D の色。空なら名前から（「ホワイト」「White」など）、それもなければ種類ごとの標準
+const LOOK_COLORS = { white: '白', black: '黒', silver: 'シルバー' };
+function autoColor(it) { return /ホワイト|white|白/i.test(it.name) ? 'white' : /ブラック|black|黒/i.test(it.name) ? 'black' : ''; }
+function lookColor(it) { return LOOK_COLORS[it.color] ? it.color : autoColor(it); }
+// モニターの置き方: v 縦置き / c 曲面 / a モニターアーム
+function monLook(it) { const m = it.mon || ''; return { v: m.includes('v'), c: m.includes('c'), a: m.includes('a') }; }
 function cleanDim(a) {
   if (!Array.isArray(a) || a.length !== 3) return null;
   const v = a.map(x => Number.isFinite(x) && x > 0 && x <= 400 ? r1(x) : null);
@@ -3380,8 +3411,12 @@ function body3d(it) {
   const [w, d, h] = dims(it), k = kindOf(it);
   if (k === 'monitor' || k === 'portable') {
     // 画面の高さは幅と縦横比から。残りがスタンドの高さ
-    const r = it.spec.w / it.spec.h, ph = Math.max(4, Math.min(h - .5, (w - 1.4) / r + 2.4));
-    return { kind: 'monitor', w, d, h, ph, stand: h - ph, pz: k === 'portable' ? 0 : -d * .2 };
+    const r = it.spec.w / it.spec.h, ml = monLook(it);
+    let pw = w, ph = Math.max(4, Math.min(h - .5, (w - 1.4) / r + 2.4)), dd = d;
+    const stand = h - ph;
+    if (ml.v) [pw, ph] = [ph, pw];   // 縦置き: 画面の幅と高さを入れ替える
+    if (ml.a) dd = 8;                // アーム: 台座がないので、机の上は画面の厚みぶんだけ
+    return { kind: 'monitor', w: pw, d: dd, h: stand + ph, ph, stand, pz: k === 'portable' || ml.a ? 0 : -dd * .2, curved: ml.c && !ml.v, arm: ml.a };
   }
   return { kind: k, w, d, h };
 }
@@ -3416,6 +3451,8 @@ function build3d(C, light) {
   const mat = (color, o = {}) => new T.MeshStandardMaterial({ color, roughness: .55, metalness: .1, ...o });
   const box = (w, h, d, m) => { const g = new T.Mesh(new T.BoxGeometry(w, h, d), m); g.castShadow = g.receiveShadow = true; return g; };
   const dark = mat(light ? '#2b2f35' : '#16191d'), pale = mat(light ? '#f4f4f1' : '#d9dbd6'), silver = mat('#b9bec5', { metalness: .6, roughness: .35 });
+  const TONE = { white: mat(light ? '#f2f2ee' : '#dcdcd6'), black: mat('#1b1e22'), silver };
+  const tone = (it, def) => TONE[lookColor(it)] || def;
   // 床と光
   const floor = new T.Mesh(new T.PlaneGeometry(1600, 1600), mat(C.page, { roughness: 1 }));
   floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
@@ -3452,36 +3489,58 @@ function build3d(C, light) {
     // モニターライトやWebカメラを載せるモニター（近くにあるもの）
     const monNear = () => items.find(m => m.cat === 'monitor' && pos.get(m.id) && Math.abs(pos.get(m.id).x - p.x) < 40 && Math.abs(pos.get(m.id).y - p.y) < 14);
     if (b.kind === 'monitor') {
-      const standH = b.stand, sh = b.ph;
-      const baseP = box(Math.min(26, b.w * .4), 1, b.d, dark); baseP.position.set(0, .5, 0); g.add(baseP);
-      const neck = box(4, standH + sh * .4, 2.5, dark); neck.position.set(0, (standH + sh * .4) / 2, b.pz - 2.3); g.add(neck);   // 首は画面の裏
-      const panel = box(b.w, sh, 2, dark); panel.position.set(0, standH + sh / 2, b.pz); g.add(panel);
-      const face = new T.Mesh(new T.PlaneGeometry(Math.max(1, b.w - 1.6), Math.max(1, sh - 1.6)), new T.MeshBasicMaterial({ map: scr }));
-      face.position.set(0, standH + sh / 2, b.pz + 1.02); g.add(face);
+      const standH = b.stand, sh = b.ph, cy = standH + sh / 2, body = tone(it, dark);
+      if (b.arm) {
+        // 天板の奥の端にクランプした柱から、腕で画面の裏を支える
+        const zb = 3 - p.y, poleH = cy + 4;
+        const pole = box(3, poleH, 3, body); pole.position.set(0, poleH / 2, zb); g.add(pole);
+        const clamp = box(6, 2, 7, body); clamp.position.set(0, 1, zb); g.add(clamp);
+        const len = Math.max(1, Math.abs(b.pz - 3 - zb));
+        const arm = box(3, 2.5, len, body); arm.position.set(0, cy, (zb + b.pz - 3) / 2); g.add(arm);
+        const plate = box(9, 9, 1.5, body); plate.position.set(0, cy, b.pz - 1.9); g.add(plate);
+      } else {
+        const baseP = box(Math.min(26, b.w * .4), 1, b.d, body); baseP.position.set(0, .5, 0); g.add(baseP);
+        const neck = box(4, standH + sh * .4, 2.5, body); neck.position.set(0, (standH + sh * .4) / 2, b.pz - 2.3); g.add(neck);   // 首は画面の裏
+      }
+      if (b.curved) {
+        // 曲面: 円柱の一部。中心を手前に置き、両端が手前に来るようにする
+        const R = Math.max(b.w * 1.1, 80), a = b.w / (R + 1), a2 = Math.max(1, b.w - 1.6) / R;
+        const shellM = body.clone(); shellM.side = T.DoubleSide;
+        const shell = new T.Mesh(new T.CylinderGeometry(R + 1, R + 1, sh, 48, 1, true, Math.PI - a / 2, a), shellM);
+        shell.position.set(0, cy, b.pz + R); shell.castShadow = true; g.add(shell);
+        const face = new T.Mesh(new T.CylinderGeometry(R, R, Math.max(1, sh - 1.6), 48, 1, true, Math.PI - a2 / 2, a2), new T.MeshBasicMaterial({ map: scr, side: T.DoubleSide }));
+        face.scale.x = -1;   // 内側から見るので左右を戻す
+        face.position.set(0, cy, b.pz + R); g.add(face);
+      } else {
+        const panel = box(b.w, sh, 2, body); panel.position.set(0, cy, b.pz); g.add(panel);
+        const face = new T.Mesh(new T.PlaneGeometry(Math.max(1, b.w - 1.6), Math.max(1, sh - 1.6)), new T.MeshBasicMaterial({ map: scr }));
+        face.position.set(0, cy, b.pz + 1.02); g.add(face);
+      }
       anchors.set(it.id, new T.Vector3(X, base + Math.max(2, standH), Z + b.pz - 2.5));   // ケーブルは裏から
     } else if (b.kind === 'laptop') {
-      const lap = box(b.w, b.h, b.d, silver); lap.position.set(0, b.h / 2, 0); g.add(lap);
+      const lapM = tone(it, silver);
+      const lap = box(b.w, b.h, b.d, lapM); lap.position.set(0, b.h / 2, 0); g.add(lap);
       const lid = new T.Group(); lid.position.set(0, b.h, -b.d / 2);
-      const lidM = box(b.w, b.d, .6, silver); lidM.position.set(0, b.d / 2, 0); lid.add(lidM);
+      const lidM = box(b.w, b.d, .6, lapM); lidM.position.set(0, b.d / 2, 0); lid.add(lidM);
       const face = new T.Mesh(new T.PlaneGeometry(b.w - 2, b.d - 2), new T.MeshBasicMaterial({ map: scr })); face.position.set(0, b.d / 2, .31); lid.add(face);
       lid.rotation.x = -.28; g.add(lid);
       topY = b.h + b.d * .95;
       anchors.set(it.id, new T.Vector3(X, base + b.h / 2, Z));
     } else if (b.kind === 'keyboard') {
-      const kb = box(b.w, b.h * .65, b.d, pale); kb.position.set(0, b.h * .325, 0); kb.rotation.x = .05; g.add(kb);
-      const keys = box(Math.max(1, b.w - 2), b.h * .3, Math.max(1, b.d - 2), mat(light ? '#ffffff' : '#eeeeea')); keys.position.set(0, b.h * .8, 0); g.add(keys);
+      const kb = box(b.w, b.h * .65, b.d, tone(it, pale)); kb.position.set(0, b.h * .325, 0); kb.rotation.x = .05; g.add(kb);
+      const keys = box(Math.max(1, b.w - 2), b.h * .3, Math.max(1, b.d - 2), lookColor(it) === 'black' ? mat('#2f343a') : mat(light ? '#ffffff' : '#eeeeea')); keys.position.set(0, b.h * .8, 0); g.add(keys);
       anchors.set(it.id, new T.Vector3(X, base + b.h / 2, Z));
     } else if (b.kind === 'mouse') {
       // 楕円の上半分が見える（下半分は天板の中）
-      const m = new T.Mesh(new T.SphereGeometry(1, 24, 16), dark); m.scale.set(b.w / 2, b.h, b.d / 2); m.castShadow = true; g.add(m);
+      const m = new T.Mesh(new T.SphereGeometry(1, 24, 16), tone(it, dark)); m.scale.set(b.w / 2, b.h, b.d / 2); m.castShadow = true; g.add(m);
       anchors.set(it.id, new T.Vector3(X, base + b.h / 3, Z));
     } else if (b.kind === 'speaker') {
-      const sp = box(b.w, b.h, b.d, pale); sp.position.set(0, b.h / 2, 0); g.add(sp);
+      const sp = box(b.w, b.h, b.d, tone(it, pale)); sp.position.set(0, b.h / 2, 0); g.add(sp);
       const woof = new T.Mesh(new T.CircleGeometry(Math.min(b.w, b.h) * .32, 32), mat('#c46a3a', { metalness: .5, roughness: .35 })); woof.position.set(0, b.h * .38, b.d / 2 + .05); g.add(woof);
       const tw = new T.Mesh(new T.CircleGeometry(Math.min(b.w, b.h) * .12, 24), dark); tw.position.set(0, b.h * .78, b.d / 2 + .05); g.add(tw);
       anchors.set(it.id, new T.Vector3(X, base + 3, Z));
     } else if (b.kind === 'tower') {
-      const tw = box(b.w, b.h, b.d, dark); tw.position.set(0, b.h / 2, 0); g.add(tw);
+      const tw = box(b.w, b.h, b.d, tone(it, dark)); tw.position.set(0, b.h / 2, 0); g.add(tw);
       const glow = box(.5, b.h * .7, b.d * .6, mat(C.accent, { emissive: C.accent, emissiveIntensity: .8 })); glow.position.set(b.w / 2 + .2, b.h / 2, 0); g.add(glow);
       anchors.set(it.id, new T.Vector3(X, base + b.h * .6, Z));
     } else if (b.kind === 'monbar' || b.kind === 'webcam') {
@@ -3493,35 +3552,36 @@ function build3d(C, light) {
         g.position.set(X, DH + mb.h + (b.kind === 'monbar' ? 1.5 : 0), mp.y - D / 2 + mb.pz);
       }
       if (b.kind === 'monbar') {
-        const bar = box(b.w, 2.5, 3, dark); bar.position.set(0, mounted ? 0 : 1.25, 0); g.add(bar);
+        const bar = box(b.w, 2.5, 3, tone(it, dark)); bar.position.set(0, mounted ? 0 : 1.25, 0); g.add(bar);
         const glowP = new T.Mesh(new T.PlaneGeometry(b.w - 2, 1.5), new T.MeshBasicMaterial({ color: '#fff6dc' })); glowP.rotation.x = Math.PI / 2; glowP.position.set(0, mounted ? -1.3 : 0, 1); g.add(glowP);
         if (mounted) { const spot = new T.SpotLight('#fff3d6', 1.2, 140, .9, .6); spot.position.set(0, 0, 2); spot.target.position.set(0, -60, 30); g.add(spot); g.add(spot.target); }
         topY = 3;
       } else {
-        const cm = box(b.w, b.h, b.d, dark); cm.position.set(0, b.h / 2, 0); g.add(cm);
+        const cm = box(b.w, b.h, b.d, tone(it, dark)); cm.position.set(0, b.h / 2, 0); g.add(cm);
         const lens = new T.Mesh(new T.CircleGeometry(Math.min(1.4, b.h * .35), 20), mat('#0a0a0a', { metalness: .8, roughness: .2 })); lens.position.set(0, b.h / 2, b.d / 2 + .05); g.add(lens);
       }
-      anchors.set(it.id, new T.Vector3(g.position.x, g.position.y + 1, g.position.z));
+      anchors.set(it.id, new T.Vector3(g.position.x, g.position.y + 1, g.position.z - (mounted ? 3 : 0)));   // モニターに載せたら裏からケーブルを出す
     } else if (b.kind === 'lightbar') {
-      const lb0 = box(b.w, b.h, b.d, dark); lb0.position.set(0, b.h / 2, 0); g.add(lb0);
+      const lb0 = box(b.w, b.h, b.d, tone(it, dark)); lb0.position.set(0, b.h / 2, 0); g.add(lb0);
       const glowP = new T.Mesh(new T.PlaneGeometry(Math.max(.5, b.w - 1), b.h - 2), new T.MeshBasicMaterial({ color: C.accent })); glowP.position.set(0, b.h / 2, -b.d / 2 - .05); glowP.rotation.y = Math.PI; g.add(glowP);
       anchors.set(it.id, new T.Vector3(X, base + 1, Z));
     } else if (b.kind === 'lamp') {
-      const pole = box(1.5, b.h, 1.5, dark); pole.position.set(0, b.h / 2, 0); g.add(pole);
-      const sh = new T.Mesh(new T.ConeGeometry(Math.min(b.w, b.d) / 2, 8, 24, 1, true), dark); sh.position.set(0, b.h, 0); g.add(sh);
+      const lampM = tone(it, dark);
+      const pole = box(1.5, b.h, 1.5, lampM); pole.position.set(0, b.h / 2, 0); g.add(pole);
+      const sh = new T.Mesh(new T.ConeGeometry(Math.min(b.w, b.d) / 2, 8, 24, 1, true), lampM); sh.position.set(0, b.h, 0); g.add(sh);
       anchors.set(it.id, new T.Vector3(X, base + 1, Z));
     } else if (b.kind === 'mic') {
       const r = Math.min(b.w, b.d) / 2;
       const foot = new T.Mesh(new T.CylinderGeometry(r, r, 1.2, 28), dark); foot.position.set(0, .6, 0); g.add(foot);
       const pole = new T.Mesh(new T.CylinderGeometry(.5, .5, b.h * .5, 12), dark); pole.position.set(0, b.h * .25, 0); g.add(pole);
-      const cap = new T.Mesh(new T.CylinderGeometry(r * .45, r * .45, b.h * .5, 24), mat(light ? '#3a3f46' : '#2a2f36', { metalness: .4 })); cap.position.set(0, b.h * .75, 0); g.add(cap);
+      const cap = new T.Mesh(new T.CylinderGeometry(r * .45, r * .45, b.h * .5, 24), tone(it, mat(light ? '#3a3f46' : '#2a2f36', { metalness: .4 }))); cap.position.set(0, b.h * .75, 0); g.add(cap);
       [foot, pole, cap].forEach(m => { m.castShadow = true; });
       anchors.set(it.id, new T.Vector3(X, base + 1, Z));
     } else if (b.kind === 'trackpad' || b.kind === 'tablet' || b.kind === 'phone') {
-      const sl = box(b.w, b.h, b.d, b.kind === 'trackpad' ? silver : dark); sl.position.set(0, b.h / 2, 0); g.add(sl);
+      const sl = box(b.w, b.h, b.d, tone(it, b.kind === 'trackpad' ? silver : dark)); sl.position.set(0, b.h / 2, 0); g.add(sl);
       anchors.set(it.id, new T.Vector3(X, base + b.h / 2, Z));
     } else {
-      const bx = box(b.w, b.h, b.d, it.cat === 'charger' ? pale : it.cat === 'dock' || b.kind === 'smallpc' ? silver : dark);
+      const bx = box(b.w, b.h, b.d, tone(it, it.cat === 'charger' ? pale : it.cat === 'dock' || b.kind === 'smallpc' ? silver : dark));
       bx.position.set(0, b.h / 2, 0); g.add(bx);
       anchors.set(it.id, new T.Vector3(X, base + b.h / 2, Z));
     }
