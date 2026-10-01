@@ -14,7 +14,7 @@
 
 https://desk-recipe-rank.82706991hiroto.workers.dev （2026年10月に公開。`/ranking` で動作確認済み）
 
-アプリの `index.html` の `RANK_API` にこの URL を入れると、利用者ランキングのタブと参加の欄が出ます。利用者が増えるまでは空のままにしています。
+アプリの `index.html` の `RANK_API` にこの URL を入れてあります（2026年10月につないだ）。空にすると、利用者ランキングのタブと参加の欄が隠れます。
 
 ## 公開の手順（Cloudflare の画面で行う）
 
