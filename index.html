@@ -3454,11 +3454,11 @@ function build3d(C, light) {
     if (b.kind === 'monitor') {
       const standH = b.stand, sh = b.ph;
       const baseP = box(Math.min(26, b.w * .4), 1, b.d, dark); baseP.position.set(0, .5, 0); g.add(baseP);
-      const neck = box(4, standH + sh * .4, 2.5, dark); neck.position.set(0, (standH + sh * .4) / 2, b.pz + 2.3); g.add(neck);
+      const neck = box(4, standH + sh * .4, 2.5, dark); neck.position.set(0, (standH + sh * .4) / 2, b.pz - 2.3); g.add(neck);   // 首は画面の裏
       const panel = box(b.w, sh, 2, dark); panel.position.set(0, standH + sh / 2, b.pz); g.add(panel);
       const face = new T.Mesh(new T.PlaneGeometry(Math.max(1, b.w - 1.6), Math.max(1, sh - 1.6)), new T.MeshBasicMaterial({ map: scr }));
       face.position.set(0, standH + sh / 2, b.pz + 1.02); g.add(face);
-      anchors.set(it.id, new T.Vector3(X, base + Math.max(2, standH), Z + b.pz));
+      anchors.set(it.id, new T.Vector3(X, base + Math.max(2, standH), Z + b.pz - 2.5));   // ケーブルは裏から
     } else if (b.kind === 'laptop') {
       const lap = box(b.w, b.h, b.d, silver); lap.position.set(0, b.h / 2, 0); g.add(lap);
       const lid = new T.Group(); lid.position.set(0, b.h, -b.d / 2);
