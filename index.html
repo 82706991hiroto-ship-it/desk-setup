@@ -410,6 +410,8 @@
   .t3-btn:active { background: var(--field); }
   .t3-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
   .t3-full[aria-pressed="true"] .i-in, .t3-full[aria-pressed="false"] .i-out { display: none; }
+  .t3-btn[hidden] { display: none; }
+  @media (max-width: 560px) { .three-tools { gap: 6px; } .three-tools .seg button { padding: 7px 9px; } .three-tools .t3-btn { min-width: 34px; height: 34px; padding: 0 8px; font-size: 14px; } }
   .sel-bar {
     position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); max-width: calc(100% - 20px);
     display: flex; gap: 8px; align-items: center; padding: 6px 6px 6px 12px;
@@ -1438,6 +1440,10 @@ function itemHTML(it, checks) {
       ${['幅', '奥行', '高さ'].map((l, i) => `<label>${l} (cm)<input class="text" data-dim="${i}" inputmode="decimal" value="${u[i] > 0 ? nf(u[i]) : ''}" placeholder="${nf(bd[i])}"></label>`).join('')}
       <span class="hint full">空欄のところは${src}（${bd.map(nf).join(' × ')} cm）を使います。${note}</span>
     </div><div class="spec-grid" style="margin-top:8px">${colorSel}${monRow}</div></details>`);
+  }
+  if (kindOf(it) === 'chair') {
+    const ac = autoColor(it);
+    parts.push(`<details class="more"${it._open3 ? ' open' : ''} data-open3="${it.id}"><summary>色（3D）${it.color ? ' ・ 入力済み' : ''}</summary><div class="spec-grid"><label>色（3D）<select class="text" data-look="color"><option value="">自動（${ac ? LOOK_COLORS[ac] + '・名前から' : '黒'}）</option>${Object.entries(LOOK_COLORS).map(([v, l]) => `<option value="${v}"${it.color === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label><span class="hint full">3D では、机の手前に置いて描きます。</span></div></details>`);
   }
   const ed = specEditor(it);
   if (ed) parts.push(`<details class="more"${it._open ? ' open' : ''} data-open="${it.id}"><summary>スペックを編集</summary><div class="spec-grid">${ed}</div></details>`);
@@ -2876,6 +2882,8 @@ const RANK_API = 'https://desk-recipe-rank.82706991hiroto.workers.dev';
 // cats: { カテゴリ: [{ cid（カタログにないものは null）, name, n: 人数, src: [posts の番号] }] }
 const CREATOR_RANK = {"checked":"2026-09-30","creators":53,"posts":[{"c":"ちから（ちからの作業部屋【インズノート】）","u":"https://www.youtube.com/watch?v=FpX3jBlGOcc","d":"2025-12-26"},{"c":"家活男子のススメ","u":"https://www.youtube.com/watch?v=KVc6mAZ22o0","d":"2025-03-07"},{"c":"すばる（Tigerwall）","u":"https://www.youtube.com/watch?v=RLtodiEdS_A","d":"2025-01-12"},{"c":"えふぃる（efiL）","u":"https://www.youtube.com/watch?v=qQU9XWh-rKQ","d":"2025-05-06"},{"c":"さいちょう","u":"https://www.youtube.com/watch?v=r6V86-BGIt4","d":"2025-12-05"},{"c":"しょうご（前略、物欲が止まりません。）","u":"https://www.youtube.com/watch?v=GBRuJ5txYYQ","d":"2025-01-25"},{"c":"さっさん / SASSAN","u":"https://www.youtube.com/watch?v=0Wq9YvkgUdI","d":"2025-12-24"},{"c":"びえんガジェットPC","u":"https://www.youtube.com/watch?v=Q_b0PSfh8Rw","d":"2025-09-03"},{"c":"東京タマスタイル（TOKYO Tamastyle）","u":"https://www.youtube.com/watch?v=09YBos_fsXc","d":"2025-01-13"},{"c":"DG Nexus","u":"https://www.youtube.com/watch?v=iv9LOwluyvs","d":"2026-01-11"},{"c":"miDen","u":"https://www.youtube.com/watch?v=QN6f81qFe6g","d":"2026-03-11"},{"c":"ツヨシ（techyou）","u":"https://www.youtube.com/watch?v=PIhcwBZV5BE","d":"2025-04-18"},{"c":"Emu（EmuLog）","u":"https://note.com/emulog/n/ne413198d04d2","d":"2025-12-22"},{"c":"shunsuke〔駿介〕","u":"https://note.com/brave_ixia3770/n/n2331caf75254","d":"2025-04-05"},{"c":"タカヒロ（ガジェットブログ・デジスタ）","u":"https://digital-style.jp/desk-tour-2025","d":"2025-11-22"},{"c":"bingo+","u":"https://note.com/bingo10/n/nde9bd173692d","d":"2026-01-06"},{"c":"Harushiro（ゆるっとデスクライフ）","u":"https://yurutodesklife.jp/desk-tour-2025/","d":"2025-05-05"},{"c":"トモ（トモウェブ）","u":"https://tomo-web.jp/desk-tour-update/","d":"2026-06-12"},{"c":"GOME（G-LABO）","u":"https://note.com/gome_web/n/ndab7caaf3bf5","d":"2026-05-06"},{"c":"みつ（ガジェット暮らしのnote）","u":"https://note.com/muramitsu/n/n3d1b73ed71e4","d":"2026-03-11"},{"c":"るいとー（ルイデント）","u":"https://ruidento.com/desk-tour-winter-2026/","d":"2026-01-09"},{"c":"ロピログ","u":"https://note.com/tatu1014/n/n4f33f9f34ae2","d":"2026-07-10"},{"c":"よは（YOHAKU）","u":"https://ryuforest.com/desk-tour-2026/","d":"2026-01-27"},{"c":"りんこ（りんこスタイル）","u":"https://rincostyle.blog/desktour/","d":"2026-05-18"},{"c":"ブレイン・ラボ社員 H・Kさん（PdM）","u":"https://note.com/brainlab/n/nd9302e6dd467","d":"2025-01-17"},{"c":"ブレイン・ラボ社員 Y・Yさん（デザイナー）","u":"https://note.com/brainlab/n/nd9302e6dd467","d":"2025-01-17"},{"c":"ブレイン・ラボ社員 N・Rさん（人事）","u":"https://note.com/brainlab/n/nd9302e6dd467","d":"2025-01-17"},{"c":"ブレイン・ラボ社員 W・Yさん（エンジニア）","u":"https://note.com/brainlab/n/nd9302e6dd467","d":"2025-01-17"},{"c":"ブレイン・ラボ社員 Y・Yさん（エンジニア）","u":"https://note.com/brainlab/n/nd9302e6dd467","d":"2025-01-17"},{"c":"ブレイン・ラボ社員 C・Sさん（デザイナー）","u":"https://note.com/brainlab/n/nd9302e6dd467","d":"2025-01-17"},{"c":"ブレイン・ラボ社員 H・Mさん（人事）","u":"https://note.com/brainlab/n/nd9302e6dd467","d":"2025-01-17"},{"c":"ブレイン・ラボ社員 U・Kさん（エンジニア）","u":"https://note.com/brainlab/n/nd9302e6dd467","d":"2025-01-17"},{"c":"ヒューマンテクノロジーズ社員（2016年入社エンジニア・バランス派）","u":"https://recruit.h-t.co.jp/blog/2025-10-08","d":"2025-10-08"},{"c":"ヒューマンテクノロジーズ社員（2022年入社エンジニア）","u":"https://recruit.h-t.co.jp/blog/2025-10-08","d":"2025-10-08"},{"c":"鳴海シロウ","u":"https://note.com/hearty_sloth9552/n/n9da075ff7bf7","d":"2025-12-31"},{"c":"4.5room（資料室）","u":"https://note.com/4_5room/n/n7e4b09295971","d":"2025-03-27"},{"c":"くまンモ","u":"https://note.com/kumanmoo/n/nabb568fb8cc4","d":"2025-05-11"},{"c":"たつ","u":"https://note.com/tatsu_life/n/n79fb38888361","d":"2025-03-24"},{"c":"MESI（コラボスタイル）","u":"https://zenn.dev/collabostyle/articles/f7ec387e0096b4","d":"2025-12-06"},{"c":"OVR.","u":"https://note.com/over50gg/n/n5e08456a6f57","d":"2025-07-05"},{"c":"tk（がじぇぷら！Gadget Life +）","u":"https://gadget-life.blog/desk-tour-gadget-worker-2025/","d":"2025-05-03"},{"c":"ささやん（HUGBLO）","u":"https://hugblo.com/desk-tour/","d":"2025-05-07"},{"c":"maipyon（ぴょんガジェ）","u":"https://maipyon.jp/desk-tours-2025/","d":"2025-11-22"},{"c":"ささき｜デザイナー","u":"https://note.com/hakumai_0kcal/n/n4975f602193b","d":"2025-09-12"},{"c":"Padobure（東京生まれHOUSE MUSIC育ち）","u":"https://nomusicnolife.hatenablog.com/entry/2025/01/05/%E5%B9%B4%E9%A0%83%E7%94%B7%E5%AD%90%E3%81%AE%E3%83%87%E3%82%B9%E3%82%AF%E3%83%84%E3%82%A2%E3%83%BC%EF%BC%882025%E5%B9%B41%E6%9C%88%EF%BC%89","d":"2025-01-05"},{"c":"しぶや","u":"https://note.com/setoshohei/n/nb384de81058e","d":"2025-11-24"},{"c":"まち","u":"https://note.com/machi11/n/n58e0d602c470","d":"2026-03-06"},{"c":"Gadge（Gadge310）","u":"https://note.com/1031310/n/n88ab0b1d407e","d":"2026-01-17"},{"c":"ばるき","u":"https://note.com/kakinoke/n/nfc483d7aeb56","d":"2026-07-09"},{"c":"藤井翔太","u":"https://note.com/f_bby__shota/n/n7b9856650ee9","d":"2026-01-21"},{"c":"浪凪ゆらる","u":"https://note.com/tttrk/n/n8339dea4f66d","d":"2025-07-20"},{"c":"東京ぱぱ","u":"https://note.com/good_tapir1455/n/n846d25f0ab8d","d":"2026-05-04"},{"c":"ゆう（INDOOR HEART）","u":"https://indoorheart.com/desk-gadget-goods","d":"2026-05-14"}],"cats":{"computer":[{"cid":"mba-m3","name":"MacBook Air (M3)","n":4,"src":[14,22,41,49]},{"cid":null,"name":"自作PC","n":4,"src":[2,6,16,42]},{"cid":"macmini-m2pro","name":"Mac mini (M2 Pro)","n":2,"src":[1,19]},{"cid":"mba-m1","name":"MacBook Air (M1)","n":2,"src":[44,49]},{"cid":"mba-m2","name":"Apple MacBook Air (M2)","n":2,"src":[23,37]},{"cid":"mbp14-m1max","name":"MacBook Pro 14\" (M1 Max)","n":2,"src":[11,21]},{"cid":"mbp14-m3","name":"MacBook Pro 14\" (M3)","n":2,"src":[3,17]},{"cid":"mba-m4","name":"MacBook Air (M4)","n":2,"src":[9,42]}],"monitor":[{"cid":"u2723qe","name":"Dell U2723QE","n":2,"src":[4,23]},{"cid":"u3223qe","name":"Dell U3223QE","n":2,"src":[19,43]},{"cid":"u4021qw","name":"Dell U4021QW","n":2,"src":[11,17]},{"cid":"innocn-27d1u","name":"INNOCN 27D1U","n":2,"src":[4,23]}],"dock":[{"cid":"caldigit-ts4","name":"CalDigit TS4","n":3,"src":[2,14,21]},{"cid":"benq-dp1310","name":"BenQ beCreatus DP1310","n":2,"src":[1,7]}],"keyboard":[{"cid":"hhkb-hybrid","name":"HHKB Professional HYBRID Type-S","n":4,"src":[1,11,21,36]},{"cid":"mx-keys-mini","name":"Logicool MX Keys Mini","n":4,"src":[3,14,45,52]},{"cid":"magic-kb-numpad","name":"Apple Magic Keyboard（Touch ID・テンキー付き）","n":2,"src":[6,39]},{"cid":"epomaker-ek21","name":"EPOMAKER EK21（テンキー）","n":2,"src":[11,23]},{"cid":"keychron-k8-pro","name":"Keychron K8 Pro","n":2,"src":[44,50]},{"cid":"lofree-flow-lite","name":"Lofree Flow Lite (84)","n":2,"src":[3,42]}],"mouse":[{"cid":"magic-trackpad","name":"Apple Magic Trackpad","n":8,"src":[1,5,12,13,17,25,32,43]},{"cid":"mx-master-3s","name":"Logicool MX Master 3S","n":8,"src":[2,10,15,19,27,43,45,52]},{"cid":"ergo-m575s","name":"Logicool ERGO M575SP（トラックボール）","n":3,"src":[3,14,42]},{"cid":"mx-master-4","name":"Logicool MX Master 4","n":3,"src":[21,22,46]},{"cid":"magic-mouse","name":"Apple Magic Mouse","n":2,"src":[17,39]},{"cid":"g502x-lightspeed","name":"Logicool G G502 X LIGHTSPEED","n":2,"src":[6,28]},{"cid":"mx-anywhere-3s","name":"Logicool MX Anywhere 3S","n":2,"src":[19,41]},{"cid":"mx-ergo","name":"Logicool MX ERGO（MXTB1s・初代）","n":2,"src":[40,44]},{"cid":"mx-ergo-s","name":"Logicool MX ERGO S","n":2,"src":[11,35]}],"audio":[{"cid":"airpods-4","name":"Apple AirPods 4","n":2,"src":[0,39]},{"cid":"airpods-max","name":"Apple AirPods Max（USB-C）","n":2,"src":[0,39]},{"cid":"airpods-pro-3","name":"Apple AirPods Pro 3","n":2,"src":[0,52]},{"cid":"earpods","name":"Apple EarPods（USB-C）","n":2,"src":[13,39]},{"cid":"ath-hl7bt","name":"Audio-Technica ATH-HL7BT","n":2,"src":[6,11]},{"cid":null,"name":"Kanto YU2","n":2,"src":[5,46]},{"cid":"motu-m2","name":"MOTU M2（オーディオインターフェース）","n":2,"src":[0,11]}],"camera":[{"cid":"sm7b","name":"Shure SM7B","n":5,"src":[1,6,10,11,42]},{"cid":null,"name":"FIFINE K688","n":3,"src":[2,34,43]},{"cid":"at2020","name":"Audio-Technica AT2020","n":2,"src":[3,27]},{"cid":"blue-yeti","name":"Logicool G Yeti（Blue Yeti）","n":2,"src":[13,38]},{"cid":"mv7plus","name":"Shure MV7+","n":2,"src":[44,49]},{"cid":"mv7","name":"Shure MV7（初代）","n":2,"src":[21,52]}],"lighting":[{"cid":"screenbar-halo2","name":"BenQ ScreenBar Halo 2","n":4,"src":[14,22,23,52]},{"cid":"screenbar-pro","name":"BenQ ScreenBar Pro","n":4,"src":[4,8,17,42]},{"cid":"screenbar-halo","name":"BenQ ScreenBar Halo","n":3,"src":[1,3,11]},{"cid":"xiaomi-lightbar","name":"Xiaomi Mi モニター掛け式ライト","n":2,"src":[2,44]}],"arm":[{"cid":"ergotron-lx","name":"エルゴトロン LX モニターアーム","n":9,"src":[1,4,17,19,21,27,41,43,47]},{"cid":"amazon-arm","name":"Amazonベーシック モニターアーム","n":3,"src":[12,40,52]},{"cid":"cofo-arm-pro","name":"COFO Monitor Arm Pro（シングル）","n":3,"src":[5,19,22]},{"cid":"flo-arm","name":"Herman Miller Flo モニターアーム","n":3,"src":[3,17,42]},{"cid":"ergotron-hx","name":"エルゴトロン HX デスクモニターアーム","n":2,"src":[6,10]}],"furniture":[{"cid":"flexispot-e7","name":"FlexiSpot E7 電動昇降デスク","n":5,"src":[2,17,23,27,40]},{"cid":"flexispot-e7h","name":"FlexiSpot E7H 電動昇降デスク（脚のみ）","n":4,"src":[7,11,22,24]},{"cid":"kanademono-top","name":"KANADEMONO THE BOARD（天板）","n":4,"src":[17,21,38,46]},{"cid":"flexispot-e8","name":"FlexiSpot E8 電動昇降デスク（脚のみ）","n":3,"src":[5,42,45]},{"cid":"sayl","name":"Herman Miller セイルチェア","n":3,"src":[21,34,46]},{"cid":null,"name":"BREENHILL フェルトデスクマット","n":2,"src":[41,48]},{"cid":"flexispot-c7-morpher","name":"FlexiSpot C7 Morpher（オフィスチェア）","n":2,"src":[22,52]},{"cid":"flexispot-e7-pro","name":"FlexiSpot E7 Pro 電動昇降デスク（脚のみ）","n":2,"src":[0,52]},{"cid":"flexispot-top","name":"FlexiSpot 純正天板","n":2,"src":[40,52]},{"cid":"aeron","name":"Herman Miller アーロンチェア","n":2,"src":[17,25]},{"cid":"palmwork-chair","name":"Palmwork パームワークチェア","n":2,"src":[3,19]},{"cid":null,"name":"Palmwork 電動昇降デスク","n":2,"src":[1,3]},{"cid":"growspica-elite","name":"Rasical GrowSpica Elite","n":2,"src":[1,5]},{"cid":null,"name":"RASICAL Growspica Pro","n":2,"src":[17,40]},{"cid":"sihoo-c300-pro","name":"SIHOO Doro C300 Pro","n":2,"src":[23,35]},{"cid":null,"name":"YSAGi デスクマット","n":2,"src":[19,23]},{"cid":"sanwa-mat-6030","name":"サンワサプライ フェルトデスクマット 600×300（MPD-FLT2BK）","n":2,"src":[12,40]}],"charger":[{"cid":"anker-nano-station","name":"Anker Nano Charging Station (6-in-1, 67W)","n":2,"src":[0,48]}],"mobile":[{"cid":"ipad-pro-m4","name":"iPad Pro (M4)","n":2,"src":[19,40]},{"cid":"ipad-pro11-m5","name":"iPad Pro 11\" (M5)","n":2,"src":[6,22]},{"cid":"ipad-mini-a17pro","name":"iPad mini (A17 Pro)","n":2,"src":[17,39]}]}};
 const RANK_KEY = 'desk-setup:rank';
+// 3D でチェアを出すか（見る人ごとに覚える）
+const showChair = () => { try { return localStorage.getItem('desk-setup:chair') !== '0'; } catch (e) { return true; } };
 let rankMode = 'creator', rankCat = '', userRank = null;
 const rankState = () => { try { return JSON.parse(localStorage.getItem(RANK_KEY)) || null; } catch (e) { return null; } };
 const setRankState = v => { try { if (v) localStorage.setItem(RANK_KEY, JSON.stringify(v)); else localStorage.removeItem(RANK_KEY); } catch (e) {} };
@@ -3094,6 +3102,7 @@ const CATALOG_DIM = {
   'ipad-pro11-m5': [17.8, 25, 0.5],
   'ipad-mini-a17pro': [13.5, 19.5, 0.6],
 };
+const CHAIR_RE = /チェア|chair|エルゴヒューマン|ergohuman|GrowSpica|Doro|Embody|エンボディ/i;
 const MIC_RE = /マイク|\bmic(rophone)?\b|MV7|Wave:?\s?\d|Yeti|SM7|NT-USB|AT20\d\d|FIFINE/i;
 // 形の種類（大きさではなく、カテゴリと名前で決める）
 function kindOf(it) {
@@ -3102,10 +3111,11 @@ function kindOf(it) {
     case 'computer': return /デスクトップ|desktop|tower|タワー/i.test(n) ? 'tower' : /mini|Studio|NUC|ミニPC/i.test(n) ? 'smallpc' : 'laptop';
     case 'monitor': return /モバイル|portable/i.test(n) ? 'portable' : 'monitor';
     case 'mouse': return /trackpad|トラックパッド/i.test(n) ? 'trackpad' : 'mouse';
-    case 'audio': return /ヘッドホン|ヘッドフォン|イヤホン|WH-|ATH-|AirPods|EarPods|headphone/i.test(n) ? 'headphones' : /インターフェース|interface|MOTU|Scarlett|Focusrite/i.test(n) ? 'interface' : MIC_RE.test(n) ? 'mic' : 'speaker';
+    case 'audio': return /AirPods(?! ?Max)|EarPods|イヤホン|Buds|WF-/i.test(n) ? 'earbuds' : /ヘッドホン|ヘッドフォン|WH-|ATH-|AirPods ?Max|headphone/i.test(n) ? 'headphones' : /インターフェース|interface|MOTU|Scarlett|Focusrite/i.test(n) ? 'interface' : MIC_RE.test(n) ? 'mic' : 'speaker';
     case 'camera': return MIC_RE.test(n) ? 'mic' : 'webcam';
     case 'lighting': return /ScreenBar|モニターライト|monitor ?light/i.test(n) ? 'monbar' : /ライトバー|light ?bar|Play/i.test(n) ? 'lightbar' : 'lamp';
     case 'mobile': return /iPad|タブレット|tablet/i.test(n) ? 'tablet' : /スタンド|3-in-1|stand/i.test(n) ? 'stand' : 'phone';
+    case 'furniture': return CHAIR_RE.test(n) ? 'chair' : 'furniture';
     default: return it.cat;   // keyboard, dock, charger など
   }
 }
@@ -3137,6 +3147,7 @@ function guessDims(it) {
     case 'trackpad': return [16, 11.5, 1];
     case 'speaker': return [12, 15, 20];
     case 'headphones': return [18, 9, 8];
+    case 'earbuds': return [6, 2.5, 5];
     case 'interface': return [18, 12, 5];
     case 'mic': return [10, 10, 20];
     case 'webcam': return [10, 5, 4];
@@ -3388,7 +3399,10 @@ function wireDesk() {
   $('#deskW').addEventListener('change', size); $('#deskD').addEventListener('change', size);
   $('#deskLabels').addEventListener('change', () => {
     if (wireMode === 'desk') renderDesk();
-    if (wireMode === '3d' && three) three.world.labels.forEach(l => { l.visible = $('#deskLabels').checked; });
+    if (wireMode === '3d' && three) {
+      three.world.labels.forEach(l => { l.visible = $('#deskLabels').checked; });
+      if (three.world.chair && !showChair()) three.world.chair.label.visible = false;
+    }
   });
   $('#deskAuto').addEventListener('click', () => {
     if (!confirm('機材の置き場所を自動で並べ直しますか？動かした位置は元に戻せません。')) return;
@@ -3459,7 +3473,8 @@ function build3d(C, light) {
   const grid = new T.GridHelper(1600, 80, C.line, C.line); grid.position.y = .05; grid.material.opacity = .5; grid.material.transparent = true; scene.add(grid);
   scene.add(new T.HemisphereLight(light ? '#ffffff' : '#dfe7ee', light ? '#d8d4c8' : '#20252b', light ? 1.4 : 1.5));
   const sun = new T.DirectionalLight('#ffffff', light ? 1.6 : 1.8);
-  sun.position.set(-120, 260, 160); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+  const lite = matchMedia('(pointer: coarse)').matches;   // スマホでは影の細かさを下げる
+  sun.position.set(-120, 260, 160); sun.castShadow = true; sun.shadow.mapSize.set(lite ? 1024 : 2048, lite ? 1024 : 2048);
   Object.assign(sun.shadow.camera, { left: -220, right: 220, top: 220, bottom: -220, near: 10, far: 700 });
   scene.add(sun);
   // 天板と脚
@@ -3577,6 +3592,20 @@ function build3d(C, light) {
       const cap = new T.Mesh(new T.CylinderGeometry(r * .45, r * .45, b.h * .5, 24), tone(it, mat(light ? '#3a3f46' : '#2a2f36', { metalness: .4 }))); cap.position.set(0, b.h * .75, 0); g.add(cap);
       [foot, pole, cap].forEach(m => { m.castShadow = true; });
       anchors.set(it.id, new T.Vector3(X, base + 1, Z));
+    } else if (b.kind === 'headphones') {
+      // 立てて置いたヘッドホン: 左右のイヤーカップと、上のヘッドバンド
+      const hm = tone(it, dark), cupR = Math.max(3, b.w * .22), R = Math.max(4, b.w / 2 - 2);
+      for (const sx of [-1, 1]) {
+        const cup = new T.Mesh(new T.CylinderGeometry(cupR, cupR, 3.5, 28), hm); cup.rotation.z = Math.PI / 2; cup.position.set(sx * R, cupR, 0); cup.castShadow = true; g.add(cup);
+      }
+      const band = new T.Mesh(new T.TorusGeometry(R, .9, 10, 32, Math.PI), hm); band.position.set(0, cupR, 0); band.castShadow = true; g.add(band);
+      topY = cupR + R + 1;
+      anchors.set(it.id, new T.Vector3(X, base + cupR, Z));
+    } else if (b.kind === 'earbuds') {
+      // ケース（角の丸い小さな箱の代わりに、平たい円柱）
+      const cs = new T.Mesh(new T.CylinderGeometry(b.w / 2, b.w / 2, b.d, 24), tone(it, pale)); cs.rotation.x = Math.PI / 2; cs.scale.set(1, 1, 1); cs.position.set(0, b.w / 2, 0); cs.castShadow = true; g.add(cs);
+      topY = b.w;
+      anchors.set(it.id, new T.Vector3(X, base + 1, Z));
     } else if (b.kind === 'trackpad' || b.kind === 'tablet' || b.kind === 'phone') {
       const sl = box(b.w, b.h, b.d, tone(it, b.kind === 'trackpad' ? silver : dark)); sl.position.set(0, b.h / 2, 0); g.add(sl);
       anchors.set(it.id, new T.Vector3(X, base + b.h / 2, Z));
@@ -3589,6 +3618,34 @@ function build3d(C, light) {
     scene.add(g);
     const lb = textSprite(it.name, C); lb.position.set(g.position.x, g.position.y + topY + 7, g.position.z); scene.add(lb); labels.push(lb);
     groups.set(it.id, { g, label: lb, dy: topY + 7, plain: !mounted });
+  }
+
+  // チェア（構成にあれば、机の手前に置く）
+  const chairIt = state.items.find(i => kindOf(i) === 'chair');
+  let chair = null;
+  if (chairIt) {
+    const cm = tone(chairIt, dark), metal = mat(light ? '#9aa0a7' : '#4a5058', { metalness: .6, roughness: .4 });
+    const ch = new T.Group(); ch.position.set(W * .12, 0, D / 2 + 42); ch.rotation.y = -.45;   // 少し引いて斜めに（机が隠れないように）
+    for (let i = 0; i < 5; i++) {   // 5本脚とキャスター
+      const a = i / 5 * Math.PI * 2, leg = box(3, 2, 30, metal);
+      leg.position.set(Math.sin(a) * 15, 6, Math.cos(a) * 15); leg.rotation.y = a; ch.add(leg);
+      const wheel = new T.Mesh(new T.SphereGeometry(2.4, 12, 8), metal); wheel.position.set(Math.sin(a) * 29, 2.4, Math.cos(a) * 29); ch.add(wheel);
+    }
+    const gas = new T.Mesh(new T.CylinderGeometry(1.8, 1.8, 36, 12), metal); gas.position.set(0, 24, 0); ch.add(gas);
+    const seat = box(50, 7, 48, cm); seat.position.set(0, 45, 0); ch.add(seat);
+    const back = box(48, 54, 5, cm); back.position.set(0, 76, 24); back.rotation.x = -.12; ch.add(back);
+    const spine = box(6, 30, 4, metal); spine.position.set(0, 55, 25); ch.add(spine);
+    for (const sx of [-1, 1]) {
+      const post = box(3, 20, 3, metal); post.position.set(sx * 26, 56, 6); ch.add(post);
+      const pad = box(7, 2.5, 24, cm); pad.position.set(sx * 26, 67, 4); ch.add(pad);
+    }
+    if (/エルゴヒューマン|ergohuman|GrowSpica|Doro|C7|ヘッドレスト|headrest/i.test(chairIt.name)) {
+      const head = box(28, 13, 5, cm); head.position.set(0, 112, 28); head.rotation.x = -.18; ch.add(head);
+    }
+    ch.traverse(o => { if (o.isMesh) o.castShadow = o.receiveShadow = true; });
+    scene.add(ch);
+    const lb = textSprite(chairIt.name, C); lb.position.set(W * .12, 126, D / 2 + 46); scene.add(lb); labels.push(lb);
+    chair = { g: ch, label: lb };
   }
 
   // ケーブル（机の裏を回るように少し垂らす）
@@ -3621,7 +3678,7 @@ function build3d(C, light) {
       scene.add(dot); flows.push({ dot, curve, off: i / n, speed: kind === 'wireless' ? .12 : .22, rev });
     }
   }
-  return { scene, labels, flows, groups, center: new T.Vector3(0, DH + 12, 0), W, D, DH };
+  return { scene, labels, flows, groups, chair, center: new T.Vector3(0, DH + 12, 0), W, D, DH };
 }
 
 function disposeScene(scene) {
@@ -3638,13 +3695,14 @@ async function open3D(wrap) {
   let renderer;
   try { renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); }
   catch (e) { wrap.innerHTML = '<div class="wire-empty">この端末・ブラウザでは 3D 表示を使えませんでした。</div>'; return false; }
-  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  renderer.setPixelRatio(Math.min(matchMedia('(pointer: coarse)').matches ? 1.5 : 2, window.devicePixelRatio || 1));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const coarse = matchMedia('(pointer: coarse)').matches;
   holder.innerHTML = `<div class="three-tools">
       <span class="seg" id="t3View" role="group" aria-label="視点"><button type="button" data-view="persp" aria-pressed="true">斜め</button><button type="button" data-view="front" aria-pressed="false">正面</button><button type="button" data-view="top" aria-pressed="false">真上</button></span>
       <span class="t3-group"><button type="button" class="t3-btn" data-zoom="1" aria-label="縮小">−</button><button type="button" class="t3-btn" data-zoom="-1" aria-label="拡大">＋</button></span>
+      <button type="button" class="t3-btn" id="t3Chair" aria-pressed="true" hidden>チェア</button>
       <button type="button" class="t3-btn t3-full" id="t3Full" aria-pressed="false" aria-label="全画面で表示"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="i-in" d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/><path class="i-out" d="M6 2v4H2M14 6h-4V2M10 14v-4h4M2 10h4v4"/></svg></button>
     </div>
     <div class="sel-bar" id="t3Sel" hidden>
@@ -3659,7 +3717,14 @@ async function open3D(wrap) {
   const makeWorld = () => {
     const w = build3d(C, light); w.labels.forEach(l => { l.visible = $('#deskLabels').checked; });
     w.ring = new THREE.Mesh(new THREE.BufferGeometry(), ringMat()); w.ring.rotation.x = -Math.PI / 2; w.ring.renderOrder = 5; w.ring.visible = false; w.ringFor = null;
-    w.scene.add(w.ring); return w;
+    w.scene.add(w.ring);
+    if (w.chair) { const on = showChair(); w.chair.g.visible = on; w.chair.label.visible = on && $('#deskLabels').checked; }
+    return w;
+  };
+  const applyChair = () => {
+    const w = three.world, btn = holder.querySelector('#t3Chair'), on = showChair();
+    btn.hidden = !w.chair; btn.setAttribute('aria-pressed', String(on));
+    if (w.chair) { w.chair.g.visible = on; w.chair.label.visible = on && $('#deskLabels').checked; }
   };
   const cam = new THREE.PerspectiveCamera(38, 1, 1, 3000);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -3812,6 +3877,7 @@ async function open3D(wrap) {
       if (reduce) { [orbit.theta, orbit.phi] = orbit.goal; orbit.goal = null; }
     } else if (b.dataset.zoom) zoomBy(b.dataset.zoom === '1' ? 1.25 : .8);
     else if (b.id === 't3Full') setFull(!$('#wireDlg').classList.contains('full'));
+    else if (b.id === 't3Chair') { try { localStorage.setItem('desk-setup:chair', showChair() ? '0' : '1'); } catch (err) {} applyChair(); }
   });
   selBar.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
@@ -3827,7 +3893,7 @@ async function open3D(wrap) {
   };
   document.addEventListener('keydown', onKey);
   three.cleanup.push(() => document.removeEventListener('keydown', onKey));
-  syncFull();
+  syncFull(); applyChair();
 
   const clock = new THREE.Clock();
   const loop = () => {
