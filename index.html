@@ -573,7 +573,7 @@
       <section class="card" aria-labelledby="rankTitle">
         <h2 id="rankTitle">ランキング</h2>
         <button class="btn block" id="rankBtn" type="button">人気の機材を見る</button>
-        <p class="fine">デスク発信者がよく使っている機材と、このツールの利用者に人気の機材です。</p>
+        <p class="fine" id="rankNote">デスク発信者がよく使っている機材と、このツールの利用者に人気の機材です。</p>
       </section>
 
       <section class="card" aria-labelledby="shareTitle">
@@ -584,7 +584,7 @@
           <button class="btn block" id="imgBtn" type="button">画像を保存（ポストに添付用）</button>
           <button class="btn block" id="exportBtn" type="button">記事用に書き出す（ブログ・note・概要欄）</button>
         </div>
-        <p class="fine">構成はリンクの中に入っています。ランキングに参加しない限り、サーバーには何も送られません。購入先のリンクは共有リンクには入らず、書き出しでだけ使います。</p>
+        <p class="fine">構成はリンクの中に入っています。サーバーには送られません。購入先のリンクは共有リンクには入らず、書き出しでだけ使います。</p>
       </section>
 
       <section class="card" aria-labelledby="snapTitle">
@@ -3929,6 +3929,8 @@ function wireSnaps() {
   document.querySelectorAll('#wireDlg, #diffDlg, #rankDlg').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
   $('#wireBtn').addEventListener('click', openWiring);
   $('#rankBtn').addEventListener('click', openRanking);
+  // 集計サーバーをつなぐまでは、利用者ランキングのタブを出さない
+  if (!RANK_API) { $('#rankMode').style.display = 'none'; rankMode = 'creator'; $('#rankNote').textContent = 'デスク紹介のブログ・note・YouTube で、よく使われている機材です。'; }
   $('#rankMode').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; rankMode = b.dataset.v; rankCat = ''; openRanking(); });
   $('#rankCats').addEventListener('click', e => { const b = e.target.closest('[data-rank-cat]'); if (!b) return; rankCat = b.dataset.rankCat; renderRanking(); });
   $('#rankDlg').addEventListener('click', async e => {
