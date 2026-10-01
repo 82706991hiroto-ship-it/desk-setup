@@ -2849,7 +2849,8 @@ async function drawWiring() {
 
 // ---- 机の配置図 ----
 // ---- ランキング ----
-// 利用者ランキングの集計サーバー（server/ の Cloudflare Worker）。空のうちは「準備中」と表示する
+// 利用者ランキングの集計サーバー（server/ の Cloudflare Worker）。空のうちは利用者ランキングのタブを出さない
+// 公開済み: https://desk-recipe-rank.82706991hiroto.workers.dev（利用者が増えたらここに入れる）
 const RANK_API = '';
 // デスク発信者の愛用品（research/rankings.md の調査から。2025年1月以降に公開されたデスク紹介で「使っている」と書かれていた機材）
 // cats: { カテゴリ: [{ cid（カタログにないものは null）, name, n: 人数, src: [posts の番号] }] }
