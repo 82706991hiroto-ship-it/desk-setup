@@ -1,0 +1,13 @@
+name = "desk-setup-stats"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# 集計を受け付けるページの URL（カンマ区切り）
+ALLOWED_ORIGINS = "https://82706991hiroto-ship-it.github.io,http://localhost:8000"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "desk-setup-stats"
+# `npx wrangler d1 create desk-setup-stats` で表示される database_id に置き換える
+database_id = "REPLACE_WITH_DATABASE_ID"

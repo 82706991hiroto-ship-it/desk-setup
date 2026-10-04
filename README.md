@@ -19,7 +19,9 @@ https://82706991hiroto-ship-it.github.io/desk-setup/
 
 - **写真に書き込む**: デスクの写真に、機材のブランド・名前・価格を矢印つきで書き込んで画像として保存できます。写真の上で機材をタップして名前を打てば、カタログや構成リストから候補が出てそのまま置けます。「Logicool MX Master 3S ¥16,500」のような一覧を貼り付けて、写真の上で順番にタップしていくこともできます（表計算ソフトやマークダウンの表にも対応）。ラベルと矢印の先はドラッグで動かせます。ラベルは、ほかのラベルと重ならず背景がすっきりした場所に自動で置かれます（「空いている場所に並べ直す」で全体をやり直すこともできます）。フォントは手書き風・ペン字・英字手書き・丸ゴシック・ゴシック・明朝・ポップの7種類から選べます。色は自動（背景の明るさで白か黒）/白/黒をラベルごとに選べ、大きさも変えられます
 
-データはブラウザの localStorage にだけ保存します。写真もアップロードはせず、ブラウザの中だけで扱います。
+- **人気機材の集計**（集計用の Worker を置いたときだけ）: 共有したときに、カタログから選んだ機材の ID だけを送って数えます。機材を探すところに「よく使われている機材」と「◯件の構成で使用」が出ます。共有カードのチェックで参加をやめられます
+
+データはブラウザの localStorage にだけ保存します。写真もアップロードはせず、ブラウザの中だけで扱います。人気機材の集計に参加している場合だけ、共有したときにカタログの機材 ID の組み合わせを送ります（名前・価格・自分で入力した機材・Xのユーザー名は送りません）。
 
 ## 構成
 
@@ -30,10 +32,33 @@ https://82706991hiroto-ship-it.github.io/desk-setup/
 - `runChecks()`: 接続チェック本体
 - `serialize()` / `deserialize()`: 共有URL・保存用の形式
 - `drawPhoto()`: 写真へのラベルと矢印の描画（プレビューと書き出しで同じ処理）
+- `STATS_API` / `sendStats()` / `loadPopular()`: 人気機材の集計。`STATS_API` が空のあいだは何も送らず、何も表示しない
 
 ### カタログに機材を足す
 
 `CATALOG` に1行足します。カテゴリごとのスペックの書き方は、配列の直前にあるコメントを見てください。スペックは代表的な値で、あくまで目安です。
+
+## 人気機材の集計（Cloudflare Workers）
+
+`worker/` が集計用の Worker です。Cloudflare の D1（SQLite）に、共有された構成のカタログ ID の組み合わせと、機材ごとの登場回数を保存します。同じ組み合わせは1回だけ数えます。
+
+- `POST /v1/setups` `{"ids": ["u2723qe", "hhkb-hybrid"]}`: 構成を数える（ID が2つ以上のときだけ）
+- `GET /v1/popular`: `{ setups, items: [{ id, n }] }`（5分キャッシュ）
+- `ALLOWED_ORIGINS`（`wrangler.toml`）に書いたページからの送信だけ受け付けます
+
+置き方:
+
+```sh
+cd worker
+npx wrangler login                      # または環境変数 CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID
+npx wrangler d1 create desk-setup-stats # 表示された database_id を wrangler.toml に書く
+npm run db:init                         # テーブルを作る
+npm run deploy                          # https://desk-setup-stats.<サブドメイン>.workers.dev
+```
+
+最後に、表示された URL を `index.html` の `STATS_API` に書きます。ページに出るのは、構成が5件以上集まってからです。
+
+テストは `cd worker && npm test`（Node 22 以上。D1 の代わりに node:sqlite を使います）。
 
 ## 公開
 
@@ -43,4 +68,3 @@ GitHub Pages（Settings → Pages → Branch: `main` / root）で公開できま
 
 - PC のポート構成をカードから編集できるようにする
 - 天板サイズと機材配置のシミュレーター
-- 公開された構成から、よく使われている機材を集計する

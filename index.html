@@ -296,6 +296,8 @@
   .check small { color: var(--text-2); font-size: 12px; display: block; overflow-wrap: anywhere; }
   .fine { font-size: 11px; color: var(--muted); margin: 12px 0 0; }
   .share-btns { display: grid; gap: 8px; }
+  .share-opt { margin-top: 12px; }
+  .share-opt[hidden] { display: none; }
   .toast {
     position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0;
     background: var(--text); color: var(--card); padding: 10px 18px; border-radius: 999px; font-size: 13px;
@@ -381,7 +383,8 @@
           <button class="btn block" id="copyBtn" type="button">共有リンクをコピー</button>
           <button class="btn block" id="imgBtn" type="button">画像を保存（ポストに添付用）</button>
         </div>
-        <p class="fine">構成はリンクの中に入っています。サーバーには何も送られません。</p>
+        <label class="toggle share-opt" id="statsOptRow" hidden><input type="checkbox" id="statsOpt" checked> 人気機材の集計に参加する</label>
+        <p class="fine" id="shareFine">構成はリンクの中に入っています。サーバーには何も送られません。</p>
       </section>
     </aside>
   </div>
@@ -575,6 +578,14 @@ const DEFAULT_CONN = {
   keyboard: ['bt', 'receiver', 'usbc'], mouse: ['bt', 'receiver', 'usbc'], audio: ['bt', 'usba', 'usbc'],
   camera: ['usba', 'usbc'], lighting: ['usba', 'usbc'], mobile: ['usbc'],
 };
+
+// ---- 人気機材の集計 ----
+// 集計用 Worker（worker/）の URL。空のあいだは集計の送信も表示もしない
+const STATS_API = '';
+const STATS_MIN_SETUPS = 5;           // これより少ないうちは表示しない
+const STATS_OPT_KEY = 'desk-setup:stats';
+const STATS_LAST_KEY = 'desk-setup:stats-last';
+let popular = null;                   // { setups, counts: Map<カタログID, 構成の数> }
 
 // ---- 状態 ----
 const STORE_KEY = 'desk-setup:v1';
@@ -906,16 +917,29 @@ function renderChips() {
   const all = [{ id: '', label: 'すべて' }, ...CATS.filter(c => CATALOG.some(x => x.cat === c.id))];
   $('#chips').innerHTML = all.map(c => `<button class="chip" type="button" data-cat="${c.id}" aria-pressed="${activeCat === c.id}">${esc(c.label)}</button>`).join('');
 }
+const popCount = id => (popular && popular.setups >= STATS_MIN_SETUPS && popular.counts.get(id)) || 0;
+const byPopular = (a, b) => popCount(b.id) - popCount(a.id);
+function resultHTML(c) {
+  const n = popCount(c.id);
+  const used = n ? ` · ${n}件の構成で使用` : '';
+  return `<button class="result" type="button" data-add="${c.id}"><span style="min-width:0"><b>${esc(c.name)}</b><small>${esc(CAT_LABEL[c.cat])} · ${esc(specText(c))}${used}</small></span><span class="plus" aria-hidden="true">＋</span><span class="sr">追加</span></button>`;
+}
 function renderResults() {
   const q = $('#q').value.trim().toLowerCase();
-  if (!q && !activeCat) { $('#results').innerHTML = ''; return; }
+  if (!q && !activeCat) {
+    const top = CATALOG.filter(c => popCount(c.id)).sort(byPopular).slice(0, 6);
+    $('#results').innerHTML = top.length
+      ? `<div class="hint">よく使われている機材（共有された${popular.setups}件の構成から）</div>` + top.map(resultHTML).join('')
+      : '';
+    return;
+  }
   const words = q.split(/\s+/).filter(Boolean);
   const hits = CATALOG.filter(c =>
     (!activeCat || c.cat === activeCat) &&
     words.every(w => (c.name + ' ' + CAT_LABEL[c.cat] + ' ' + c.id).toLowerCase().includes(w))
-  ).slice(0, 12);
+  ).sort(byPopular).slice(0, 12);
   $('#results').innerHTML = hits.length
-    ? hits.map(c => `<button class="result" type="button" data-add="${c.id}"><span style="min-width:0"><b>${esc(c.name)}</b><small>${esc(CAT_LABEL[c.cat])} · ${esc(specText(c))}</small></span><span class="plus" aria-hidden="true">＋</span><span class="sr">追加</span></button>`).join('')
+    ? hits.map(resultHTML).join('')
     : `<div class="hint">見つかりませんでした。下の「カタログにないとき」から追加できます。</div>`;
 }
 
@@ -1099,6 +1123,34 @@ function loadLocal() {
 }
 function commit(full) { save(); if (full) render(); else renderSide(); }
 
+// 集計: 送るのはカタログから選んだ機材の ID だけ。名前・価格・自分で入力した機材は送らない
+async function loadPopular() {
+  if (!STATS_API) return;
+  try {
+    const r = await fetch(STATS_API + '/v1/popular');
+    if (!r.ok) return;
+    const d = await r.json();
+    popular = { setups: Number(d.setups) || 0, counts: new Map((d.items || []).map(x => [String(x.id), Number(x.n) || 0])) };
+    renderResults();
+  } catch (e) {}
+}
+function sendStats() {
+  if (!STATS_API || shared || !$('#statsOpt').checked) return;
+  const ids = [...new Set(state.items.map(i => i.cid).filter(Boolean))].sort();
+  if (ids.length < 2) return;
+  const key = ids.join(' ');
+  try { if (localStorage.getItem(STATS_LAST_KEY) === key) return; } catch (e) {}
+  fetch(STATS_API + '/v1/setups', { method: 'POST', body: JSON.stringify({ ids }), keepalive: true })
+    .then(r => { if (r.ok) try { localStorage.setItem(STATS_LAST_KEY, key); } catch (e) {} })
+    .catch(() => {});
+}
+function syncStatsOpt() {
+  const on = $('#statsOpt').checked;
+  $('#shareFine').textContent = on
+    ? '構成はリンクの中に入っています。共有するときに、カタログから選んだ機材の種類（ID）だけを集計に送ります。名前・価格・自分で入力した機材は送りません。'
+    : '構成はリンクの中に入っています。サーバーには何も送られません。';
+}
+
 function toast(msg) {
   const t = $('#toast'); t.textContent = msg; t.classList.add('show');
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2200);
@@ -1240,18 +1292,30 @@ function wire() {
     state = emptyState(); syncHead(); commit(true);
   });
 
+  if (STATS_API) {
+    $('#statsOptRow').hidden = false;
+    try { $('#statsOpt').checked = localStorage.getItem(STATS_OPT_KEY) !== '0'; } catch (e) {}
+    syncStatsOpt();
+  }
+  $('#statsOpt').addEventListener('change', e => {
+    try { localStorage.setItem(STATS_OPT_KEY, e.target.checked ? '1' : '0'); } catch (err) {}
+    syncStatsOpt();
+  });
   $('#copyBtn').addEventListener('click', async () => {
+    sendStats();
     const url = await shareUrl();
     try { await navigator.clipboard.writeText(url); toast('共有リンクをコピーしました'); }
     catch (e) { prompt('このリンクをコピーしてください', url); }
   });
   $('#postBtn').addEventListener('click', async () => {
+    sendStats();
     const url = await shareUrl();
     const total = state.items.reduce((s, i) => s + (i.price || 0), 0);
     const text = `${state.title || '私のデスク'}（${state.items.length}点${total ? '・合計' + yen(total) : ''}）\n#デスクツアー #デスク環境`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'noopener');
   });
   $('#imgBtn').addEventListener('click', async () => {
+    sendStats();
     const cv = await drawCard();
     cv.toBlob(b => {
       const a = document.createElement('a');
@@ -1977,6 +2041,7 @@ async function init() {
   }
   syncHead();
   render();
+  loadPopular();
   await initPhoto();
 }
 init();

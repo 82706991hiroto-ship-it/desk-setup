@@ -1,0 +1,10 @@
+{
+  "name": "desk-setup-stats",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test --no-warnings test/*.test.mjs",
+    "db:init": "npx wrangler d1 execute desk-setup-stats --remote --file=schema.sql",
+    "deploy": "npx wrangler deploy"
+  }
+}
