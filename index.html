@@ -346,6 +346,13 @@
   .desk-size .text { width: 72px; padding: 5px 8px; font-size: 13px; }
   .desk-size[hidden] { display: none; }
   .desk-svg { display: block; width: 100%; height: auto; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .d2-svg { position: absolute; inset: 0; }
+  .d2-svg .desk-svg { width: 100%; height: 100%; }
+  .d2-legend { position: absolute; left: 10px; bottom: 30px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 8px; background: var(--card); box-shadow: 0 1px 3px rgba(0,0,0,.18); font-size: 10.5px; color: var(--text-2); pointer-events: none; }
+  .d2-legend i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; margin-left: 4px; }
+  .d2-legend i:first-child { margin-left: 0; }
+  .d2-legend .lg-video { background: var(--accent-fg); } .d2-legend .lg-usb { background: var(--text-2); } .d2-legend .lg-power { background: var(--warn); }
+  .d2-legend .lg-wl { background: repeating-linear-gradient(90deg, var(--muted) 0 2px, transparent 2px 5px); }
   .desk-svg .dk-item { cursor: grab; }
   .desk-svg .dk-item.dragging { cursor: grabbing; }
   .desk-svg .dk-item.dragging rect.box { filter: drop-shadow(0 8px 14px rgba(0,0,0,.35)); }
@@ -976,7 +983,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 
 function newItem(cat, name, spec, cid) {
   return { id: (state.seq++).toString(36), cid: cid || null, cat, name, price: null, spec: clone(spec), link: null, power: 'auto', clam: false,
-    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '', place: '', plan: false };
+    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '', place: '', mount: [], plan: false };
 }
 // ドックを足したとき、つなぎ直せる機材があれば知らせる
 function dockHint(it) {
@@ -987,7 +994,7 @@ function addFromCatalog(cid) {
   const it = newItem(c.cat, c.name, c.spec, cid);
   if (c.ref) { it.price = c.ref; it.pkind = 'ref'; it.pdate = CATALOG_PRICE_DATE; }
   state.items.push(it);
-  autoLink(it);
+  autoLink(it); autoMount(it);
   commit(true);
   flashItem(it.id);
   dockHint(it);
@@ -997,7 +1004,7 @@ function addBasedOn(cid, name) {
   const c = catalogById(cid);
   const it = newItem(c.cat, name || c.name, c.spec, cid);
   state.items.push(it);
-  autoLink(it);
+  autoLink(it); autoMount(it);
   commit(true);
   flashItem(it.id);
   dockHint(it);
@@ -1006,7 +1013,7 @@ function addCustom(cat, name) {
   const base = TEMPLATE[cat] ? catalogById(TEMPLATE[cat]).spec : { conn: DEFAULT_CONN[cat] || [] };
   const it = newItem(cat, name || CAT_LABEL[cat], base, null);
   state.items.push(it);
-  autoLink(it);
+  autoLink(it); autoMount(it);
   commit(true);
   flashItem(it.id);
   dockHint(it);
@@ -1143,6 +1150,11 @@ const linkKey = l => l ? `${l.h}|${l.p}|${l.v}` : '';
 function normalize() {
   for (const it of state.items) {
     if (it.link && !linkOptions(it).some(o => linkKey(o) === linkKey(it.link))) it.link = null;
+  }
+  // アームが支えるモニター: 消えたものを外し、1台のモニターは1つのアームだけ
+  const taken = new Set();
+  for (const a of state.items.filter(i => i.cat === 'arm')) {
+    a.mount = (a.mount || []).filter(id => { const m = byId(id); if (!m || m.cat !== 'monitor' || taken.has(id)) return false; taken.add(id); return true; });
   }
 }
 
@@ -1437,6 +1449,11 @@ function itemHTML(it, checks) {
     const mv = dockMoves(it);
     if (mv.length) fields.push(`<button class="btn" type="button" style="font-size:12px;padding:6px 12px" data-relink="${it.id}" title="${esc(mv.map(i => i.name).join('、'))}">今の機材をドック経由につなぎ直す（PC 直結 ${mv.length}点）</button>`);
   }
+  if (it.cat === 'arm') {
+    const mons = state.items.filter(m => m.cat === 'monitor');
+    fields.push(mons.length ? `<span class="fld" style="flex-wrap:wrap"><span>取り付けるモニター</span>${mons.map(m => { const o = armOf(m); return `<label class="toggle"><input type="checkbox" data-mount="${m.id}"${(it.mount || []).includes(m.id) ? ' checked' : ''}> ${esc(m.name)}${o && o !== it ? `（${esc(o.name)}）` : ''}</label>`; }).join('')}</span>`
+      : `<span class="hint">モニターを追加すると、取り付けるモニターを選べます（3D でアームの形になります）</span>`);
+  }
   if (it.cat === 'computer' && it.spec.clamDisp) {
     fields.push(`<label class="toggle"><input type="checkbox" data-f="clam"${it.clam ? ' checked' : ''}> 蓋を閉じて使う</label>`);
   }
@@ -1480,7 +1497,7 @@ function itemHTML(it, checks) {
     const colorSel = `<label>色（3D）<select class="text" data-look="color"><option value="">自動（${ac ? LOOK_COLORS[ac] + '・名前から' : '種類の標準'}）</option>${Object.entries(LOOK_COLORS).map(([v, l]) => `<option value="${v}"${it.color === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>`;
     const monRow = isMon ? `<label>向き<select class="text" data-look="mon.v"><option value="">横置き</option><option value="1"${ml.v ? ' selected' : ''}>縦置き</option></select></label>
       <label style="align-self:end"><span class="toggle"><input type="checkbox" data-look="mon.c"${ml.c ? ' checked' : ''}${ml.v ? ' disabled' : ''}> 曲面</span></label>
-      <label style="align-self:end"><span class="toggle"><input type="checkbox" data-look="mon.a"${ml.a ? ' checked' : ''}> モニターアーム</span></label>` : '';
+      <label style="align-self:end"><span class="toggle"><input type="checkbox" data-look="mon.a"${ml.a ? ' checked' : ''}> モニターアーム${armOf(it) ? `（${esc(armOf(it).name)}）` : ''}</span></label>` : '';
     const looks = (it.color ? 1 : 0) + (it.mon ? 1 : 0);
     parts.push(`<details class="more"${it._open3 ? ' open' : ''} data-open3="${it.id}"><summary>${isMon ? '大きさ・色・置き方' : '大きさ・色'}（配置図・3D）${it.dim || looks ? ' ・ 入力済み' : ''}</summary><div class="spec-grid dim-grid">
       ${['幅', '奥行', '高さ'].map((l, i) => `<label>${l} (cm)<input class="text" data-dim="${i}" inputmode="decimal" value="${u[i] > 0 ? nf(u[i]) : ''}" placeholder="${nf(bd[i])}"></label>`).join('')}
@@ -1643,6 +1660,7 @@ function serialize(forShare = false) {
       if (it.color) o.co = it.color;
       if (it.mon) o.mo = it.mon;
       if (it.place) o.pa = it.place;
+      if (it.mount && it.mount.length) o.mt = it.mount;
       if (!forShare && it.links && it.links.length) o.ln = it.links.map(l => [l.s, l.u]);
       return o;
     }),
@@ -1674,6 +1692,7 @@ function deserialize(o) {
       dim: cleanDim(x.sz),
       color: LOOK_COLORS[x.co] ? x.co : '', mon: typeof x.mo === 'string' ? [...new Set(x.mo.replace(/[^vca]/g, ''))].join('') : '',
       place: /^[utf]$/.test(x.pa || '') ? x.pa : '',
+      mount: Array.isArray(x.mt) ? x.mt.slice(0, 4).map(String) : [],
     });
   }
   st.seq = max + 1;
@@ -1908,6 +1927,12 @@ function wire() {
     }
   });
   list.addEventListener('change', e => {
+    if (e.target.dataset.mount) {
+      const a = byId(e.target.closest('.item').dataset.id), mid = e.target.dataset.mount; if (!a) return;
+      for (const o of state.items) if (o.cat === 'arm') o.mount = (o.mount || []).filter(id => id !== mid);   // ほかのアームからは外す
+      if (e.target.checked) a.mount.push(mid);
+      commit(true); return;
+    }
     if (e.target.dataset.lf) {
       const it = byId(e.target.closest('.item').dataset.id); const l = it && it.links[Number(e.target.dataset.li)];
       if (!l) return;
@@ -1924,6 +1949,7 @@ function wire() {
       if (k === 'color') it.color = LOOK_COLORS[e.target.value] ? e.target.value : '';
       else {
         const f = k.slice(4), on = e.target.type === 'checkbox' ? e.target.checked : !!e.target.value;
+        if (f === 'a' && !on) { const a = armOf(it); if (a) a.mount = a.mount.filter(id => id !== it.id); }   // アームを外す
         const set = new Set(it.mon || ''); if (on) set.add(f); else set.delete(f);
         if (set.has('v')) set.delete('c');   // 縦置きの曲面は扱わない
         it.mon = ['v', 'c', 'a'].filter(x => set.has(x)).join('');
@@ -3046,7 +3072,6 @@ async function leaveRank() {
 
 let wireMode = 'desk';
 try { const m = localStorage.getItem('desk-setup:wire-mode'); wireMode = m === 'tree' || m === '3d' ? m : 'desk'; } catch (e) {}
-let deskDrag = null;
 const DESK_SKIP = new Set(['furniture', 'arm']);
 
 // 真上から見た大きさ（cm）
@@ -3242,7 +3267,22 @@ const PLACE_LABEL = { u: '机の下', t: '机の上', f: '床' };
 function autoPlace(it) { return it.spec.up === 'usbc' ? 't' : 'u'; }
 function dockPlace(it) { return it.cat !== 'dock' ? '' : PLACE_LABEL[it.place] ? it.place : autoPlace(it); }
 const underDesk = it => dockPlace(it) === 'u';
-function monLook(it) { const m = it.mon || ''; return { v: m.includes('v'), c: m.includes('c'), a: m.includes('a') }; }
+function monLook(it) { const m = it.mon || ''; return { v: m.includes('v'), c: m.includes('c'), a: m.includes('a') || !!armOf(it) }; }
+// モニターアーム（機材リストの「アーム・スタンド」）と、それが支えるモニター
+function armOf(m) { return m.cat === 'monitor' && state.items.find(a => a.cat === 'arm' && (a.mount || []).includes(m.id)) || null; }
+const armCap = a => /デュアル|ダブル|dual|2画面|２画面|double/i.test(a.name) ? 2 : 1;
+// 追加したアームを、まだアームのないモニターに付ける（デュアルなら2台）
+function autoMount(a) {
+  if (a.cat !== 'arm') return;
+  const free = state.items.filter(m => m.cat === 'monitor' && !armOf(m) && !monLook(m).v);
+  a.mount = free.slice(0, armCap(a)).map(m => m.id);
+}
+// アームの支柱の位置（cm）。2台を支えるアームは、2台の間に1本
+function armPole(m, pos) {
+  const a = armOf(m), ms = a ? a.mount.map(byId).filter(x => x && pos.get(x.id)) : [];
+  if (ms.length >= 2) return { x: ms.reduce((s, x) => s + pos.get(x.id).x, 0) / ms.length, first: ms[0] === m };
+  return { x: pos.get(m.id).x, first: true };
+}
 function cleanDim(a) {
   if (!Array.isArray(a) || a.length !== 3) return null;
   const v = a.map(x => Number.isFinite(x) && x > 0 && x <= 400 ? r1(x) : null);
@@ -3257,7 +3297,8 @@ function autoDesk(items, W, D, fixed) {
   const mons = by('monitor');
   const monW = mons.reduce((s, m) => s + fp.get(m.id)[0], 0) + Math.max(0, mons.length - 1) * 4;
   let mx = W / 2 - monW / 2;
-  for (const m of mons) { const [w, h] = fp.get(m.id); put(m, mx + w / 2, 4 + h / 2); mx += w + 4; }
+  // アームのモニターは、奥の端から少し浮かせて手前に出す
+  for (const m of mons) { const [w, h] = fp.get(m.id); put(m, mx + w / 2, monLook(m).a ? 20 : 4 + h / 2); mx += w + 4; }
   const left = W / 2 - monW / 2, right = W / 2 + monW / 2;
   const kind = c => items.filter(i => kindOf(i) === c);
   const spk = kind('speaker').slice(0, 2);
@@ -3323,11 +3364,14 @@ function cableKind(it, host) {
   return 'usb';
 }
 
-function deskSVG(C, forExport) {
-  const W = state.desk.w, D = state.desk.d, S = 7;            // 1cm = 7px
-  const PADX = 34, TOP = 14, BOTM = 16;                        // cm
-  const RW = (W + PADX * 2) * S, RH = (D + TOP + BOTM + 10) * S;
-  const ox = PADX * S, oy = (TOP + 10) * S;                    // 天板の左上
+// 配置図の大きさ: 1cm = 7px、天板の左上が (ox, oy)
+function deskGeom() {
+  const S = 7, PADX = 34, TOP = 14, BOTM = 16;   // cm
+  return { S, RW: (state.desk.w + PADX * 2) * S, RH: (state.desk.d + TOP + BOTM + 10) * S, ox: PADX * S, oy: (TOP + 10) * S };
+}
+function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見るときの文字の拡大率
+  const KL = Math.sqrt(K);
+  const W = state.desk.w, D = state.desk.d, { S, RW, RH, ox, oy } = deskGeom();
   const pos = deskPositions(), items = deskItems(), checks = runChecks();
   const esc2 = t => esc(String(t));
   const cutTo = (t, px, per) => { const n = Math.max(2, Math.floor(px / per)); return t.length > n ? t.slice(0, n - 1) + '…' : t; };
@@ -3338,8 +3382,9 @@ function deskSVG(C, forExport) {
   out.push(`<defs><pattern id="dgrid" width="${S * 5}" height="${S * 5}" patternUnits="userSpaceOnUse"><path d="M ${S * 5} 0 L 0 0 0 ${S * 5}" fill="none" stroke="${C.grid}" stroke-width="1"/></pattern></defs>`);
   out.push(`<rect width="${RW}" height="${RH}" fill="${C.page}"/><rect width="${RW}" height="${RH}" fill="url(#dgrid)"/>`);
   // 見出し
-  out.push(`<text x="${ox}" y="${S * 5}" fill="${C.fg}" font-family='${FM}' font-size="13">// desk_layout</text>`);
-  out.push(`<text x="${ox}" y="${S * 5 + 30}" fill="${C.text}" font-family='${FS}' font-size="24" font-weight="700">${esc2(cutTo(state.title || '私のデスク', RW * .5, 24))}</text>`);
+  // 見出し・凡例・ロゴは書き出しの画像だけ（画面では凡例をボタンの横に出す）
+  if (forExport) out.push(`<text x="${ox}" y="${S * 5}" fill="${C.fg}" font-family='${FM}' font-size="13">// desk_layout</text>`);
+  if (forExport) out.push(`<text x="${ox}" y="${S * 5 + 30}" fill="${C.text}" font-family='${FS}' font-size="24" font-weight="700">${esc2(cutTo(state.title || '私のデスク', RW * .5, 24))}</text>`);
   const legend = [['video', '映像'], ['usb', 'USB'], ['power', '給電・充電'], ['wireless', 'ワイヤレス']];
   let lx = RW - ox;
   const lg = [];
@@ -3351,7 +3396,7 @@ function deskSVG(C, forExport) {
     lg.push(`<line x1="${lx}" y1="${S * 5 + 22}" x2="${lx + 24}" y2="${S * 5 + 22}" stroke="${col[k]}" stroke-width="3" stroke-linecap="round"${k === 'wireless' ? ' stroke-dasharray="2 5"' : ''}/>`);
     lx -= 14;
   }
-  out.push(lg.join(''));
+  if (forExport) out.push(lg.join(''));
   // 天板
   out.push(`<rect x="${ox}" y="${oy}" width="${W * S}" height="${D * S}" rx="10" fill="${C.card}" stroke="${C.line}" stroke-width="1.5"/>`);
   out.push(`<rect x="${ox}" y="${oy + D * S - 4}" width="${W * S}" height="4" rx="2" fill="${C.accent}" opacity=".85"/>`);
@@ -3370,7 +3415,7 @@ function deskSVG(C, forExport) {
     const d = `M ${a[0].toFixed(1)} ${a[1].toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
     const warn = sevOf(it, checks);
     const stroke = warn ? (warn.sev === 'error' ? C.crit : C.warn) : c;
-    out.push(`<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${kind === 'wireless' ? 2 : 3}" stroke-linecap="round" opacity="${kind === 'wireless' ? .7 : .9}"${kind === 'wireless' ? ' stroke-dasharray="2 7"' : ''}/>`);
+    out.push(`<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${(kind === 'wireless' ? 2 : 3) * KL}" stroke-linecap="round" opacity="${kind === 'wireless' ? .7 : .9}"${kind === 'wireless' ? ' stroke-dasharray="2 7"' : ''}/>`);
     if (!forExport) {
       out.push(`<path class="flow${kind === 'wireless' ? ' slow' : ''}" d="${d}" fill="none" stroke="${kind === 'power' ? C.page : kind === 'wireless' ? stroke : C.page}" stroke-width="${kind === 'wireless' ? 2 : 1.6}" stroke-linecap="round" opacity=".75"/>`);
     }
@@ -3384,7 +3429,7 @@ function deskSVG(C, forExport) {
       const t = edgeLabel({ from: { it: h }, to: { it } });
       const mxl = (a[0] + 2 * cx + b[0]) / 4, myl = (a[1] + 2 * cy + b[1]) / 4;
       const tw = t.length * 6.6 + 10;
-      labels.push(`<g transform="translate(${mxl.toFixed(1)} ${myl.toFixed(1)})"><rect x="${-tw / 2}" y="-9" width="${tw}" height="17" rx="4" fill="${C.page}" opacity=".92"/><text x="0" y="4" text-anchor="middle" fill="${stroke === c ? C.sub : stroke}" font-family='${FM}' font-size="10.5">${esc2(t)}</text></g>`);
+      labels.push(`<g transform="translate(${mxl.toFixed(1)} ${myl.toFixed(1)}) scale(${KL.toFixed(2)})"><rect x="${-tw / 2}" y="-9" width="${tw}" height="17" rx="4" fill="${C.page}" opacity=".92"/><text x="0" y="4" text-anchor="middle" fill="${stroke === c ? C.sub : stroke}" font-family='${FM}' font-size="10.5">${esc2(t)}</text></g>`);
     }
   }
   // 機材（机の下のものは、上のものに隠れないよう最後に点線の輪郭だけ重ねる）
@@ -3398,37 +3443,206 @@ function deskSVG(C, forExport) {
     const mon = it.cat === 'monitor', fill = C.page, ink = C.text;
     const big = !mon && hh >= 70 && ww >= 90;
     if (under) {
-      const tg = cutTo(`机の下${it.plan ? '（予定）' : ''} · ${it.name}`, Math.max(ww, 150), 6.4), tw = [...tg].reduce((s, c) => s + (c.charCodeAt(0) > 255 ? 10 : 6), 0) + 10;
+      const tg = cutTo(`机の下${it.plan ? '（予定）' : ''} · ${it.name}`, Math.max(ww, 150), 6.4), tw = ([...tg].reduce((s, c) => s + (c.charCodeAt(0) > 255 ? 10 : 6), 0) + 10) * K;
       out.push(`<g class="dk-item" data-id="${esc2(it.id)}" tabindex="-1"><rect class="box" x="${X.toFixed(1)}" y="${Y.toFixed(1)}" width="${ww.toFixed(1)}" height="${hh.toFixed(1)}" rx="${Math.min(8, hh / 3).toFixed(1)}" fill="${C.page}" fill-opacity="0" stroke="${warn ? edge : C.fg}" stroke-width="1.6" stroke-dasharray="5 4"/>`
-        + `<rect x="${X.toFixed(1)}" y="${(Y + hh + 3).toFixed(1)}" width="${tw.toFixed(1)}" height="16" rx="4" fill="${C.page}" opacity=".9"/><text x="${(X + 5).toFixed(1)}" y="${(Y + hh + 15).toFixed(1)}" fill="${C.fg}" font-family='${FS}' font-size="10" font-weight="700">${esc2(tg)}</text></g>`);
+        + `<rect x="${X.toFixed(1)}" y="${(Y + hh + 3).toFixed(1)}" width="${tw.toFixed(1)}" height="${(16 * K).toFixed(1)}" rx="4" fill="${C.page}" opacity=".9"/><text x="${(X + 5 * K).toFixed(1)}" y="${(Y + hh + 3 + 12 * K).toFixed(1)}" fill="${C.fg}" font-family='${FS}' font-size="${(10 * K).toFixed(1)}" font-weight="700">${esc2(tg)}</text></g>`);
       continue;
     }
     out.push(`<g class="dk-item" data-id="${esc2(it.id)}" tabindex="-1"${it.plan ? ' opacity=".62"' : ''}>`);   // 買う予定は薄く
     out.push(`<rect class="box" x="${X.toFixed(1)}" y="${Y.toFixed(1)}" width="${ww.toFixed(1)}" height="${hh.toFixed(1)}" rx="${Math.min(8, hh / 3).toFixed(1)}" fill="${fill}" stroke="${edge}" stroke-width="${warn || it.cat === 'computer' || it.plan ? 2 : 1.2}"${onDesk && !it.plan ? '' : ' stroke-dasharray="5 4"'}/>`);
-    if (it.plan) out.push(`<text x="${(X + 5).toFixed(1)}" y="${(Y + 11).toFixed(1)}" fill="${C.fg}" font-family='${FM}' font-size="9" font-weight="700">予定</text>`);
+    if (it.plan) out.push(`<text x="${(X + 5).toFixed(1)}" y="${(Y + 2 + 9 * K).toFixed(1)}" fill="${C.fg}" font-family='${FM}' font-size="${(9 * K).toFixed(1)}" font-weight="700">予定</text>`);
     // モニターは、枠がスタンド込みの置き場所、塗った帯が画面
-    if (mon) { const ph = Math.max(5, 2.5 * S), py = oy + (p.y + body3d(it).pz) * S; out.push(`<rect x="${X.toFixed(1)}" y="${(py - ph / 2).toFixed(1)}" width="${ww.toFixed(1)}" height="${ph.toFixed(1)}" rx="2" fill="${C.text}"/>`); }
-    const nameSize = Math.max(9, Math.min(13, (mon ? hh * .5 : hh) * .38)), catSize = 9.5;
+    if (mon) {
+      const ph = Math.max(5, 2.5 * S), py = oy + (p.y + body3d(it).pz) * S;
+      out.push(`<rect x="${X.toFixed(1)}" y="${(py - ph / 2).toFixed(1)}" width="${ww.toFixed(1)}" height="${ph.toFixed(1)}" rx="2" fill="${C.text}"/>`);
+      // アーム: 奥の端の支柱から画面までの腕
+      if (monLook(it).a && onDesk) {
+        const pl = armPole(it, pos), cx0 = ox + pl.x * S, cy0 = oy + 4 * S;
+        out.push(`<path d="M ${cx0.toFixed(1)} ${cy0.toFixed(1)} L ${(ox + p.x * S).toFixed(1)} ${Y.toFixed(1)}" stroke="${C.muted}" stroke-width="${(5 * KL).toFixed(1)}" stroke-linecap="round" opacity=".8"/>`);
+        if (pl.first) out.push(`<rect x="${(cx0 - 1.6 * S).toFixed(1)}" y="${(oy + 1 * S).toFixed(1)}" width="${(3.2 * S).toFixed(1)}" height="${(5 * S).toFixed(1)}" rx="3" fill="${C.sub}"/>`);
+      }
+    }
+    const nameSize = Math.max(9, Math.min(13, (mon ? hh * .5 : hh) * .38)) * K, catSize = 9.5 * K;
     const cx = X + ww / 2;
     if (big) out.push(`<text x="${cx.toFixed(1)}" y="${(Y + hh / 2 - 4).toFixed(1)}" text-anchor="middle" fill="${C.muted}" font-family='${FM}' font-size="${catSize}">${esc2(CAT_LABEL[it.cat])}</text>`);
     const nm = cutTo(it.name, Math.max(ww, 70) - 10, nameSize * .62);
-    const ty = big ? Y + hh / 2 + 12 : mon ? Y + hh * .7 + nameSize * .35 : Y + hh / 2 + nameSize * .35;
+    const thin = mon && hh < 90;   // アームのモニターなど奥行が薄いときは、名前を枠の下に
+    const ty = big ? Y + hh / 2 + 12 * K : thin ? Y + hh + nameSize * 1.1 : mon ? Y + hh * .7 + nameSize * .35 : Y + hh / 2 + nameSize * .35;
     if (ww >= 70 || it.cat === 'monitor') out.push(`<text x="${cx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" fill="${ink}" font-family='${FS}' font-size="${nameSize.toFixed(1)}" font-weight="500">${esc2(nm)}</text>`);
-    else out.push(`<text x="${cx.toFixed(1)}" y="${(Y + hh + 13).toFixed(1)}" text-anchor="middle" fill="${C.text}" font-family='${FS}' font-size="10.5" font-weight="500">${esc2(cutTo(it.name, 120, 6.8))}</text>`);
+    else out.push(`<text x="${cx.toFixed(1)}" y="${(Y + hh + 13 * K).toFixed(1)}" text-anchor="middle" fill="${C.text}" font-family='${FS}' font-size="${(10.5 * K).toFixed(1)}" font-weight="500">${esc2(cutTo(it.name, 120, 6.8))}</text>`);
     out.push('</g>');
   }
   out.push(labels.join(''));
+  // 選んだ機材の枠（画面だけ）
+  const sp = sel && pos.get(sel), si = sel && byId(sel);
+  if (sp && si) {
+    const [w, h] = footprint(si), m = 5;
+    out.push(`<rect x="${(ox + (sp.x - w / 2) * S - m).toFixed(1)}" y="${(oy + (sp.y - h / 2) * S - m).toFixed(1)}" width="${(w * S + m * 2).toFixed(1)}" height="${(h * S + m * 2).toFixed(1)}" rx="10" fill="none" stroke="${C.fg}" stroke-width="3" pointer-events="none"/>`);
+  }
   // ロゴ
-  out.push(`<text x="${RW - ox}" y="${RH - S * 3}" text-anchor="end" font-family='${FD}' font-size="26"><tspan fill="${C.text}">DESK </tspan><tspan fill="${C.fg}">/</tspan><tspan fill="${C.text}"> RECIPE</tspan></text>`);
+  if (forExport) out.push(`<text x="${RW - ox}" y="${RH - S * 3}" text-anchor="end" font-family='${FD}' font-size="26"><tspan fill="${C.text}">DESK </tspan><tspan fill="${C.fg}">/</tspan><tspan fill="${C.text}"> RECIPE</tspan></text>`);
   const off = items.filter(i => !pos.has(i.id));
   out.push('</svg>');
   return { svg: out.join(''), RW, RH, S, ox, oy, off };
 }
 
+// 画面の配置図: 机のまわりだけを映し、拡大・移動できる（書き出しの画像は deskSVG の全体）
+const d2 = { view: null, sel: null, raf: 0 };
 function renderDesk() {
+  const wrap = $('#wireWrap');
+  let host = wrap.querySelector('.d2-wrap');
+  if (!host) { host = buildDesk2d(wrap); }
   const C = themeColors();
-  const { svg } = deskSVG(C, false);
-  $('#wireWrap').innerHTML = svg;
+  if (d2.sel && !byId(d2.sel)) d2.sel = null;
+  Object.assign(d2, deskGeom());
+  if (!d2.view) d2.view = desk2dFit();
+  // 縮小して見ているほど文字を大きく（画面で 10px 前後に）
+  const hw = host.clientWidth || 600, hh = host.clientHeight || 400, v = d2.view;
+  const px = Math.min(hw / v.w, hh / v.h);
+  d2.K = Math.max(1, Math.min(3.2, .95 / px));
+  const r = deskSVG(C, false, d2.sel, d2.K);
+  const box = host.querySelector('.d2-svg');
+  box.innerHTML = r.svg;
+  const svg = box.querySelector('svg');
+  svg.removeAttribute('width'); svg.removeAttribute('height');
+  applyDeskView();
+  const sb = host.querySelector('#d2Sel'), it = d2.sel && byId(d2.sel);
+  sb.hidden = !it; host.querySelector('.three-hint').hidden = !!it;
+  if (it) host.querySelector('#d2SelName').textContent = it.name;
+}
+// 机と、机の外に置いた機材が全部入る範囲（SVG の座標）
+function desk2dFit() {
+  const W = state.desk.w, D = state.desk.d, pos = deskPositions();
+  let x0 = 0, y0 = 0, x1 = W, y1 = D;
+  for (const it of deskItems()) {
+    const p = pos.get(it.id); if (!p) continue;
+    const [w, h] = footprint(it);
+    x0 = Math.min(x0, p.x - w / 2); x1 = Math.max(x1, p.x + w / 2); y0 = Math.min(y0, p.y - h / 2); y1 = Math.max(y1, p.y + h / 2);
+  }
+  const m = 5, S = d2.S;
+  return { x: d2.ox + (x0 - m) * S, y: d2.oy + (y0 - m) * S, w: (x1 - x0 + m * 2) * S, h: (y1 - y0 + m * 2 + 4) * S };
+}
+function applyDeskView() {
+  const svg = $('#wireWrap .d2-svg svg'), v = d2.view; if (!svg || !v) return;
+  svg.setAttribute('viewBox', `${v.x.toFixed(1)} ${v.y.toFixed(1)} ${v.w.toFixed(1)} ${v.h.toFixed(1)}`);
+}
+function renderDeskSoon() { if (!d2.raf) d2.raf = requestAnimationFrame(() => { d2.raf = 0; renderDesk(); }); }
+function buildDesk2d(wrap) {
+  wrap.innerHTML = `<div class="three-wrap d2-wrap">
+    <div class="d2-svg"></div>
+    <div class="three-tools">
+      <span class="t3-group"><button type="button" class="t3-btn" data-zoom="1" aria-label="縮小">−</button><button type="button" class="t3-btn" data-zoom="-1" aria-label="拡大">＋</button></span>
+      <button type="button" class="t3-btn" data-fit>全体</button>
+      <button type="button" class="t3-btn t3-full" id="t3Full" aria-pressed="false" aria-label="全画面で表示"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="i-in" d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/><path class="i-out" d="M6 2v4H2M14 6h-4V2M10 14v-4h4M2 10h4v4"/></svg></button>
+    </div>
+    <span class="d2-legend" aria-hidden="true"><i class="lg-video"></i>映像<i class="lg-usb"></i>USB<i class="lg-power"></i>給電<i class="lg-wl"></i>無線</span>
+    <div class="sel-bar" id="d2Sel" hidden>
+      <span class="sel-name" id="d2SelName"></span>
+      <span class="t3-group" role="group" aria-label="少しずつ動かす"><button type="button" class="t3-btn" data-nudge="l" aria-label="左へ">←</button><button type="button" class="t3-btn" data-nudge="u" aria-label="奥へ">↑</button><button type="button" class="t3-btn" data-nudge="d" aria-label="手前へ">↓</button><button type="button" class="t3-btn" data-nudge="r" aria-label="右へ">→</button></span>
+      <button type="button" class="t3-btn" data-unsel aria-label="選択を外す">✕</button>
+    </div>
+    <div class="three-hint">${matchMedia('(pointer: coarse)').matches ? 'タップで選ぶ ・ なぞって移動 ・ 2本指で拡大' : 'クリックで選択 ・ ドラッグで移動 ・ ホイールで拡大'}</div>
+  </div>`;
+  const host = wrap.querySelector('.d2-wrap'), el = host.querySelector('.d2-svg');
+  const svgOf = () => el.querySelector('svg');
+  const toUser = (x, y) => { const svg = svgOf(); const pt = svg.createSVGPoint(); pt.x = x; pt.y = y; return pt.matrixTransform(svg.getScreenCTM().inverse()); };
+  const scale = () => svgOf().getScreenCTM().a;   // 画面の1px あたり
+  const zoomAt = (f, x, y) => {
+    const v = d2.view, fit = desk2dFit();
+    const nw = Math.max(fit.w / 8, Math.min(fit.w * 1.6, v.w * f)), k = nw / v.w;
+    const u = x == null ? { x: v.x + v.w / 2, y: v.y + v.h / 2 } : toUser(x, y);
+    d2.view = { x: u.x - (u.x - v.x) * k, y: u.y - (u.y - v.y) * k, w: v.w * k, h: v.h * k };
+    applyDeskView(); renderDeskSoon();   // 文字の大きさを合わせ直す
+  };
+  const panBy = (dx, dy) => { const sc = scale(); d2.view.x -= dx / sc; d2.view.y -= dy / sc; applyDeskView(); };
+  // 指の下（または近く）の機材
+  const itemAt = (x, y, tol) => {
+    const g = document.elementFromPoint(x, y)?.closest?.('.dk-item');
+    if (g && el.contains(g)) return g.dataset.id;
+    const pos = deskPositions(), u = toUser(x, y), S = d2.S, sc = scale();
+    let best = null, bestD = tol;
+    for (const it of deskItems()) {
+      const p = pos.get(it.id); if (!p) continue;
+      const [w, h] = footprint(it), cx = d2.ox + p.x * S, cy = d2.oy + p.y * S;
+      const dx = Math.max(0, Math.abs(u.x - cx) - w * S / 2), dy = Math.max(0, Math.abs(u.y - cy) - h * S / 2);
+      const d = Math.hypot(dx, dy) * sc;
+      if (d < bestD) { bestD = d; best = it.id; }
+    }
+    return best;
+  };
+  const freezeAll = () => { const all = deskPositions(); for (const i of deskItems()) if (!i.pos && all.get(i.id)) i.pos = { ...all.get(i.id) }; };
+  const clampPos = (x, y) => ({ x: Math.max(-30, Math.min(state.desk.w + 30, Math.round(x * 2) / 2)), y: Math.max(-18, Math.min(state.desk.d + 24, Math.round(y * 2) / 2)) });
+  const select = id => { d2.sel = id && byId(id) ? id : null; renderDesk(); };
+  d2.nudge = dir => {
+    const it = d2.sel && byId(d2.sel); if (!it) return;
+    freezeAll();
+    const [dx, dy] = { l: [-1, 0], r: [1, 0], u: [0, -1], d: [0, 1] }[dir];
+    it.pos = clampPos(it.pos.x + dx, it.pos.y + dy); save(); renderDesk();
+  };
+  d2.select = select;
+
+  const ptrs = new Map(); let gest = null;
+  const centroid = () => { const a = [...ptrs.values()]; return [a.reduce((s, p) => s + p[0], 0) / a.length, a.reduce((s, p) => s + p[1], 0) / a.length]; };
+  const spread = () => { const [a, b] = [...ptrs.values()]; return Math.hypot(a[0] - b[0], a[1] - b[1]); };
+  const endMove = () => { if (gest && gest.mode === 'move') { const moved = gest.moved; gest = null; if (moved) { save(); renderDesk(); } } };
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    try { el.setPointerCapture(e.pointerId); } catch (err) {}
+    ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+    if (ptrs.size === 2) { endMove(); gest = { mode: 'two', c: centroid(), d: spread() }; return; }
+    if (ptrs.size > 2) return;
+    const mouse = e.pointerType === 'mouse', hit = itemAt(e.clientX, e.clientY, mouse ? 6 : 26);
+    // タッチでは、選んだ機材があれば、どこをなぞってもそれが動く
+    gest = { mode: 'pending', x0: e.clientX, y0: e.clientY, hit, target: hit || (!mouse && d2.sel) || null, slop: mouse ? 3 : 8 };
+  });
+  el.addEventListener('pointermove', e => {
+    if (!ptrs.has(e.pointerId)) return;
+    const [px, py] = ptrs.get(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+    if (!gest) return;
+    if (gest.mode === 'two') {
+      if (ptrs.size !== 2) return;
+      const c = centroid(), d = spread();
+      panBy(c[0] - gest.c[0], c[1] - gest.c[1]);
+      if (gest.d > 0 && d > 0) zoomAt(gest.d / d, c[0], c[1]);
+      gest.c = c; gest.d = d; return;
+    }
+    if (gest.mode === 'pending') {
+      if (Math.hypot(e.clientX - gest.x0, e.clientY - gest.y0) < gest.slop) return;
+      const it = gest.target && byId(gest.target);
+      if (it) {
+        freezeAll(); d2.sel = it.id;
+        const u = toUser(gest.x0, gest.y0);
+        gest = { mode: 'move', it, ux: u.x, uy: u.y, x0: it.pos.x, y0: it.pos.y, moved: false };
+      } else gest = { mode: 'pan' };
+    }
+    if (gest.mode === 'move') {
+      const u = toUser(e.clientX, e.clientY);
+      gest.it.pos = clampPos(gest.x0 + (u.x - gest.ux) / d2.S, gest.y0 + (u.y - gest.uy) / d2.S); gest.moved = true;
+      renderDeskSoon(); return;
+    }
+    if (gest.mode === 'pan') panBy(e.clientX - px, e.clientY - py);
+  });
+  const up = e => {
+    if (!ptrs.has(e.pointerId)) return;
+    ptrs.delete(e.pointerId);
+    if (!gest) return;
+    if (gest.mode === 'pending' && e.type === 'pointerup') { const h = gest.hit; gest = null; select(h); return; }   // タップ: 選ぶ／何もない所なら外す
+    if (gest.mode === 'move') { endMove(); return; }
+    if (gest.mode === 'two') { gest = ptrs.size ? { mode: 'done' } : null; return; }
+    if (!ptrs.size) gest = null;
+  };
+  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  el.addEventListener('wheel', e => { e.preventDefault(); zoomAt(1 + Math.sign(e.deltaY) * .12, e.clientX, e.clientY); }, { passive: false });
+  host.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.zoom) zoomAt(b.dataset.zoom === '1' ? 1.25 : .8);
+    else if (b.hasAttribute('data-fit')) { d2.view = desk2dFit(); renderDesk(); }
+    else if (b.id === 't3Full') { setFull(!$('#wireDlg').classList.contains('full')); }
+    else if (b.dataset.nudge) d2.nudge(b.dataset.nudge);
+    else if (b.hasAttribute('data-unsel')) select(null);
+  });
+  syncFull();
+  return host;
 }
 
 async function deskPNG() {
@@ -3450,35 +3664,16 @@ function svgPoint(svg, e) {
 
 function wireDesk() {
   const wrap = $('#wireWrap');
-  wrap.addEventListener('pointerdown', e => {
-    if (wireMode !== 'desk') return;
-    const g = e.target.closest('.dk-item'); if (!g) return;
-    const svg = wrap.querySelector('svg'), it = byId(g.dataset.id); if (!svg || !it) return;
-    e.preventDefault();
-    // 最初に動かしたときに、全部の位置を固定する（ほかの機材が勝手に動かないように）
-    const all = deskPositions();
-    for (const i of deskItems()) if (!i.pos && all.get(i.id)) i.pos = { ...all.get(i.id) };
-    const { S } = deskSVG(themeColors(), false);
-    const p = svgPoint(svg, e);
-    deskDrag = { it, S, sx: p.x, sy: p.y, x0: it.pos.x, y0: it.pos.y, id: e.pointerId };
-    wrap.setPointerCapture(e.pointerId);
-    g.classList.add('dragging');
+  // 配置図のキーボード操作: 矢印で選んだ機材を 1cm ずつ、Esc で選択を外す
+  document.addEventListener('keydown', e => {
+    if (wireMode !== 'desk' || !d2.sel || !$('#wireDlg').open || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+    const dir = { ArrowLeft: 'l', ArrowUp: 'u', ArrowDown: 'd', ArrowRight: 'r' }[e.key];
+    if (dir) { e.preventDefault(); d2.nudge(dir); }
+    else if (e.key === 'Escape') { e.preventDefault(); d2.select(null); }
   });
-  wrap.addEventListener('pointermove', e => {
-    if (!deskDrag) return;
-    const svg = wrap.querySelector('svg'); if (!svg) return;
-    const p = svgPoint(svg, e), W = state.desk.w, D = state.desk.d;
-    const nx = deskDrag.x0 + (p.x - deskDrag.sx) / deskDrag.S, ny = deskDrag.y0 + (p.y - deskDrag.sy) / deskDrag.S;
-    deskDrag.it.pos = { x: Math.max(-30, Math.min(W + 30, Math.round(nx * 2) / 2)), y: Math.max(-18, Math.min(D + 24, Math.round(ny * 2) / 2)) };
-    renderDesk();
-    const g = wrap.querySelector(`.dk-item[data-id="${CSS.escape(deskDrag.it.id)}"]`); if (g) { g.classList.add('dragging'); g.parentNode.appendChild(g); }
-  });
-  const end = () => { if (!deskDrag) return; deskDrag = null; save(); renderDesk(); };
-  wrap.addEventListener('pointerup', end);
-  wrap.addEventListener('pointercancel', end);
   const size = () => {
     const w = parseInt($('#deskW').value, 10), d = parseInt($('#deskD').value, 10);
-    if (w >= 40 && w <= 400 && d >= 40 && d <= 200) { state.desk = { w, d }; save(); if (wireMode === '3d') openWiring(); else renderDesk(); }
+    if (w >= 40 && w <= 400 && d >= 40 && d <= 200) { state.desk = { w, d }; save(); d2.view = null; if (wireMode === '3d') openWiring(); else renderDesk(); }
   };
   $('#deskW').addEventListener('change', size); $('#deskD').addEventListener('change', size);
   $('#deskLabels').addEventListener('change', () => {
@@ -3488,7 +3683,7 @@ function wireDesk() {
   $('#deskAuto').addEventListener('click', () => {
     if (!confirm('機材の置き場所を自動で並べ直しますか？動かした位置は元に戻せません。')) return;
     for (const i of state.items) i.pos = null;
-    save(); renderDesk();
+    save(); d2.view = null; renderDesk();
   });
   $('#wireMode').addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
@@ -3550,6 +3745,11 @@ function build3d(C, light) {
   scene.fog = new T.Fog(C.page, 380, 900);
   const mat = (color, o = {}) => new T.MeshStandardMaterial({ color, roughness: .55, metalness: .1, ...o });
   const box = (w, h, d, m) => { const g = new T.Mesh(new T.BoxGeometry(w, h, d), m); g.castShadow = g.receiveShadow = true; return g; };
+  // 2点を結ぶ丸い棒（アームの腕など）
+  const rod = (a, b, r, m) => {
+    const len = Math.max(.1, a.distanceTo(b)), g = new T.Mesh(new T.CylinderGeometry(r, r, len, 14), m);
+    g.position.copy(a).lerp(b, .5); g.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), b.clone().sub(a).normalize()); g.castShadow = true; return g;
+  };
   const dark = mat(light ? '#2b2f35' : '#16191d'), pale = mat(light ? '#f4f4f1' : '#d9dbd6'), silver = mat('#b9bec5', { metalness: .6, roughness: .35 });
   const TONE = { white: mat(light ? '#f2f2ee' : '#dcdcd6'), black: mat('#1b1e22'), silver };
   const tone = (it, def) => TONE[lookColor(it)] || def;
@@ -3593,13 +3793,20 @@ function build3d(C, light) {
     if (b.kind === 'monitor') {
       const standH = b.stand, sh = b.ph, cy = standH + sh / 2, body = tone(it, dark);
       if (b.arm) {
-        // 天板の奥の端にクランプした柱から、腕で画面の裏を支える
-        const zb = 3 - p.y, poleH = cy + 4;
-        const pole = box(3, poleH, 3, body); pole.position.set(0, poleH / 2, zb); g.add(pole);
-        const clamp = box(6, 2, 7, body); clamp.position.set(0, 1, zb); g.add(clamp);
-        const len = Math.max(1, Math.abs(b.pz - 3 - zb));
-        const arm = box(3, 2.5, len, body); arm.position.set(0, cy, (zb + b.pz - 3) / 2); g.add(arm);
-        const plate = box(9, 9, 1.5, body); plate.position.set(0, cy, b.pz - 1.9); g.add(plate);
+        // 天板の奥の端にクランプした支柱から、関節のある腕（下の腕・上の腕）で画面の裏を支える
+        const pl = armPole(it, pos), armM = tone(armOf(it) || it, silver);
+        const px = pl.x - p.x, zb = 4 - p.y, poleH = Math.max(14, Math.min(34, cy - 4));
+        if (pl.first) {
+          const pole = rod(new T.Vector3(px, 0, zb), new T.Vector3(px, poleH, zb), 1.6, armM); g.add(pole);
+          const clamp = box(7, 2.2, 9, armM); clamp.position.set(px, 1.1, zb - 1); g.add(clamp);
+          const under = box(5, 1.5, 7, armM); under.position.set(px, -TH - 1.5, zb - 1); g.add(under);   // 天板の下の締め具
+          const screw = rod(new T.Vector3(px, -TH - 1, zb), new T.Vector3(px, -TH - 6, zb), .5, armM); g.add(screw);
+        }
+        const top = new T.Vector3(px, poleH - 2, zb), plateP = new T.Vector3(0, cy, b.pz - 3.2);
+        const elbow = new T.Vector3(px / 2 + (Math.abs(px) > 1 ? 0 : 8), Math.max(poleH, cy - 6), (zb + plateP.z) / 2 + 2);   // 1台用は肘を右へ出す
+        g.add(rod(top, elbow, 1.4, armM)); g.add(rod(elbow, plateP, 1.2, armM));
+        for (const j of [top, elbow]) { const k = new T.Mesh(new T.CylinderGeometry(2, 2, 3.2, 16), armM); k.position.copy(j); k.castShadow = true; g.add(k); }
+        const plate = box(10, 10, 1.4, armM); plate.position.set(0, cy, b.pz - 1.9); g.add(plate);
       } else {
         const baseP = box(Math.min(26, b.w * .4), 1, b.d, body); baseP.position.set(0, .5, 0); g.add(baseP);
         const neck = box(4, standH + sh * .4, 2.5, body); neck.position.set(0, (standH + sh * .4) / 2, b.pz - 2.3); g.add(neck);   // 首は画面の裏
@@ -3618,7 +3825,8 @@ function build3d(C, light) {
         const face = new T.Mesh(new T.PlaneGeometry(Math.max(1, b.w - 1.6), Math.max(1, sh - 1.6)), new T.MeshBasicMaterial({ map: scr }));
         face.position.set(0, cy, b.pz + 1.02); g.add(face);
       }
-      anchors.set(it.id, new T.Vector3(X, base + Math.max(2, standH), Z + b.pz - 2.5));   // ケーブルは裏から
+      if (b.arm && onDesk) { const pl = armPole(it, pos); anchors.set(it.id, new T.Vector3(pl.x - W / 2, base + 1, -D / 2 + 6)); }   // アームはケーブルを支柱に沿わせる
+      else anchors.set(it.id, new T.Vector3(X, base + Math.max(2, standH), Z + b.pz - 2.5));   // ケーブルは裏から
     } else if (b.kind === 'laptop') {
       const lapM = tone(it, silver);
       const lap = box(b.w, b.h, b.d, lapM); lap.position.set(0, b.h / 2, 0); g.add(lap);
@@ -4025,7 +4233,7 @@ function setFull(on) {
   const d = $('#wireDlg'); d.classList.toggle('full', on);
   const b = $('#t3Full'); if (b) { b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? '全画面をやめる' : '全画面で表示'); }
 }
-function syncFull() { setFull(wireMode === '3d' && matchMedia('(max-width: 560px)').matches); }
+function syncFull() { setFull((wireMode === '3d' || wireMode === 'desk') && matchMedia('(max-width: 560px)').matches); }
 function stop3D() {
   if (!three) return;
   cancelAnimationFrame(three.raf); if (three.ro) three.ro.disconnect();
@@ -4041,7 +4249,7 @@ async function openWiring() {
   $('#deskAuto').hidden = wireMode !== 'desk';
   $('#deskLabelsText').textContent = wireMode === '3d' ? '名前' : 'ケーブル名';
   $('#deskW').value = state.desk.w; $('#deskD').value = state.desk.d;
-  if (wireMode !== '3d') { stop3D(); setFull(false); }
+  if (wireMode !== '3d') { stop3D(); if (wireMode !== 'desk') setFull(false); }
   if (wireMode === '3d') {
     const d0 = $('#wireDlg'); if (!d0.open) d0.showModal();
     $('#wireHint').textContent = '機材はドラッグで動かせます。選ぶと矢印ボタン（キーボードの矢印キー）で 2cm ずつ動かせます。天板の外まで動かすと床に置きます。置き場所は「机の配置」と共通です。高さや形は目安です。';
@@ -4050,8 +4258,8 @@ async function openWiring() {
     return;
   } else if (wireMode === 'desk') {
     if (!deskItems().length) { wrap.innerHTML = '<div class="wire-empty">机に置く機材がまだありません。構成リストで機材を追加してください。</div>'; $('#wireSave').disabled = true; }
-    else { renderDesk(); $('#wireSave').disabled = false; }
-    $('#wireHint').textContent = '機材はドラッグで好きな場所に動かせます。点線の枠は天板の外（床やデスクの下）にある機材です。つながり方は、構成リストの「接続先」で変えられます。';
+    else { d2.view = null; d2.sel = null; wrap.innerHTML = ''; renderDesk(); $('#wireSave').disabled = false; }
+    $('#wireHint').textContent = '機材はドラッグで動かせます。選ぶと矢印ボタン（キーボードの矢印キー）で 1cm ずつ動かせます。2本指（ホイール）で拡大、何もない所のドラッグで見る場所を動かせます。点線の枠は天板の外や机の下にある機材です。つながり方は、構成リストの「接続先」で変えられます。';
   } else {
     const cv = await drawWiring();
     wrap.innerHTML = '';
