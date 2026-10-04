@@ -259,6 +259,11 @@
   .item { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 8px; min-width: 0; }
   .item.sev-error { border-left: 3px solid var(--crit); }
   .item.sev-warn { border-left: 3px solid var(--warn); }
+  .item.plan { border-style: dashed; border-color: var(--accent-fg); }
+  .item.plan .plan-tg { color: var(--accent-fg); font-weight: 600; }
+  .total-plan { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+  .total-plan:empty { display: none; }
+  .total-plan b { color: var(--accent-fg); font-weight: 600; }
   .row1 { display: grid; grid-template-columns: minmax(0, 1fr) 132px 30px; gap: 8px; align-items: center; }
   .row1 .name { font-weight: 500; }
   @media (max-width: 560px) {
@@ -560,6 +565,7 @@
         <h2 id="totalTitle">合計</h2>
         <div class="total-num" id="totalNum">¥0</div>
         <div class="total-sub" id="totalSub">0点</div>
+        <div class="total-plan" id="totalPlan"></div>
         <div class="total-note" id="totalNote"></div>
         <div class="bars" id="bars"></div>
       </section>
@@ -969,7 +975,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 
 function newItem(cat, name, spec, cid) {
   return { id: (state.seq++).toString(36), cid: cid || null, cat, name, price: null, spec: clone(spec), link: null, power: 'auto', clam: false,
-    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '' };
+    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '', plan: false };
 }
 function addFromCatalog(cid) {
   const c = catalogById(cid);
@@ -1395,6 +1401,7 @@ function itemHTML(it, checks) {
   if (it.cat === 'computer' && it.spec.clamDisp) {
     fields.push(`<label class="toggle"><input type="checkbox" data-f="clam"${it.clam ? ' checked' : ''}> 蓋を閉じて使う</label>`);
   }
+  fields.push(`<label class="toggle plan-tg"><input type="checkbox" data-f="plan"${it.plan ? ' checked' : ''}> 買う予定</label>`);
   if (fields.length) parts.push(`<div class="fields">${fields.join('')}</div>`);
 
   if (worst) parts.push(`<div class="item-msg ${worst.sev}">${esc(worst.title)}</div>`);
@@ -1458,7 +1465,7 @@ function itemHTML(it, checks) {
       <label style="align-self:end"><span class="toggle"><input type="checkbox" data-f="dsc"${s.dsc ? ' checked' : ''}> DSC 対応</span></label>
     </div></details>`);
   }
-  return `<div class="item${worst ? ' sev-' + worst.sev : ''}" data-id="${it.id}">${parts.join('')}</div>`;
+  return `<div class="item${worst ? ' sev-' + worst.sev : ''}${it.plan ? ' plan' : ''}" data-id="${it.id}">${parts.join('')}</div>`;
 }
 
 // モニター以外のスペック編集欄（カタログにない機材を実物に合わせるため）
@@ -1509,6 +1516,8 @@ function renderSide() {
   countTo($('#totalNum'), total);
   const outs = Object.entries(TOT_LABEL).map(([k, l]) => ({ l, v: state.items.filter(i => i.tot === k).reduce((s, i) => s + (i.price || 0), 0), n: state.items.filter(i => i.tot === k).length })).filter(x => x.n);
   $('#totalNote').textContent = outs.length ? '合計に含めていない: ' + outs.map(x => `${x.l} ${x.n}点${x.v ? ' ' + yen(x.v) : ''}`).join(' / ') : '';
+  const pl = planned(state.items), plV = sumPrice(pl);
+  $('#totalPlan').innerHTML = pl.length ? `買った後の合計です。今の構成 ${yen(total - plV)} ＋ <b>買う予定 ${yen(plV)}</b>（${pl.length}点）` : '';
   const priced = state.items.filter(i => i.price).length;
   $('#totalSub').textContent = `${state.items.length}点` + (state.items.length && priced < state.items.length ? `（価格未入力 ${state.items.length - priced}点）` : '');
   const byCat = CATS.map(c => ({ c, v: sumPrice(state.items.filter(i => i.cat === c.id)) })).filter(x => x.v > 0).sort((a, b) => b.v - a.v);
@@ -1531,6 +1540,7 @@ function renderSide() {
   if (cnt('error')) pills.push(`<span class="pill error">問題 ${cnt('error')}</span>`);
   if (cnt('warn')) pills.push(`<span class="pill warn">注意 ${cnt('warn')}</span>`);
   if (cnt('ok')) pills.push(`<span class="pill ok">OK ${cnt('ok')}</span>`);
+  if (planned(state.items).length) pills.push(`<span class="pill">買う予定込み</span>`);
   $('#summary').innerHTML = pills.join('');
   const mark = { ok: '✓', warn: '!', error: '×', info: 'i' };
   $('#checks').innerHTML = checks.length
@@ -1543,6 +1553,8 @@ function renderSide() {
 const TOT_LABEL = { ex: '番外', gift: '提供品', work: '会社支給' };
 const counted = i => !TOT_LABEL[i.tot];
 const sumPrice = items => items.reduce((s, i) => s + (counted(i) && i.price || 0), 0);
+// 買う予定の機材（合計は「買った後」。うち予定の分を分けて出す）
+const planned = items => items.filter(i => i.plan);
 function priceNote(it) {
   const parts = [];
   if (it.pdate) {
@@ -1582,6 +1594,7 @@ function serialize(forShare = false) {
       if (it.link) o.l = [it.link.h, it.link.p, it.link.v];
       if (it.power && it.power !== 'auto') o.w = it.power;
       if (it.clam) o.m = 1;
+      if (it.plan) o.pl = 1;
       if (it.pkind === 'ref') o.pk = 'r';
       if (it.pdate) o.pd = it.pdate;
       if (it.tot) o.tt = it.tot;
@@ -1613,7 +1626,7 @@ function deserialize(o) {
       id, cid: base ? x.c : null, cat, name: String(x.n ?? (base ? base.name : CAT_LABEL[cat])).slice(0, 60),
       price: Number.isFinite(x.p) ? x.p : null, spec,
       link: Array.isArray(x.l) ? { h: String(x.l[0]), p: x.l[1], v: x.l[2] } : null,
-      power: x.w ? String(x.w) : 'auto', clam: !!x.m,
+      power: x.w ? String(x.w) : 'auto', clam: !!x.m, plan: !!x.pl,
       pkind: x.pk === 'r' ? 'ref' : 'paid', pdate: /^\d{4}-\d{2}$/.test(x.pd || '') ? x.pd : '',
       tot: TOT_LABEL[x.tt] ? x.tt : '', memo: String(x.me || '').slice(0, 80),
       links: cleanLinks(Array.isArray(x.ln) ? x.ln.map(l => ({ s: l && l[0], u: l && l[1] })) : []),
@@ -1715,12 +1728,14 @@ async function drawCard() {
   x.textAlign = 'right';
   x.fillStyle = C.muted; x.font = `400 13px ${M}`; x.fillText(`TOTAL / ${state.items.length} ITEMS`, W - 64, 84);
   x.fillStyle = C.text; x.font = `400 76px ${D}`; x.fillText(total ? yen(total) : '—', W - 64, 150);
+  const plV = sumPrice(planned(state.items));
+  if (plV) { x.fillStyle = C.fg; x.font = `500 14px ${F}`; x.fillText(`うち買う予定 ${yen(plV)}`, W - 64, 180); }
   x.textAlign = 'left';
 
   x.strokeStyle = C.line; x.lineWidth = 1; x.beginPath(); x.moveTo(64, 196.5); x.lineTo(W - 64, 196.5); x.stroke();
 
   const rows = [];
-  for (const c of CATS) for (const it of state.items.filter(i => i.cat === c.id)) rows.push({ cat: c.label, name: it.name, price: it.price });
+  for (const c of CATS) for (const it of state.items.filter(i => i.cat === c.id)) rows.push({ cat: c.label, name: it.name + (it.plan ? '（予定）' : ''), price: it.price });
   const perCol = 12, colW = (W - 128 - 48) / 2, top = 236, lh = 29;
   const maxRows = perCol * 2;
   const shown = rows.length > maxRows ? rows.slice(0, maxRows - 1) : rows;
@@ -1881,6 +1896,7 @@ function wire() {
     if (f === 'tot') it.tot = TOT_LABEL[v] ? v : '';
     if (f === 'power') it.power = v;
     if (f === 'clam') it.clam = e.target.checked;
+    if (f === 'plan') it.plan = e.target.checked;
     if (f === 'res') { const [w, h] = v.split('x').map(Number); s.w = w; s.h = h; }
     if (f === 'hz') { const n = parseInt(v, 10); if (n > 0 && n <= 1000) s.hz = n; }
     if (f === 'pdW') { const n = parseInt(v, 10); s.pdW = n > 0 && n <= 240 ? n : 0; }
@@ -1919,7 +1935,8 @@ function wire() {
   $('#postBtn').addEventListener('click', async () => {
     const url = await shareUrl();
     const total = sumPrice(state.items);
-    const text = `${state.title || '私のデスク'}（${state.items.length}点${total ? '・合計' + yen(total) : ''}）\n#デスクレシピ #デスクツアー`;
+    const plV = sumPrice(planned(state.items));
+    const text = `${state.title || '私のデスク'}（${state.items.length}点${total ? '・合計' + yen(total) : ''}${plV ? '・うち買う予定' + yen(plV) : ''}）\n#デスクレシピ #デスクツアー`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'noopener');
   });
   $('#imgBtn').addEventListener('click', async () => {
@@ -2657,7 +2674,8 @@ function goodLinks(it) { return (it.links || []).filter(l => validUrl(l.u)).map(
 function totalText() {
   const total = sumPrice(state.items), n = state.items.length;
   const outs = Object.entries(TOT_LABEL).filter(([k]) => state.items.some(i => i.tot === k)).map(([, l]) => l);
-  return `合計 ${yen(total)}（${n}点${outs.length ? '・' + outs.join('・') + 'は含まない' : ''}）`;
+  const plV = sumPrice(planned(state.items));
+  return `合計 ${yen(total)}（${n}点${outs.length ? '・' + outs.join('・') + 'は含まない' : ''}${plV ? '・うち購入予定 ' + yen(plV) : ''}）`;
 }
 function disclosure() {
   const out = [];
@@ -2674,7 +2692,7 @@ function buildExport() {
       lines.push(`## ${g.c.label}`, '');
       for (const it of g.items) {
         const pt = o.price ? priceText(it) : (TOT_LABEL[it.tot] ? `（${TOT_LABEL[it.tot]}）` : '');
-        lines.push(`- **${mdEsc(it.name)}**${pt ? ' ' + pt : ''}`);
+        lines.push(`- **${mdEsc(it.name)}**${it.plan ? '（購入予定）' : ''}${pt ? ' ' + pt : ''}`);
         if (o.memo && it.memo) lines.push(`  - ${mdEsc(it.memo)}`);
         const ls = goodLinks(it);
         if (o.links && ls.length) lines.push(`  - 購入先: ${ls.map(l => `[${mdEsc(l.s)}](${l.u})`).join(' / ')}`);
@@ -2689,7 +2707,7 @@ function buildExport() {
       lines.push(`■ ${g.c.label}`);
       for (const it of g.items) {
         const pt = o.price ? priceText(it) : (TOT_LABEL[it.tot] ? `（${TOT_LABEL[it.tot]}）` : '');
-        lines.push(`・${it.name}${pt ? ' ' + pt : ''}`);
+        lines.push(`・${it.name}${it.plan ? '（購入予定）' : ''}${pt ? ' ' + pt : ''}`);
         if (o.memo && it.memo) lines.push(`　${it.memo}`);
         if (o.links) for (const l of goodLinks(it)) lines.push(`　${l.s}: ${l.u}`);
       }
@@ -2705,7 +2723,7 @@ function buildExport() {
     if (o.pr) lines.push('<p>※この記事にはPR（アフィリエイトリンク）が含まれています。</p>');
     lines.push('<table>', '  <thead><tr>' + head.map(h => `<th>${h}</th>`).join('') + '</tr></thead>', '  <tbody>');
     for (const g of groups) for (const it of g.items) {
-      const cells = [esc(g.c.label), esc(it.name) + (!o.price && TOT_LABEL[it.tot] ? `（${TOT_LABEL[it.tot]}）` : '')];
+      const cells = [esc(g.c.label), esc(it.name) + (it.plan ? '（購入予定）' : '') + (!o.price && TOT_LABEL[it.tot] ? `（${TOT_LABEL[it.tot]}）` : '')];
       if (o.price) cells.push(esc(priceText(it)));
       if (o.memo) cells.push(esc(it.memo || ''));
       if (o.links) cells.push(goodLinks(it).map(l => `<a href="${esc(l.u)}" target="_blank" rel="noopener sponsored">${esc(l.s)}</a>`).join(' / '));
@@ -2882,7 +2900,7 @@ let rankMode = 'creator', rankCat = '', userRank = null;
 const rankState = () => { try { return JSON.parse(localStorage.getItem(RANK_KEY)) || null; } catch (e) { return null; } };
 const setRankState = v => { try { if (v) localStorage.setItem(RANK_KEY, JSON.stringify(v)); else localStorage.removeItem(RANK_KEY); } catch (e) {} };
 // 送るのはカタログにある機材の ID だけ（名前・価格・メモ・購入先・写真・配置は送らない）
-const rankPayload = () => [...new Set(state.items.map(i => i.cid).filter(Boolean))].sort();
+const rankPayload = () => [...new Set(state.items.filter(i => !i.plan).map(i => i.cid).filter(Boolean))].sort();   // 買う予定は「使っている」に入れない
 
 async function openRanking() {
   const d = $('#rankDlg'); if (!d.open) d.showModal();
@@ -3309,11 +3327,12 @@ function deskSVG(C, forExport) {
     const [w, h] = footprint(it), X = ox + (p.x - w / 2) * S, Y = oy + (p.y - h / 2) * S, ww = w * S, hh = h * S;
     const onDesk = p.x - w / 2 >= -1 && p.x + w / 2 <= W + 1 && p.y - h / 2 >= -1 && p.y + h / 2 <= D + 1;
     const warn = sevOf(it, checks);
-    const edge = warn ? (warn.sev === 'error' ? C.crit : C.warn) : it.cat === 'computer' ? C.fg : C.line;
+    const edge = warn ? (warn.sev === 'error' ? C.crit : C.warn) : it.plan || it.cat === 'computer' ? C.fg : C.line;
     const mon = it.cat === 'monitor', fill = C.page, ink = C.text;
     const big = !mon && hh >= 70 && ww >= 90;
-    out.push(`<g class="dk-item" data-id="${esc2(it.id)}" tabindex="-1">`);
-    out.push(`<rect class="box" x="${X.toFixed(1)}" y="${Y.toFixed(1)}" width="${ww.toFixed(1)}" height="${hh.toFixed(1)}" rx="${Math.min(8, hh / 3).toFixed(1)}" fill="${fill}" stroke="${edge}" stroke-width="${warn || it.cat === 'computer' ? 2 : 1.2}"${onDesk ? '' : ' stroke-dasharray="5 4"'}/>`);
+    out.push(`<g class="dk-item" data-id="${esc2(it.id)}" tabindex="-1"${it.plan ? ' opacity=".62"' : ''}>`);   // 買う予定は薄く
+    out.push(`<rect class="box" x="${X.toFixed(1)}" y="${Y.toFixed(1)}" width="${ww.toFixed(1)}" height="${hh.toFixed(1)}" rx="${Math.min(8, hh / 3).toFixed(1)}" fill="${fill}" stroke="${edge}" stroke-width="${warn || it.cat === 'computer' || it.plan ? 2 : 1.2}"${onDesk && !it.plan ? '' : ' stroke-dasharray="5 4"'}/>`);
+    if (it.plan) out.push(`<text x="${(X + 5).toFixed(1)}" y="${(Y + 11).toFixed(1)}" fill="${C.fg}" font-family='${FM}' font-size="9" font-weight="700">予定</text>`);
     // モニターは、枠がスタンド込みの置き場所、塗った帯が画面
     if (mon) { const ph = Math.max(5, 2.5 * S), py = oy + (p.y + body3d(it).pz) * S; out.push(`<rect x="${X.toFixed(1)}" y="${(py - ph / 2).toFixed(1)}" width="${ww.toFixed(1)}" height="${ph.toFixed(1)}" rx="2" fill="${C.text}"/>`); }
     const nameSize = Math.max(9, Math.min(13, (mon ? hh * .5 : hh) * .38)), catSize = 9.5;
@@ -3603,9 +3622,10 @@ function build3d(C, light) {
       bx.position.set(0, b.h / 2, 0); g.add(bx);
       anchors.set(it.id, new T.Vector3(X, base + b.h / 2, Z));
     }
+    if (it.plan) g.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = .42; o.material.depthWrite = false; o.castShadow = false; } });   // 買う予定は透かして描く
     g.userData.itemId = it.id;
     scene.add(g);
-    const lb = textSprite(it.name, C); lb.position.set(g.position.x, g.position.y + topY + 7, g.position.z); scene.add(lb); labels.push(lb);
+    const lb = textSprite(it.plan ? it.name + '（予定）' : it.name, C); lb.position.set(g.position.x, g.position.y + topY + 7, g.position.z); scene.add(lb); labels.push(lb);
     groups.set(it.id, { g, label: lb, dy: topY + 7, plain: !mounted });
   }
 
@@ -4015,9 +4035,9 @@ function wireSnaps() {
   $('#rankCats').addEventListener('click', e => { const b = e.target.closest('[data-rank-cat]'); if (!b) return; rankCat = b.dataset.rankCat; renderRanking(); });
   $('#rankDlg').addEventListener('click', async e => {
     const add = e.target.closest('[data-rank-add]');
-    if (add) { addFromCatalog(add.dataset.rankAdd); toast('構成に追加しました'); renderRanking(); return; }
+    if (add) { addFromCatalog(add.dataset.rankAdd); state.items[state.items.length - 1].plan = true; commit(true); toast('「買う予定」として追加しました'); renderRanking(); return; }
     const cus = e.target.closest('[data-rank-custom]');
-    if (cus) { addCustom(cus.dataset.rankCustom, cus.dataset.name); toast('名前で追加しました。仕様は「スペックを編集」で合わせてください'); renderRanking(); return; }
+    if (cus) { addCustom(cus.dataset.rankCustom, cus.dataset.name); state.items[state.items.length - 1].plan = true; commit(true); toast('「買う予定」として名前で追加しました。仕様は「スペックを編集」で合わせてください'); renderRanking(); return; }
     if (e.target.closest('[data-rank-send]')) { if (await sendRank()) { toast('ランキングに送りました'); await loadUserRank(); renderRanking(); } return; }
     if (e.target.closest('[data-rank-leave]')) { if (!confirm('ランキングへの参加をやめて、送った内容を消しますか？')) return; await leaveRank(); await loadUserRank(); renderRanking(); }
   });
