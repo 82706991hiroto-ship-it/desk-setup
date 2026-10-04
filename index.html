@@ -984,7 +984,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 
 function newItem(cat, name, spec, cid) {
   return { id: (state.seq++).toString(36), cid: cid || null, cat, name, price: null, spec: clone(spec), link: null, power: 'auto', clam: false,
-    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '', place: '', mount: [], lift: 0, plan: false };
+    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '', place: '', mount: [], lift: 0, px: null, plan: false };
 }
 // ドックを足したとき、つなぎ直せる機材があれば知らせる
 function dockHint(it) {
@@ -1663,6 +1663,7 @@ function serialize(forShare = false) {
       if (it.place) o.pa = it.place;
       if (it.mount && it.mount.length) o.mt = it.mount;
       if (it.lift) o.lf = it.lift;
+      if (Number.isFinite(it.px)) o.ax = it.px;
       if (!forShare && it.links && it.links.length) o.ln = it.links.map(l => [l.s, l.u]);
       return o;
     }),
@@ -1696,6 +1697,7 @@ function deserialize(o) {
       place: /^[utf]$/.test(x.pa || '') ? x.pa : '',
       mount: Array.isArray(x.mt) ? x.mt.slice(0, 4).map(String) : [],
       lift: Number.isFinite(x.lf) ? Math.max(-20, Math.min(30, x.lf)) : 0,
+      px: Number.isFinite(x.ax) ? Math.max(-40, Math.min(440, x.ax)) : null,
     });
   }
   st.seq = max + 1;
@@ -1934,7 +1936,7 @@ function wire() {
       const a = byId(e.target.closest('.item').dataset.id), mid = e.target.dataset.mount; if (!a) return;
       for (const o of state.items) if (o.cat === 'arm') o.mount = (o.mount || []).filter(id => id !== mid);   // ほかのアームからは外す
       if (e.target.checked) a.mount.push(mid);
-      commit(true); return;
+      a.px = null; commit(true); return;
     }
     if (e.target.dataset.lf) {
       const it = byId(e.target.closest('.item').dataset.id); const l = it && it.links[Number(e.target.dataset.li)];
@@ -1952,7 +1954,7 @@ function wire() {
       if (k === 'color') it.color = LOOK_COLORS[e.target.value] ? e.target.value : '';
       else {
         const f = k.slice(4), on = e.target.type === 'checkbox' ? e.target.checked : !!e.target.value;
-        if (f === 'a' && !on) { const a = armOf(it); if (a) a.mount = a.mount.filter(id => id !== it.id); }   // アームを外す
+        if (f === 'a') { const a = armOf(it); if (a && !on) { a.mount = a.mount.filter(id => id !== it.id); a.px = null; } it.px = null; }   // アームを付け外ししたら支柱の位置は自動に戻す
         const set = new Set(it.mon || ''); if (on) set.add(f); else set.delete(f);
         if (set.has('v')) set.delete('c');   // 縦置きの曲面は扱わない
         it.mon = ['v', 'c', 'a'].filter(x => set.has(x)).join('');
@@ -3278,15 +3280,24 @@ const armCap = a => /デュアル|ダブル|dual|2画面|２画面|double/i.test
 function autoMount(a) {
   if (a.cat !== 'arm') return;
   const free = state.items.filter(m => m.cat === 'monitor' && !armOf(m) && !monLook(m).v);
-  a.mount = free.slice(0, armCap(a)).map(m => m.id);
+  a.mount = free.slice(0, armCap(a)).map(m => m.id); a.px = null;
 }
 // アームの腕1本の長さ（cm）。下の腕と上の腕で、届く範囲はこの2倍まで
 const armSeg = m => { const a = armOf(m); return a && /LX|HX/i.test(a.name) ? 30 : 25; };
 // アームの支柱の位置（cm）。2台を支えるアームは、2台の間に1本
+// 支柱は天板に固定なので、一度決まった位置（px）を覚えておき、モニターを動かしても動かさない
 function armPole(m, pos) {
-  const a = armOf(m), ms = a ? a.mount.map(byId).filter(x => x && pos.get(x.id)) : [];
-  if (ms.length >= 2) return { x: ms.reduce((s, x) => s + pos.get(x.id).x, 0) / ms.length, first: ms[0] === m };
-  return { x: pos.get(m.id).x, first: true };
+  const a = armOf(m), ms = a ? a.mount.map(byId).filter(x => x && pos.get(x.id)) : [], holder = a || m;
+  const first = ms.length >= 2 ? ms[0] === m : true;
+  if (Number.isFinite(holder.px)) return { x: holder.px, first };
+  if (ms.length >= 2) return { x: ms.reduce((s, x) => s + pos.get(x.id).x, 0) / ms.length, first };
+  return { x: pos.get(m.id).x, first };
+}
+// 動かす前に、アームの支柱の位置を今の場所で固定する
+function freezePoles(pos) {
+  for (const m of state.items.filter(i => i.cat === 'monitor' && monLook(i).a && pos.get(i.id))) {
+    const h = armOf(m) || m; if (!Number.isFinite(h.px)) h.px = Math.round(armPole(m, pos).x * 2) / 2;
+  }
 }
 function cleanDim(a) {
   if (!Array.isArray(a) || a.length !== 3) return null;
@@ -3575,7 +3586,7 @@ function buildDesk2d(wrap) {
     }
     return best;
   };
-  const freezeAll = () => { const all = deskPositions(); for (const i of deskItems()) if (!i.pos && all.get(i.id)) i.pos = { ...all.get(i.id) }; };
+  const freezeAll = () => { const all = deskPositions(); freezePoles(all); for (const i of deskItems()) if (!i.pos && all.get(i.id)) i.pos = { ...all.get(i.id) }; };
   const clampPos = (x, y) => ({ x: Math.max(-30, Math.min(state.desk.w + 30, Math.round(x * 2) / 2)), y: Math.max(-18, Math.min(state.desk.d + 24, Math.round(y * 2) / 2)) });
   const select = id => { d2.sel = id && byId(id) ? id : null; renderDesk(); };
   d2.nudge = dir => {
@@ -3687,7 +3698,7 @@ function wireDesk() {
   });
   $('#deskAuto').addEventListener('click', () => {
     if (!confirm('機材の置き場所を自動で並べ直しますか？動かした位置は元に戻せません。')) return;
-    for (const i of state.items) i.pos = null;
+    for (const i of state.items) { i.pos = null; i.px = null; }
     save(); d2.view = null; renderDesk();
   });
   $('#wireMode').addEventListener('click', e => {
@@ -4106,7 +4117,7 @@ async function open3D(wrap) {
     for (const o of three.world.groups.values()) if (o.rig && o.rig.reach) o.rig.reach.visible = !!rig && Math.abs(o.rig.px - rig.px) < .01;
   };
   // 位置を変えて、その場で見た目も動かす（ケーブルは離したあとにつくり直す）
-  const freezeAll = () => { const all = deskPositions(); for (const i of deskItems()) if (!i.pos && all.get(i.id)) i.pos = { ...all.get(i.id) }; };
+  const freezeAll = () => { const all = deskPositions(); freezePoles(all); for (const i of deskItems()) if (!i.pos && all.get(i.id)) i.pos = { ...all.get(i.id) }; };
   // アームのモニターを置く（腕が届く範囲に収めて、腕をつくり直す）
   const placeArm = (gr, x, y, lift) => {
     const { W, D, DH } = three.world;
