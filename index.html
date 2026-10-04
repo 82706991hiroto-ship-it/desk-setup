@@ -413,6 +413,7 @@
   .three-tools .seg button { padding: 7px 12px; }
   .t3-full { margin-left: auto; }
   .t3-group { display: inline-flex; gap: 4px; }
+  .t3-group[hidden] { display: none; }
   .t3-btn {
     min-width: 38px; height: 38px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px;
     background: var(--card); color: var(--text); font: 500 16px var(--font-sans); line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,.18);
@@ -425,8 +426,8 @@
   .t3-btn[hidden] { display: none; }
   @media (max-width: 560px) { .three-tools { gap: 6px; } .three-tools .seg button { padding: 7px 9px; } .three-tools .t3-btn { min-width: 34px; height: 34px; padding: 0 8px; font-size: 14px; } }
   .sel-bar {
-    position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); max-width: calc(100% - 20px);
-    display: flex; gap: 8px; align-items: center; padding: 6px 6px 6px 12px;
+    position: absolute; left: 10px; right: 10px; bottom: 10px; width: fit-content; margin: 0 auto;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; align-items: center; padding: 6px 6px 6px 12px;
     background: var(--card); border: 1px solid var(--accent); border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.28);
   }
   .sel-bar[hidden] { display: none; }
@@ -983,7 +984,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 
 function newItem(cat, name, spec, cid) {
   return { id: (state.seq++).toString(36), cid: cid || null, cat, name, price: null, spec: clone(spec), link: null, power: 'auto', clam: false,
-    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '', place: '', mount: [], plan: false };
+    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '', place: '', mount: [], lift: 0, plan: false };
 }
 // ドックを足したとき、つなぎ直せる機材があれば知らせる
 function dockHint(it) {
@@ -1661,6 +1662,7 @@ function serialize(forShare = false) {
       if (it.mon) o.mo = it.mon;
       if (it.place) o.pa = it.place;
       if (it.mount && it.mount.length) o.mt = it.mount;
+      if (it.lift) o.lf = it.lift;
       if (!forShare && it.links && it.links.length) o.ln = it.links.map(l => [l.s, l.u]);
       return o;
     }),
@@ -1693,6 +1695,7 @@ function deserialize(o) {
       color: LOOK_COLORS[x.co] ? x.co : '', mon: typeof x.mo === 'string' ? [...new Set(x.mo.replace(/[^vca]/g, ''))].join('') : '',
       place: /^[utf]$/.test(x.pa || '') ? x.pa : '',
       mount: Array.isArray(x.mt) ? x.mt.slice(0, 4).map(String) : [],
+      lift: Number.isFinite(x.lf) ? Math.max(-20, Math.min(30, x.lf)) : 0,
     });
   }
   st.seq = max + 1;
@@ -3277,6 +3280,8 @@ function autoMount(a) {
   const free = state.items.filter(m => m.cat === 'monitor' && !armOf(m) && !monLook(m).v);
   a.mount = free.slice(0, armCap(a)).map(m => m.id);
 }
+// アームの腕1本の長さ（cm）。下の腕と上の腕で、届く範囲はこの2倍まで
+const armSeg = m => { const a = armOf(m); return a && /LX|HX/i.test(a.name) ? 30 : 25; };
 // アームの支柱の位置（cm）。2台を支えるアームは、2台の間に1本
 function armPole(m, pos) {
   const a = armOf(m), ms = a ? a.mount.map(byId).filter(x => x && pos.get(x.id)) : [];
@@ -3793,19 +3798,41 @@ function build3d(C, light) {
     if (b.kind === 'monitor') {
       const standH = b.stand, sh = b.ph, cy = standH + sh / 2, body = tone(it, dark);
       if (b.arm) {
-        // 天板の奥の端にクランプした支柱から、関節のある腕（下の腕・上の腕）で画面の裏を支える
+        // 天板の奥の端にクランプした支柱（動かない）から、関節のある腕（下の腕・上の腕）で画面の裏を支える。
+        // 腕は画面の位置から毎回計算する（2本の腕の長さが決まっているので、肘の位置が決まる）
         const pl = armPole(it, pos), armM = tone(armOf(it) || it, silver);
-        const px = pl.x - p.x, zb = 4 - p.y, poleH = Math.max(14, Math.min(34, cy - 4));
+        const rg = { px: pl.x - W / 2, pz: -D / 2 + 4, H: Math.max(14, Math.min(34, cy - 4)), s: armSeg(it), cy, pzP: b.pz - 3.2, g, group: new T.Group(), lift: it.lift || 0 };
+        rg.side = Math.abs(pl.x - p.x) > 1 ? Math.sign(p.x - pl.x) : 1;   // 2台用は外側へ、1台用は右へ肘を出す
+        scene.add(rg.group);
         if (pl.first) {
-          const pole = rod(new T.Vector3(px, 0, zb), new T.Vector3(px, poleH, zb), 1.6, armM); g.add(pole);
-          const clamp = box(7, 2.2, 9, armM); clamp.position.set(px, 1.1, zb - 1); g.add(clamp);
-          const under = box(5, 1.5, 7, armM); under.position.set(px, -TH - 1.5, zb - 1); g.add(under);   // 天板の下の締め具
-          const screw = rod(new T.Vector3(px, -TH - 1, zb), new T.Vector3(px, -TH - 6, zb), .5, armM); g.add(screw);
-        }
-        const top = new T.Vector3(px, poleH - 2, zb), plateP = new T.Vector3(0, cy, b.pz - 3.2);
-        const elbow = new T.Vector3(px / 2 + (Math.abs(px) > 1 ? 0 : 8), Math.max(poleH, cy - 6), (zb + plateP.z) / 2 + 2);   // 1台用は肘を右へ出す
-        g.add(rod(top, elbow, 1.4, armM)); g.add(rod(elbow, plateP, 1.2, armM));
-        for (const j of [top, elbow]) { const k = new T.Mesh(new T.CylinderGeometry(2, 2, 3.2, 16), armM); k.position.copy(j); k.castShadow = true; g.add(k); }
+          const P = (x, y, z) => new T.Vector3(rg.px + x, y, rg.pz + z);
+          scene.add(rod(P(0, DH, 0), P(0, DH + rg.H, 0), 1.6, armM));
+          const clamp = box(7, 2.2, 9, armM); clamp.position.copy(P(0, DH + 1.1, -1)); scene.add(clamp);
+          const under = box(5, 1.5, 7, armM); under.position.copy(P(0, DH - TH - 1.5, -1)); scene.add(under);   // 天板の下の締め具
+          scene.add(rod(P(0, DH - TH - 1, 0), P(0, DH - TH - 6, 0), .5, armM));
+          // 届く範囲（選んだときだけ見せる）
+          const reach = new T.Mesh(new T.CircleGeometry(rg.s * 2 * .97, 64, 0, Math.PI), new T.MeshBasicMaterial({ color: C.accent, transparent: true, opacity: .16, depthWrite: false, side: T.DoubleSide }));
+          reach.rotation.x = -Math.PI / 2; reach.rotation.z = Math.PI; reach.position.copy(P(0, DH + .2, 0)); reach.visible = false; reach.renderOrder = 3; scene.add(reach);
+          rg.reach = reach;
+        } else rg.reach = null;
+        // 画面の位置（cm）を、腕が届く範囲・支柱より前に収める
+        rg.clamp = (x, y, lift) => {
+          const X = x - W / 2, Zp = y - D / 2 + rg.pzP, dy = (DH + lift + cy) - (DH + rg.H - 2);
+          let dx = X - rg.px, dz = Math.max(5, Zp - rg.pz);
+          const maxH = Math.sqrt(Math.max(1, (rg.s * 2 * .97) ** 2 - dy * dy)), hd = Math.hypot(dx, dz);
+          if (hd > maxH) { dx *= maxH / hd; dz *= maxH / hd; }
+          return [rg.px + dx + W / 2, rg.pz + dz - rg.pzP + D / 2];
+        };
+        rg.update = () => {
+          for (const c of [...rg.group.children]) { rg.group.remove(c); c.geometry.dispose(); }
+          const top = new T.Vector3(rg.px, DH + rg.H - 2, rg.pz), plate = new T.Vector3(g.position.x, g.position.y + cy, g.position.z + rg.pzP);
+          const d = top.distanceTo(plate), dir = plate.clone().sub(top).normalize();
+          const hz = Math.hypot(dir.x, dir.z), n = hz > .05 ? new T.Vector3(dir.z / hz, 0, -dir.x / hz) : new T.Vector3(1, 0, 0);
+          const elbow = top.clone().lerp(plate, .5).addScaledVector(n, rg.side * Math.sqrt(Math.max(0, rg.s * rg.s - d * d / 4)));
+          rg.group.add(rod(top, elbow, 1.4, armM)); rg.group.add(rod(elbow, plate, 1.2, armM));
+          for (const j of [top, elbow]) { const k = new T.Mesh(new T.CylinderGeometry(2, 2, 3.2, 16), armM); k.position.copy(j); k.castShadow = true; rg.group.add(k); }
+        };
+        g.userData.rig = rg;
         const plate = box(10, 10, 1.4, armM); plate.position.set(0, cy, b.pz - 1.9); g.add(plate);
       } else {
         const baseP = box(Math.min(26, b.w * .4), 1, b.d, body); baseP.position.set(0, .5, 0); g.add(baseP);
@@ -3928,11 +3955,13 @@ function build3d(C, light) {
       bx.position.set(0, b.h / 2, 0); g.add(bx);
       anchors.set(it.id, new T.Vector3(X, base + b.h / 2, Z));
     }
+    const rig = g.userData.rig;
+    if (rig) { const [cx, cz] = rig.clamp(p.x, p.y, rig.lift); g.position.set(cx - W / 2, DH + rig.lift, cz - D / 2); rig.update(); }   // アーム: 高さと届く範囲
     if (it.plan) g.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = .42; o.material.depthWrite = false; o.castShadow = false; } });   // 買う予定は透かして描く
     g.userData.itemId = it.id;
     scene.add(g);
     const lb = textSprite(it.name + (it.plan ? '（予定）' : '') + (under ? '（机の下）' : ''), C); lb.position.set(g.position.x, g.position.y + topY + 7, g.position.z); scene.add(lb); labels.push(lb);
-    groups.set(it.id, { g, label: lb, dy: topY + 7, plain: !mounted, yOn, under: !!b.under });
+    groups.set(it.id, { g, label: lb, dy: topY + 7, plain: !mounted && !rig, yOn, under: !!b.under, rig });
   }
 
 
@@ -4000,6 +4029,7 @@ async function open3D(wrap) {
     <div class="sel-bar" id="t3Sel" hidden>
       <span class="sel-name" id="t3SelName"></span>
       <span class="t3-group" role="group" aria-label="少しずつ動かす"><button type="button" class="t3-btn" data-nudge="l" aria-label="左へ">←</button><button type="button" class="t3-btn" data-nudge="u" aria-label="奥へ">↑</button><button type="button" class="t3-btn" data-nudge="d" aria-label="手前へ">↓</button><button type="button" class="t3-btn" data-nudge="r" aria-label="右へ">→</button></span>
+      <span class="t3-group" id="t3Arm" role="group" aria-label="モニターアーム" hidden><button type="button" class="t3-btn" data-lift="1" aria-label="高さを上げる">▲</button><button type="button" class="t3-btn" data-lift="-1" aria-label="高さを下げる">▼</button><button type="button" class="t3-btn" data-demo>動かしてみる</button></span>
       <button type="button" class="t3-btn" id="t3SelX" aria-label="選択を外す">✕</button>
     </div>
     <div class="three-hint" id="t3Hint">${coarse ? 'タップで機材を選ぶ ・ 選んだらなぞって移動 ・ 2本指で回転 / 拡大' : 'クリックで選択 ・ 機材をドラッグで移動 ・ 空いた所をドラッグで回転 ・ ホイールで拡大'}</div>`;
@@ -4060,7 +4090,8 @@ async function open3D(wrap) {
     }
     return best;
   };
-  const deskAt = (x, y) => { aim(x, y); deskPlane.constant = -three.world.DH; return ray.ray.intersectPlane(deskPlane, hitPt) ? { x: hitPt.x, z: hitPt.z } : null; };
+  // 指した先の、高さ h の水平面の上の位置（つかんだ高さで動かすと、指の動きと機材の動きがそろう）
+  const deskAt = (x, y, h = three.world.DH) => { aim(x, y); deskPlane.constant = -h; return ray.ray.intersectPlane(deskPlane, hitPt) ? { x: hitPt.x, z: hitPt.z } : null; };
 
   // 選択
   let selId = null;
@@ -4069,15 +4100,36 @@ async function open3D(wrap) {
     selId = id && byId(id) ? id : null;
     selBar.hidden = !selId; hint.hidden = !!selId;
     if (selId) holder.querySelector('#t3SelName').textContent = byId(selId).name;
+    // アームのモニター: 届く範囲を見せ、高さと「動かしてみる」を出す
+    const sr = selId && three.world.groups.get(selId), rig = sr && sr.rig;
+    holder.querySelector('#t3Arm').hidden = !rig;
+    for (const o of three.world.groups.values()) if (o.rig && o.rig.reach) o.rig.reach.visible = !!rig && Math.abs(o.rig.px - rig.px) < .01;
   };
   // 位置を変えて、その場で見た目も動かす（ケーブルは離したあとにつくり直す）
   const freezeAll = () => { const all = deskPositions(); for (const i of deskItems()) if (!i.pos && all.get(i.id)) i.pos = { ...all.get(i.id) }; };
-  const setPos = (it, x, y) => {
+  // アームのモニターを置く（腕が届く範囲に収めて、腕をつくり直す）
+  const placeArm = (gr, x, y, lift) => {
+    const { W, D, DH } = three.world;
+    [x, y] = gr.rig.clamp(x, y, lift);
+    gr.g.position.set(x - W / 2, DH + lift, y - D / 2); gr.rig.update();
+    gr.label.position.set(gr.g.position.x, gr.g.position.y + gr.dy, gr.g.position.z);
+    return [x, y];
+  };
+  const onDeskNow = it => { const p = it.pos, [fw, fd] = footprint(it), { W, D } = three.world; return !!p && p.x - fw / 2 >= -2 && p.x + fw / 2 <= W + 2 && p.y - fd / 2 >= -2 && p.y + fd / 2 <= D + 2; };
+  // soft: 天板の上から動かすときは、端を少し越えたくらいでは落とさない（soft cm 以上はみ出したら床へ）
+  const setPos = (it, x, y, soft) => {
     const { W, D, groups } = three.world;
+    const gr = groups.get(it.id);
+    if (gr && gr.rig) { [x, y] = placeArm(gr, x, y, it.lift || 0); it.pos = { x: Math.round(x * 2) / 2, y: Math.round(y * 2) / 2 }; return; }
+    if (soft) {
+      const [fw, fd] = footprint(it), x0 = fw / 2, x1 = W - fw / 2, y0 = fd / 2, y1 = D - fd / 2;
+      const over = Math.max(x0 - x, x - x1, y0 - y, y - y1, 0);
+      if (over > 0 && over < soft) { x = Math.max(x0, Math.min(x1, x)); y = Math.max(y0, Math.min(y1, y)); }
+    }
     x = Math.max(-30, Math.min(W + 30, Math.round(x * 2) / 2));
     y = Math.max(-18, Math.min(D + 24, Math.round(y * 2) / 2));
     it.pos = { x, y };
-    const gr = groups.get(it.id); if (!gr) return;
+    if (!gr) return;
     const [fw, fd] = footprint(it);
     const onDesk = x - fw / 2 >= -2 && x + fw / 2 <= W + 2 && y - fd / 2 >= -2 && y + fd / 2 <= D + 2;
     gr.g.position.x = x - W / 2; gr.g.position.z = y - D / 2;
@@ -4087,7 +4139,7 @@ async function open3D(wrap) {
   let rebuildT = 0;
   const commit = () => {
     clearTimeout(rebuildT); save();
-    if (three && three.renderer === renderer) { const old = three.world; three.world = makeWorld(); orbit.target = three.world.center; disposeScene(old.scene); }
+    if (three && three.renderer === renderer) { const old = three.world; three.world = makeWorld(); orbit.target = three.world.center; disposeScene(old.scene); if (selId) select(selId); }
   };
   three.cleanup.push(() => { if (rebuildT) { clearTimeout(rebuildT); save(); } });
   // 画面で見た向きの前後左右を、机の縦横どちらかに合わせて 2cm ずつ
@@ -4097,9 +4149,33 @@ async function open3D(wrap) {
     const fx = -Math.sin(orbit.theta), fz = -Math.cos(orbit.theta);
     let [ax, az] = { u: [fx, fz], d: [-fx, -fz], r: [-fz, fx], l: [fz, -fx] }[dir];
     if (Math.abs(ax) >= Math.abs(az)) { ax = Math.sign(ax); az = 0; } else { az = Math.sign(az); ax = 0; }
-    setPos(it, it.pos.x + ax * 2, it.pos.y + az * 2);
+    setPos(it, it.pos.x + ax * 2, it.pos.y + az * 2, onDeskNow(it) ? 14 : 0);
     clearTimeout(rebuildT); rebuildT = setTimeout(() => { rebuildT = 0; commit(); }, 450);
   };
+  // アームのモニターの高さ（3cm ずつ。画面の下が天板より下にならない）
+  const liftBy = d => {
+    const it = selId && byId(selId), gr = it && three.world.groups.get(it.id); if (!gr || !gr.rig) return;
+    freezeAll();
+    it.lift = Math.max(Math.max(-20, Math.ceil(1 - body3d(it).stand)), Math.min(30, (it.lift || 0) + d * 3));
+    gr.rig.lift = it.lift; setPos(it, it.pos.x, it.pos.y);
+    clearTimeout(rebuildT); rebuildT = setTimeout(() => { rebuildT = 0; commit(); }, 450);
+  };
+  // 「動かしてみる」: 手前に引き出す → 左右に振る → 戻す、を数秒で見せる（保存はしない）
+  let demo = null;
+  const DEMO = [[0, 0, 0, 0], [.18, 0, 14, 10], [.4, -24, 10, 10], [.64, 24, 10, 4], [.84, 0, -4, -6], [1, 0, 0, 0]];
+  const startDemo = () => {
+    const it = selId && byId(selId), gr = it && three.world.groups.get(it.id); if (!gr || !gr.rig) return;
+    freezeAll(); demo = { it, gr, x: it.pos.x, y: it.pos.y, lift: it.lift || 0, t0: performance.now() };
+  };
+  const stepDemo = now => {
+    if (!demo) return;
+    const k = reduce ? 1 : (now - demo.t0) / 5200;
+    if (k >= 1 || !three.world.groups.has(demo.it.id)) { if (three.world.groups.get(demo.it.id) === demo.gr) placeArm(demo.gr, demo.x, demo.y, demo.lift); demo = null; return; }
+    const i = DEMO.findIndex(f => f[0] > k), a = DEMO[i - 1], b = DEMO[i], u = (k - a[0]) / (b[0] - a[0]), e = u * u * (3 - 2 * u);
+    const m = j => a[j] + (b[j] - a[j]) * e;
+    placeArm(demo.gr, demo.x + m(1), demo.y + m(2), demo.lift + m(3));
+  };
+  const stopDemo = () => { if (demo) { placeArm(demo.gr, demo.x, demo.y, demo.lift); demo = null; } };
 
   // 1本指: タップで選ぶ／機材（または選んだ機材）をなぞって動かす／空いた所で回転
   // 2本指: 回転と拡大
@@ -4109,7 +4185,7 @@ async function open3D(wrap) {
   const endMove = () => { if (gest && gest.mode === 'move') { const moved = gest.moved; gest = null; if (moved) commit(); } };
   el.addEventListener('pointerdown', e => {
     try { el.setPointerCapture(e.pointerId); } catch (err) {} ptrs.set(e.pointerId, [e.clientX, e.clientY]);
-    orbit.touched = true; orbit.goal = null;
+    orbit.touched = true; orbit.goal = null; stopDemo();
     if (ptrs.size === 2) { endMove(); gest = { mode: 'two', c: centroid(), d: spread() }; return; }
     if (ptrs.size > 2) return;
     const mouse = e.pointerType === 'mouse';
@@ -4131,16 +4207,27 @@ async function open3D(wrap) {
     }
     if (gest.mode === 'pending') {
       if (Math.hypot(e.clientX - gest.x0, e.clientY - gest.y0) < gest.slop) return;
-      const it = gest.target && byId(gest.target), p0 = it && deskAt(gest.x0, gest.y0);
+      const it = gest.target && byId(gest.target), gr = it && three.world.groups.get(it.id);
+      // つかんだ所の高さ（機材を直接つかんだらその点、離れた所からなら機材の真ん中）
+      let h = three.world.DH;
+      if (gr) {
+        aim(gest.x0, gest.y0);
+        const hit = gest.hit === it.id && ray.intersectObject(gr.g, true)[0];
+        h = hit ? hit.point.y : box.setFromObject(gr.g).getCenter(v3).y;
+        h = Math.min(h, cam.position.y - 15);
+      }
+      const p0 = it && deskAt(gest.x0, gest.y0, h);
       if (it && p0) {
         freezeAll(); select(it.id);
-        gest = { mode: 'move', it, p0, sx: it.pos.x, sy: it.pos.y, moved: false };
+        // タッチは机が小さく映るので、指の動きの 6 割だけ動かし、端も強めに粘る
+        const touch = e.pointerType !== 'mouse';
+        gest = { mode: 'move', it, p0, h, gain: touch ? .6 : 1, soft: onDeskNow(it) ? (touch ? 22 : 14) : 0, sx: it.pos.x, sy: it.pos.y, moved: false };
         el.style.cursor = 'grabbing';
       } else gest = { mode: 'orbit' };
     }
     if (gest.mode === 'move') {
-      const p = deskAt(e.clientX, e.clientY); if (!p) return;
-      setPos(gest.it, gest.sx + p.x - gest.p0.x, gest.sy + p.z - gest.p0.z); gest.moved = true;
+      const p = deskAt(e.clientX, e.clientY, gest.h); if (!p) return;
+      setPos(gest.it, gest.sx + (p.x - gest.p0.x) * gest.gain, gest.sy + (p.z - gest.p0.z) * gest.gain, gest.soft); gest.moved = true;
       return;
     }
     if (gest.mode === 'orbit') turn(e.clientX - px, e.clientY - py);
@@ -4172,8 +4259,10 @@ async function open3D(wrap) {
   });
   selBar.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
-    if (b.dataset.nudge) nudge(b.dataset.nudge);
-    else if (b.id === 't3SelX') select(null);
+    if (b.dataset.nudge) { stopDemo(); nudge(b.dataset.nudge); }
+    else if (b.dataset.lift) { stopDemo(); liftBy(Number(b.dataset.lift)); }
+    else if (b.hasAttribute('data-demo')) startDemo();
+    else if (b.id === 't3SelX') { stopDemo(); select(null); }
   });
   // キーボード: 矢印で選んだ機材を動かす、Esc で選択を外す
   const onKey = e => {
@@ -4197,6 +4286,7 @@ async function open3D(wrap) {
     }
     orbit.r += (rTarget - orbit.r) * Math.min(1, raw * 3);
     orbit.lift += (orbit.liftGoal - orbit.lift) * Math.min(1, raw * 4);
+    stepDemo(performance.now());
     place();
     for (const f of three.world.flows) {
       let u = (f.off + t * f.speed) % 1; if (f.rev) u = 1 - u;
