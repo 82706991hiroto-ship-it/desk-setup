@@ -401,6 +401,30 @@
   .wire-card.full .sel-bar.d2-selbar { position: absolute; bottom: max(14px, env(safe-area-inset-bottom)); z-index: 2; }
   .wire-card .three-wrap.d2-wrap { height: var(--d2h, min(62vh, 560px)); min-height: 260px; }
   .wire-card.full .three-wrap.d2-wrap { height: 100%; min-height: 0; }
+  .d2-ports { margin-top: 10px; display: grid; gap: 10px; }
+  .d2-ports[hidden] { display: none; }
+  .pcard { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--card); display: grid; gap: 8px; }
+  .pcard h4 { margin: 0; font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+  .pcard h4 small { font-weight: 400; color: var(--text-2); font-size: 11.5px; }
+  .phost { border-top: 1px dashed var(--line); padding-top: 8px; }
+  .phost.cur .phost-name::after { content: '（今のつなぎ先）'; color: var(--accent-fg); font-weight: 400; font-size: 11px; }
+  .phost-name { font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+  .pslots { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pslot { display: grid; justify-items: center; gap: 2px; width: 84px; padding: 6px 4px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--page); color: var(--text); font: inherit; text-align: center; }
+  .pslot .pi { width: 34px; height: 18px; fill: var(--field); stroke: var(--text-2); stroke-width: 1.3; }
+  .pslot .pi .pin { fill: var(--text-2); stroke: none; }
+  .pslot .pname { font: 600 10.5px var(--font-mono); }
+  .pslot .pocc { font-size: 10.5px; color: var(--text-2); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pslot.used { background: var(--field); }
+  .pslot.used .pi { fill: var(--text-2); }
+  .pslot.can { border-color: var(--accent-fg); cursor: pointer; }
+  .pslot.can:hover { background: var(--accent-soft); }
+  .pslot.mine { border-color: var(--accent-fg); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-soft); }
+  .pslot.mine .pi { fill: var(--accent-fg); stroke: var(--accent-fg); }
+  .pslot.mine .pocc { color: var(--accent-fg); font-weight: 700; }
+  .pslot.over { border-color: var(--crit); }
+  .ppick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; }
+  .ppick .btn { padding: 5px 10px; font-size: 12px; }
   .d2-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 6px; }
   .d2-list li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 8px; align-items: start; padding: 7px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); cursor: pointer; font-size: 13px; }
   .d2-list li[aria-current="true"] { border-color: var(--accent-fg); box-shadow: 0 0 0 2px var(--accent-soft); }
@@ -3766,12 +3790,90 @@ function renderDesk() {
   const svg = box.querySelector('svg');
   svg.removeAttribute('width'); svg.removeAttribute('height');
   applyDeskView();
-  renderDeskList();
+  renderDeskList(); renderPorts();
   const sb = $('#d2Sel'), it = d2.sel && byId(d2.sel);
   sb.hidden = !it;
   if (it) $('#d2SelName').textContent = it.name;
 }
 // 机と、机の外に置いた機材が全部入る範囲（SVG の座標）
+// ---- ポートの絵: 選んだ機材のポートと、どこに刺さっているか。空いているポートをタップしてつなぎ替える ----
+const PORT_ORDER = ['tb', 'usbc', 'usba', 'hdmi', 'dp'];
+const PORT_NAME = { tb: 'Thunderbolt', usbc: 'USB-C', usba: 'USB-A', hdmi: 'HDMI', dp: 'DisplayPort' };
+function portIcon(p) {
+  const sh = {
+    tb: '<rect x="5" y="4" width="20" height="8" rx="4"/><path d="M16 5.5 13 8.4h3l-2 2.6" fill="none" stroke-width="1.2"/>',
+    usbc: '<rect x="5" y="4" width="20" height="8" rx="4"/>',
+    usba: '<rect x="4" y="3" width="22" height="10" rx="1"/><rect x="7" y="5.5" width="16" height="3" rx=".5" class="pin"/>',
+    hdmi: '<path d="M3 4h24v5l-3 3H6L3 9z"/>',
+    dp: '<path d="M3 4h24v8H7l-4-4z"/>',
+  }[p] || '<rect x="5" y="4" width="20" height="8" rx="2"/>';
+  return `<svg class="pi" viewBox="0 0 30 16" aria-hidden="true">${sh}</svg>`;
+}
+// ホストの差し込み口を1つずつ（使っている機材つき）。数より多くつないでいたら、あふれた分も出す
+function portSlots(h) {
+  const P = h.spec.ports || {}, out = [];
+  for (const p of PORT_ORDER) {
+    const n = P[p] || 0, occ = state.items.filter(i => i.link && i.link.h === h.id && i.link.p === p);
+    for (let k = 0; k < Math.max(n, occ.length); k++) out.push({ p, occ: occ[k] || null, over: k >= n });
+  }
+  return out;
+}
+function renderPorts() {
+  const box = $('#d2Ports'); if (!box) return;
+  const it = d2.sel && byId(d2.sel);
+  if (!it) { box.hidden = true; box.innerHTML = ''; return; }
+  const slot = (h, s, mode) => {
+    const mine = s.occ === it, opts = mode === 'pick' ? linkOptions(it).filter(o => o.h === h.id && o.p === s.p && o.v !== 'bt') : [];
+    const can = opts.length && (!s.occ || mine) && !s.over;
+    const occName = s.occ ? (mine ? 'つないでいる' : s.occ.name) : '空き';
+    const cls = ['pslot', s.occ ? 'used' : 'free', mine ? 'mine' : '', can && !mine ? 'can' : '', s.over ? 'over' : ''].filter(Boolean).join(' ');
+    const tag = can && !mine ? 'button' : 'div';
+    return `<${tag} class="${cls}"${tag === 'button' ? ` type="button" data-port="${h.id}|${s.p}" title="${esc(h.name)} の ${PORT_NAME[s.p]} につなぐ"` : ''}>${portIcon(s.p)}<span class="pname">${PORT_NAME[s.p]}</span><span class="pocc">${esc(s.over ? occName + '（ポート不足）' : occName)}</span></${tag}>`;
+  };
+  const parts = [];
+  // 選んだ機材自身のポート
+  if (isHost(it)) {
+    const sl = portSlots(it);
+    parts.push(`<section class="pcard"><h4>${esc(it.name)} のポート <small>${sl.filter(s => s.occ && !s.over).length} / ${sl.filter(s => !s.over).length} 使用中</small></h4><div class="pslots">${sl.map(s => slot(it, s, 'show')).join('')}</div></section>`);
+  }
+  // つなぎ先を選ぶ
+  const opts = linkOptions(it);
+  if (opts.length) {
+    const hosts = [...new Set(opts.map(o => o.h))].map(byId);
+    const cur = it.link && byId(it.link.h);
+    const pickRow = d2.portPick && d2.portPick.id === it.id ? linkOptions(it).filter(o => o.h === d2.portPick.h && o.p === d2.portPick.p && o.v !== 'bt') : [];
+    parts.push(`<section class="pcard"><h4>${esc(it.name)} をどこにつなぐか <small>${cur ? `今: ${esc(cur.name)} の ${esc(PORT_LABEL[it.link.p] || it.link.p)}（${esc(edgeLabel({ from: { it: cur }, to: { it } }))}）` : '未接続'}</small></h4>
+      ${pickRow.length > 1 ? `<div class="ppick"><span>ケーブルを選ぶ:</span>${pickRow.map(o => `<button type="button" class="btn" data-opt="${esc(linkKey(o))}">${esc(o.label)}</button>`).join('')}<button type="button" class="link-btn" data-pick-cancel>やめる</button></div>` : ''}
+      ${hosts.map(h => {
+        const bt = opts.find(o => o.h === h.id && o.v === 'bt'), btOn = it.link && it.link.h === h.id && it.link.v === 'bt';
+        const sl = portSlots(h).filter(s => opts.some(o => o.h === h.id && o.p === s.p && o.v !== 'bt') || s.occ === it);
+        return `<div class="phost${it.link && it.link.h === h.id ? ' cur' : ''}"><div class="phost-name">${esc(h.name)}</div><div class="pslots">${sl.map(s => slot(h, s, 'pick')).join('')}${bt ? `<${btOn ? 'div' : 'button type="button" data-bt="' + h.id + '"'} class="pslot bt ${btOn ? 'mine' : 'can'}"><svg class="pi" viewBox="0 0 30 16" aria-hidden="true"><path d="M11 4l8 8-4 3V1l4 3-8 8" fill="none" stroke-width="1.4"/></svg><span class="pname">Bluetooth</span><span class="pocc">${btOn ? 'つないでいる' : 'ワイヤレス'}</span></${btOn ? 'div' : 'button'}>` : ''}</div></div>`;
+      }).join('')}
+      ${it.link ? `<button type="button" class="link-btn" data-unlink>つながない（未接続にする）</button>` : ''}
+      <p class="fine" style="margin:6px 0 0">緑の枠のポートをタップすると、そこにつなぎ替えます。灰色は使用中です。</p></section>`);
+  }
+  box.hidden = !parts.length;
+  box.innerHTML = parts.join('');
+}
+function portClick(e) {
+  const it = d2.sel && byId(d2.sel); if (!it) return;
+  const apply = o => {
+    it.link = { h: o.h, p: o.p, v: o.v }; d2.portPick = null;
+    commit(true); renderDesk();
+    toast(`${it.name} を ${byId(o.h).name} の ${o.v === 'bt' ? 'Bluetooth' : PORT_NAME[o.p]} につなぎました`);
+  };
+  const pb = e.target.closest('[data-port]'), ob = e.target.closest('[data-opt]'), bb = e.target.closest('[data-bt]');
+  if (pb) {
+    const [h, p] = pb.dataset.port.split('|'), os = linkOptions(it).filter(o => o.h === h && o.p === p && o.v !== 'bt');
+    if (os.length === 1) apply(os[0]);
+    else if (os.length > 1) { d2.portPick = { id: it.id, h, p }; renderPorts(); }   // ケーブルの種類が選べるとき
+    return;
+  }
+  if (ob) { const o = linkOptions(it).find(x => linkKey(x) === ob.dataset.opt); if (o) apply(o); return; }
+  if (bb) { const o = linkOptions(it).find(x => x.h === bb.dataset.bt && x.v === 'bt'); if (o) apply(o); return; }
+  if (e.target.closest('[data-pick-cancel]')) { d2.portPick = null; renderPorts(); return; }
+  if (e.target.closest('[data-unlink]')) { it.link = null; commit(true); renderDesk(); toast(`${it.name} を未接続にしました`); }
+}
 // 図の下の一覧: 番号・名前・つなぎ先（何で）・置き場所
 function renderDeskList() {
   const ol = $('#d2List'); if (!ol) return;
@@ -3821,11 +3923,12 @@ function buildDesk2d(wrap) {
 
 
   </div>`;
-  wrap.insertAdjacentHTML('beforeend', `<div class="d2-under"><span class="d2-legend" aria-hidden="true"><i class="lg-video"></i>映像<i class="lg-usb"></i>USB<i class="lg-power"></i>給電<i class="lg-wl"></i>無線</span><span class="d2-hint">${matchMedia('(pointer: coarse)').matches ? 'タップすると、つながりが出ます ・ なぞって移動 ・ 2本指で拡大' : 'クリックすると、つながりが出ます ・ ドラッグで移動 ・ ホイールで拡大'}</span></div>${BAR}<ol class="d2-list" id="d2List" aria-label="机の上の機材とつながり"></ol>`);
+  wrap.insertAdjacentHTML('beforeend', `<div class="d2-under"><span class="d2-legend" aria-hidden="true"><i class="lg-video"></i>映像<i class="lg-usb"></i>USB<i class="lg-power"></i>給電<i class="lg-wl"></i>無線</span><span class="d2-hint">${matchMedia('(pointer: coarse)').matches ? 'タップすると、つながりが出ます ・ なぞって移動 ・ 2本指で拡大' : 'クリックすると、つながりが出ます ・ ドラッグで移動 ・ ホイールで拡大'}</span></div>${BAR}<div class="d2-ports" id="d2Ports" hidden></div><ol class="d2-list" id="d2List" aria-label="机の上の機材とつながり"></ol>`);
   wrap.querySelector('#d2Sel').addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     if (b.dataset.nudge) d2.nudge(b.dataset.nudge); else if (b.hasAttribute('data-unsel')) d2.select(null);
   });
+  wrap.querySelector('#d2Ports').addEventListener('click', e => portClick(e));
   wrap.querySelector('#d2List').addEventListener('click', e => { const li = e.target.closest('[data-pick]'); if (li) d2.select(d2.sel === li.dataset.pick ? null : li.dataset.pick); });
   const host = wrap.querySelector('.d2-wrap'), el = host.querySelector('.d2-svg');
   const svgOf = () => el.querySelector('svg');
