@@ -116,7 +116,34 @@
     display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;
   }
   .banner[hidden] { display: none; }
-  .layout[hidden], .photo-layout[hidden], .top-actions[hidden] { display: none; }
+  .layout[hidden], .photo-layout[hidden], .share-layout[hidden], .top-actions[hidden] { display: none; }
+  /* 共有・記録 */
+  .share-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; padding-bottom: 40px; }
+  @media (max-width: 900px) { .share-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; } }
+  /* スマホ: 「構成」と「チェック」を分ける。PC では横に並ぶのでチェックのタブは出さない */
+  .tab-narrow { display: none; }
+  .tab-badge { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 6px; border-radius: 999px; background: var(--crit); color: #fff; font-size: 11px; font-weight: 700; vertical-align: 1px; }
+  .tab-badge.warn { background: var(--warn); }
+  .tab-badge[hidden] { display: none; }
+  .mini-bar { display: none; }
+  @media (max-width: 900px) {
+    .tab-narrow { display: inline-block; }
+    .tab { padding: 6px 13px; }
+    #listView[data-sub="list"] > .side { display: none; }
+    #listView[data-sub="check"] > .main { display: none; }
+    #listView[data-sub="list"] > .main { padding-bottom: 64px; }
+    .mini-bar {
+      position: fixed; left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); z-index: 5;
+      display: flex; gap: 8px; align-items: center; padding: 8px 8px 8px 14px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.25);
+    }
+    .mini-bar[hidden] { display: none; }
+    .mini-total { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .mini-pills { flex: 1; min-width: 0; display: flex; gap: 4px; overflow: hidden; }
+    .mini-bar .btn { white-space: nowrap; padding: 7px 10px; }
+    .toast { bottom: 84px; }
+  }
+  .rank-note { margin: 8px 0 0; }
 
   .tabs { display: flex; gap: 2px; background: var(--field); border-radius: 999px; padding: 4px; width: fit-content; margin-bottom: 16px; }
   .tab { border: 0; background: transparent; border-radius: 999px; padding: 6px 16px; font-size: 13px; font-weight: 500; color: var(--text-2); }
@@ -261,6 +288,20 @@
   .item.sev-warn { border-left: 3px solid var(--warn); }
   .item.plan { border-style: dashed; border-color: var(--accent-fg); }
   .item.plan .plan-tg { color: var(--accent-fg); font-weight: 600; }
+  /* コンパクト表示: 1行ずつ。タップで開く */
+  .list-tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .list-tools .seg button { padding: 5px 12px; font-size: 12px; }
+  .item.compact { padding: 0; }
+  .item-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; align-items: center; width: 100%; padding: 11px 14px; border: 0; background: none; text-align: left; color: var(--text); font-size: 14px; border-radius: var(--radius); }
+  .item-row:hover { background: var(--field); }
+  .ir-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  .ir-name small { color: var(--muted); font-weight: 400; margin-left: 6px; font-size: 11.5px; }
+  .ir-price { font-variant-numeric: tabular-nums; color: var(--text-2); font-size: 13px; white-space: nowrap; }
+  .ir-mark { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--muted); }
+  .ir-mark.error { background: var(--crit-soft); color: var(--crit); } .ir-mark.warn { background: var(--warn-soft); color: var(--warn); }
+  .fold-btn { justify-self: center; }
+  #rankBtn { white-space: nowrap; }
+  .mini-pills .pill { white-space: nowrap; }
   .total-plan { font-size: 12px; color: var(--text-2); margin-top: 4px; }
   .total-plan:empty { display: none; }
   .total-plan b { color: var(--accent-fg); font-weight: 600; }
@@ -529,8 +570,10 @@
   </header>
 
   <nav class="tabs" role="tablist" aria-label="表示の切り替え">
-    <button class="tab" role="tab" type="button" data-tab="list" aria-selected="true">構成リスト</button>
-    <button class="tab" role="tab" type="button" data-tab="photo" aria-selected="false">写真に書き込む</button>
+    <button class="tab" role="tab" type="button" data-tab="list" aria-selected="true">構成</button>
+    <button class="tab tab-narrow" role="tab" type="button" data-tab="check" aria-selected="false">チェック<span class="tab-badge" id="checkBadge" hidden></span></button>
+    <button class="tab" role="tab" type="button" data-tab="share" aria-selected="false">共有・記録</button>
+    <button class="tab" role="tab" type="button" data-tab="photo" aria-selected="false">写真</button>
   </nav>
 
   <div class="banner" id="sharedBanner" hidden>
@@ -554,7 +597,9 @@
         <h2 id="addTitle">機材を追加 <small>カタログから選ぶか、自分で入力</small></h2>
         <div class="search-row">
           <input class="text" id="q" type="search" placeholder="機材名で検索（例: MacBook, U2723QE, HHKB）" autocomplete="off" aria-label="機材を検索">
+          <button class="btn" id="rankBtn" type="button" title="人気の機材（ランキング）から選ぶ">人気の機材</button>
         </div>
+        <p class="fine rank-note" id="rankNote">「人気の機材」: デスク発信者がよく使っている機材と、このツールの利用者に人気の機材です。</p>
         <div class="chips" id="chips"></div>
         <div class="results" id="results"></div>
         <div class="custom">
@@ -587,12 +632,10 @@
         <p class="fine">スペックは代表的な値からの目安です。購入前にメーカーの公式情報を確認してください。</p>
       </section>
 
-      <section class="card" aria-labelledby="rankTitle">
-        <h2 id="rankTitle">ランキング</h2>
-        <button class="btn block" id="rankBtn" type="button">人気の機材を見る</button>
-        <p class="fine" id="rankNote">デスク発信者がよく使っている機材と、このツールの利用者に人気の機材です。</p>
-      </section>
+    </aside>
+  </div>
 
+  <div class="share-layout" id="shareView" hidden>
       <section class="card" aria-labelledby="shareTitle">
         <h2 id="shareTitle">共有</h2>
         <div class="share-btns">
@@ -617,7 +660,13 @@
         </div>
         <p class="fine">記録はこのブラウザの中に保存されます。ブラウザのデータを消すと記録も消えるので、ときどきファイルに保存しておくと安心です（写真は入りません）。</p>
       </section>
-    </aside>
+  </div>
+
+  <div class="mini-bar" id="miniBar" hidden>
+    <span class="mini-total" id="miniTotal">¥0</span>
+    <span class="mini-pills" id="miniPills"></span>
+    <button class="btn" type="button" data-wire>配線・3D</button>
+    <button class="btn" type="button" data-go="check">チェック ›</button>
   </div>
 
   <div class="photo-layout" id="photoView" hidden>
@@ -984,7 +1033,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 
 function newItem(cat, name, spec, cid) {
   return { id: (state.seq++).toString(36), cid: cid || null, cat, name, price: null, spec: clone(spec), link: null, power: 'auto', clam: false,
-    pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '', place: '', mount: [], lift: 0, px: null, plan: false };
+    _exp: true, pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '', place: '', mount: [], lift: 0, px: null, plan: false };
 }
 // ドックを足したとき、つなぎ直せる機材があれば知らせる
 function dockHint(it) {
@@ -1522,6 +1571,7 @@ function itemHTML(it, checks) {
       <label style="align-self:end"><span class="toggle"><input type="checkbox" data-f="dsc"${s.dsc ? ' checked' : ''}> DSC 対応</span></label>
     </div></details>`);
   }
+  if (listCompact) parts.push(`<button class="link-btn fold-btn" type="button" data-fold="${it.id}">たたむ ▴</button>`);
   return `<div class="item${worst ? ' sev-' + worst.sev : ''}${it.plan ? ' plan' : ''}" data-id="${it.id}">${parts.join('')}</div>`;
 }
 
@@ -1551,6 +1601,17 @@ function specEditor(it) {
     + `<span class="hint full">つなぎ方は、この機材が対応している方法です。USB 給電の機材は、電力を入れると充電器の合計に入ります。</span>`;
 }
 
+// 機材リストの表示: false 詳しく / true コンパクト（スマホでは最初からコンパクト）
+let listCompact = (() => { try { const v = localStorage.getItem('desk-setup:compact'); if (v != null) return v === '1'; } catch (e) {} return matchMedia('(max-width: 900px)').matches; })();
+function compactHTML(it, checks) {
+  const worst = sevOf(it, checks), h = it.link && byId(it.link.h);
+  const sub = [it.plan && '買う予定', h && `→ ${h.name}`].filter(Boolean).join(' · ');
+  return `<div class="item compact${worst ? ' sev-' + worst.sev : ''}${it.plan ? ' plan' : ''}" data-id="${it.id}"><button class="item-row" type="button" data-expand="${it.id}" aria-expanded="false" aria-label="${esc(it.name)} を開く">
+    <span class="ir-name">${esc(it.name)}${sub ? `<small>${esc(sub)}</small>` : ''}</span>
+    <span class="ir-price">${it.price != null ? yen(it.price) : '—'}</span>
+    <span class="ir-mark ${worst ? worst.sev : ''}" aria-hidden="true">${worst ? (worst.sev === 'error' ? '×' : '!') : '›'}</span>
+  </button></div>`;
+}
 function renderList() {
   const list = $('#list');
   if (!state.items.length) {
@@ -1563,9 +1624,10 @@ function renderList() {
     const its = state.items.filter(i => i.cat === c.id);
     if (!its.length) continue;
     const sub = sumPrice(its);
-    html.push(`<section class="group"><div class="group-head"><h3>${esc(c.label)}</h3><span>${sub ? yen(sub) : ''}</span></div>${its.map(i => itemHTML(i, checks)).join('')}</section>`);
+    html.push(`<section class="group"><div class="group-head"><h3>${esc(c.label)}</h3><span>${sub ? yen(sub) : ''}</span></div>${its.map(i => listCompact && !i._exp ? compactHTML(i, checks) : itemHTML(i, checks)).join('')}</section>`);
   }
-  list.innerHTML = html.join('');
+  const mode = v => `<button type="button" data-list-mode="${v ? 1 : 0}" aria-pressed="${listCompact === v}">${v ? 'コンパクト' : '詳しく'}</button>`;
+  list.innerHTML = `<div class="list-tools"><span class="seg" role="group" aria-label="リストの表示">${mode(false)}${mode(true)}</span><span class="fine" style="margin:0">${state.items.length}点</span></div>` + html.join('');
 }
 
 function renderSide() {
@@ -1599,6 +1661,11 @@ function renderSide() {
   if (cnt('ok')) pills.push(`<span class="pill ok">OK ${cnt('ok')}</span>`);
   if (planned(state.items).length) pills.push(`<span class="pill">買う予定込み</span>`);
   $('#summary').innerHTML = pills.join('');
+  $('#miniTotal').textContent = yen(total);
+  $('#miniPills').innerHTML = pills[0] && !pills[0].includes('買う予定') ? pills[0] : '';
+  const bad = cnt('error') || cnt('warn'), badge = $('#checkBadge');
+  badge.hidden = !bad; badge.textContent = bad; badge.classList.toggle('warn', !cnt('error'));
+  syncMiniBar();
   const mark = { ok: '✓', warn: '!', error: '×', info: 'i' };
   $('#checks').innerHTML = checks.length
     ? checks.map(c => `<div class="check ${c.sev}"><span class="mark" aria-hidden="true">${mark[c.sev]}</span><span><b>${esc(c.title)}</b>${c.detail ? `<small>${esc(c.detail)}</small>` : ''}</span></div>`).join('')
@@ -1885,6 +1952,10 @@ function wire() {
       commit(true); return;
     }
     if (e.target.closest('[data-sample]')) loadSample();
+    const lm = e.target.closest('[data-list-mode]');
+    if (lm) { listCompact = lm.dataset.listMode === '1'; for (const i of state.items) i._exp = false; try { localStorage.setItem('desk-setup:compact', listCompact ? '1' : '0'); } catch (err) {} renderList(); return; }
+    const ex = e.target.closest('[data-expand]'), fd = e.target.closest('[data-fold]');
+    if (ex || fd) { const it = byId((ex || fd).dataset[ex ? 'expand' : 'fold']); if (it) { it._exp = !!ex; renderList(); if (ex) flashItem(it.id); } return; }
     const rl = e.target.closest('[data-relink]');
     if (rl) {
       const d = byId(rl.dataset.relink); if (!d) return;
@@ -2046,7 +2117,7 @@ function loadSample() {
   if (state.items.length && !confirm('今の構成をサンプルで置き換えますか？')) return;
   state = emptyState();
   state.title = 'サンプルのデスク';
-  const add = (cid, price) => { const c = catalogById(cid); const it = newItem(c.cat, c.name, c.spec, cid); it.price = price; state.items.push(it); return it; };
+  const add = (cid, price) => { const c = catalogById(cid); const it = newItem(c.cat, c.name, c.spec, cid); it.price = price; it._exp = false; state.items.push(it); return it; };
   const mbp = add('mbp14-m4pro', 328800);
   const dell = add('u2723qe', 72000);
   const lg = add('32gs95ue', 198000);
@@ -2558,13 +2629,21 @@ function exportPhoto() {
   });
 }
 
+// タブ: 構成 / チェック（スマホだけ。PC では構成の横に出る）/ 共有・記録 / 写真
+const NARROW = matchMedia('(max-width: 900px)');
 function setTab(t) {
+  if (!['list', 'check', 'share', 'photo'].includes(t)) t = 'list';
+  if (t === 'check' && !NARROW.matches) t = 'list';
   tab = t;
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
-  $('#listView').hidden = t !== 'list';
+  const lv = $('#listView');
+  lv.hidden = t !== 'list' && t !== 'check'; lv.dataset.sub = t === 'check' ? 'check' : 'list';
   $('#listActions').hidden = t !== 'list';
+  $('#shareView').hidden = t !== 'share';
   $('#photoView').hidden = t !== 'photo';
-  const shown = t === 'photo' ? $('#photoView') : $('#listView');
+  syncMiniBar();
+  if (t !== 'photo') window.scrollTo({ top: Math.min(window.scrollY, $('.tabs').offsetTop - 8) });
+  const shown = t === 'photo' ? $('#photoView') : t === 'share' ? $('#shareView') : $('#listView');
   shown.classList.remove('view-in'); shown.offsetWidth; shown.classList.add('view-in');
   try { localStorage.setItem('desk-setup:tab', t); } catch (e) {}
   if (t === 'photo') renderPhoto();
@@ -2572,6 +2651,11 @@ function setTab(t) {
 
 function wirePhoto() {
   document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+  $('#miniBar').addEventListener('click', e => {
+    const b = e.target.closest('[data-go]'); if (b) setTab(b.dataset.go);
+    if (e.target.closest('[data-wire]')) $('#wireBtn').click();
+  });
+  NARROW.addEventListener('change', () => setTab(tab));
   document.querySelectorAll('[data-photo-file]').forEach(inp => inp.addEventListener('change', e => {
     setPhotoFile(e.target.files[0]); e.target.value = '';
   }));
@@ -2735,7 +2819,12 @@ async function initPhoto() {
   if (img) { try { photoImg = await loadImage(img); } catch (e) { photoImg = null; } }
   let t = 'list';
   try { t = localStorage.getItem('desk-setup:tab') || 'list'; } catch (e) {}
-  setTab(t === 'photo' ? 'photo' : 'list');
+  setTab(t);
+}
+// スマホの「構成」では、下に合計とチェックの結果を出しておく
+function syncMiniBar() {
+  const bar = $('#miniBar'); if (!bar) return;
+  bar.hidden = !(tab === 'list' && state.items.length);
 }
 
 // ---- 記事用に書き出す ----
@@ -3279,7 +3368,7 @@ const armCap = a => /デュアル|ダブル|dual|2画面|２画面|double/i.test
 // 追加したアームを、まだアームのないモニターに付ける（デュアルなら2台）
 function autoMount(a) {
   if (a.cat !== 'arm') return;
-  const free = state.items.filter(m => m.cat === 'monitor' && !armOf(m) && !monLook(m).v);
+  const free = state.items.filter(m => m.cat === 'monitor' && !armOf(m));
   a.mount = free.slice(0, armCap(a)).map(m => m.id); a.px = null;
 }
 // アームの腕1本の長さ（cm）。下の腕と上の腕で、届く範囲はこの2倍まで
@@ -3719,8 +3808,11 @@ function body3d(it) {
     // 画面の高さは幅と縦横比から。残りがスタンドの高さ
     const r = it.spec.w / it.spec.h, ml = monLook(it);
     let pw = w, ph = Math.max(4, Math.min(h - .5, (w - 1.4) / r + 2.4)), dd = d;
-    const stand = h - ph;
-    if (ml.v) [pw, ph] = [ph, pw];   // 縦置き: 画面の幅と高さを入れ替える
+    let stand = h - ph;
+    if (ml.v) {
+      if (ml.a) stand = Math.max(1, stand + (ph - pw) / 2);   // アームは画面の真ん中を軸に回すので、真ん中の高さはそのまま
+      [pw, ph] = [ph, pw];   // 縦置き: 画面の幅と高さを入れ替える
+    }
     if (ml.a) dd = 8;                // アーム: 台座がないので、机の上は画面の厚みぶんだけ
     return { kind: 'monitor', w: pw, d: dd, h: stand + ph, ph, stand, pz: k === 'portable' || ml.a ? 0 : -dd * .2, curved: ml.c && !ml.v, arm: ml.a };
   }
@@ -3849,19 +3941,21 @@ function build3d(C, light) {
         const baseP = box(Math.min(26, b.w * .4), 1, b.d, body); baseP.position.set(0, .5, 0); g.add(baseP);
         const neck = box(4, standH + sh * .4, 2.5, body); neck.position.set(0, (standH + sh * .4) / 2, b.pz - 2.3); g.add(neck);   // 首は画面の裏
       }
+      // 画面は真ん中を原点にしたグループ（縦横を切り替えるときに、ここを回す）
+      const pg = new T.Group(); pg.position.set(0, cy, 0); g.add(pg); g.userData.pg = pg;
       if (b.curved) {
         // 曲面: 円柱の一部。中心を手前に置き、両端が手前に来るようにする
         const R = Math.max(b.w * 1.1, 80), a = b.w / (R + 1), a2 = Math.max(1, b.w - 1.6) / R;
         const shellM = body.clone(); shellM.side = T.DoubleSide;
         const shell = new T.Mesh(new T.CylinderGeometry(R + 1, R + 1, sh, 48, 1, true, Math.PI - a / 2, a), shellM);
-        shell.position.set(0, cy, b.pz + R); shell.castShadow = true; g.add(shell);
+        shell.position.set(0, 0, b.pz + R); shell.castShadow = true; pg.add(shell);
         const face = new T.Mesh(new T.CylinderGeometry(R, R, Math.max(1, sh - 1.6), 48, 1, true, Math.PI - a2 / 2, a2), new T.MeshBasicMaterial({ map: scr, side: T.DoubleSide }));
         face.scale.x = -1;   // 内側から見るので左右を戻す
-        face.position.set(0, cy, b.pz + R); g.add(face);
+        face.position.set(0, 0, b.pz + R); pg.add(face);
       } else {
-        const panel = box(b.w, sh, 2, body); panel.position.set(0, cy, b.pz); g.add(panel);
+        const panel = box(b.w, sh, 2, body); panel.position.set(0, 0, b.pz); pg.add(panel);
         const face = new T.Mesh(new T.PlaneGeometry(Math.max(1, b.w - 1.6), Math.max(1, sh - 1.6)), new T.MeshBasicMaterial({ map: scr }));
-        face.position.set(0, cy, b.pz + 1.02); g.add(face);
+        face.position.set(0, 0, b.pz + 1.02); pg.add(face);
       }
       if (b.arm && onDesk) { const pl = armPole(it, pos); anchors.set(it.id, new T.Vector3(pl.x - W / 2, base + 1, -D / 2 + 6)); }   // アームはケーブルを支柱に沿わせる
       else anchors.set(it.id, new T.Vector3(X, base + Math.max(2, standH), Z + b.pz - 2.5));   // ケーブルは裏から
@@ -3897,7 +3991,7 @@ function build3d(C, light) {
       if (mon) {
         const mb = body3d(mon), mp = pos.get(mon.id);
         mounted = true;
-        g.position.set(X, DH + mb.h + (b.kind === 'monbar' ? 1.5 : 0), mp.y - D / 2 + mb.pz);
+        g.position.set(X, DH + mb.h + (mb.arm ? mon.lift || 0 : 0) + (b.kind === 'monbar' ? 1.5 : 0), mp.y - D / 2 + mb.pz);
       }
       if (b.kind === 'monbar') {
         const bar = box(b.w, 2.5, 3, tone(it, dark)); bar.position.set(0, mounted ? 0 : 1.25, 0); g.add(bar);
@@ -4040,6 +4134,7 @@ async function open3D(wrap) {
     <div class="sel-bar" id="t3Sel" hidden>
       <span class="sel-name" id="t3SelName"></span>
       <span class="t3-group" role="group" aria-label="少しずつ動かす"><button type="button" class="t3-btn" data-nudge="l" aria-label="左へ">←</button><button type="button" class="t3-btn" data-nudge="u" aria-label="奥へ">↑</button><button type="button" class="t3-btn" data-nudge="d" aria-label="手前へ">↓</button><button type="button" class="t3-btn" data-nudge="r" aria-label="右へ">→</button></span>
+      <button type="button" class="t3-btn" id="t3Rot" hidden>縦にする</button>
       <span class="t3-group" id="t3Arm" role="group" aria-label="モニターアーム" hidden><button type="button" class="t3-btn" data-lift="1" aria-label="高さを上げる">▲</button><button type="button" class="t3-btn" data-lift="-1" aria-label="高さを下げる">▼</button><button type="button" class="t3-btn" data-demo>動かしてみる</button></span>
       <button type="button" class="t3-btn" id="t3SelX" aria-label="選択を外す">✕</button>
     </div>
@@ -4114,6 +4209,9 @@ async function open3D(wrap) {
     // アームのモニター: 届く範囲を見せ、高さと「動かしてみる」を出す
     const sr = selId && three.world.groups.get(selId), rig = sr && sr.rig;
     holder.querySelector('#t3Arm').hidden = !rig;
+    const selIt = selId && byId(selId), rb = holder.querySelector('#t3Rot');
+    rb.hidden = !(selIt && selIt.cat === 'monitor');
+    if (!rb.hidden) rb.textContent = monLook(selIt).v ? '横にする' : '縦にする';
     for (const o of three.world.groups.values()) if (o.rig && o.rig.reach) o.rig.reach.visible = !!rig && Math.abs(o.rig.px - rig.px) < .01;
   };
   // 位置を変えて、その場で見た目も動かす（ケーブルは離したあとにつくり直す）
@@ -4187,6 +4285,24 @@ async function open3D(wrap) {
     placeArm(demo.gr, demo.x + m(1), demo.y + m(2), demo.lift + m(3));
   };
   const stopDemo = () => { if (demo) { placeArm(demo.gr, demo.x, demo.y, demo.lift); demo = null; } };
+  // 縦・横の切り替え: つくり直したあと、画面を前の向きから回して見せる
+  let spin = null;
+  const rotateSel = () => {
+    const it = selId && byId(selId); if (!it || it.cat !== 'monitor') return;
+    stopDemo(); freezeAll();
+    const set = new Set(it.mon || ''), toV = !set.has('v');
+    if (toV) { set.add('v'); set.delete('c'); } else set.delete('v');
+    it.mon = ['v', 'c', 'a'].filter(x => set.has(x)).join('');
+    clearTimeout(rebuildT); rebuildT = 0; commit(); render();
+    const gr = three.world.groups.get(it.id), pg = gr && gr.g.userData.pg;
+    if (pg && !reduce) { spin = { pg, a0: toV ? -Math.PI / 2 : Math.PI / 2, t0: performance.now() }; pg.rotation.z = spin.a0; }
+  };
+  const stepSpin = now => {
+    if (!spin) return;
+    const k = Math.min(1, (now - spin.t0) / 700), e = 1 - Math.pow(1 - k, 3);
+    spin.pg.rotation.z = spin.a0 * (1 - e);
+    if (k >= 1) spin = null;
+  };
 
   // 1本指: タップで選ぶ／機材（または選んだ機材）をなぞって動かす／空いた所で回転
   // 2本指: 回転と拡大
@@ -4273,6 +4389,7 @@ async function open3D(wrap) {
     if (b.dataset.nudge) { stopDemo(); nudge(b.dataset.nudge); }
     else if (b.dataset.lift) { stopDemo(); liftBy(Number(b.dataset.lift)); }
     else if (b.hasAttribute('data-demo')) startDemo();
+    else if (b.id === 't3Rot') rotateSel();
     else if (b.id === 't3SelX') { stopDemo(); select(null); }
   });
   // キーボード: 矢印で選んだ機材を動かす、Esc で選択を外す
@@ -4297,7 +4414,7 @@ async function open3D(wrap) {
     }
     orbit.r += (rTarget - orbit.r) * Math.min(1, raw * 3);
     orbit.lift += (orbit.liftGoal - orbit.lift) * Math.min(1, raw * 4);
-    stepDemo(performance.now());
+    stepDemo(performance.now()); stepSpin(performance.now());
     place();
     for (const f of three.world.flows) {
       let u = (f.off + t * f.speed) % 1; if (f.rev) u = 1 - u;
