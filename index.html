@@ -386,6 +386,8 @@
   .desk-size { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--text-2); }
   .desk-size label { display: inline-flex; gap: 6px; align-items: center; }
   .desk-size .text { width: 72px; padding: 5px 8px; font-size: 13px; }
+  .desk-size #deskRoute { width: auto; }
+  .desk-size label[hidden] { display: none; }
   .desk-size[hidden] { display: none; }
   .desk-svg { display: block; width: 100%; height: auto; touch-action: none; user-select: none; -webkit-user-select: none; }
   .d2-svg { position: absolute; inset: 0; }
@@ -668,7 +670,8 @@
         <span class="desk-size" id="deskSize">天板
           <label><input class="text" type="number" id="deskW" min="40" max="400" step="5" inputmode="numeric" aria-label="天板の幅（cm）"><span>×</span></label>
           <label><input class="text" type="number" id="deskD" min="40" max="200" step="5" inputmode="numeric" aria-label="天板の奥行（cm）"><span>cm</span></label>
-          <label class="toggle"><input type="checkbox" id="deskLabels" checked> <span id="deskLabelsText">ケーブル名</span></label>
+          <label id="routeWrap">線<select class="text" id="deskRoute" aria-label="線の描き方"><option value="direct">まっすぐ</option><option value="tray">机の奥を通す</option></select></label>
+        <label class="toggle"><input type="checkbox" id="deskLabels" checked> <span id="deskLabelsText">ケーブル名</span></label>
           <button class="link-btn" type="button" id="deskAuto">自動で並べ直す</button>
         </span>
       </div>
@@ -3575,7 +3578,12 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
   const wired = items.filter(it => { const h = it.link && byId(it.link.h); return h && pos.has(h.id) && cableKind(it, h) !== 'wireless'; })
     .sort((a, b) => pos.get(a.link.h).x - pos.get(b.link.h).x || pos.get(a.id).x - pos.get(b.id).x);
   const lane = new Map(wired.map((it, i) => [it.id, i]));
-  const labels = [], showAll = $('#deskLabels').checked;
+  const labels = [], ends = [], badges = [], showAll = $('#deskLabels').checked, tray = d2.route === 'tray';
+  // 機材の外形（画面上）: 線の端を外形の上に置くため。モニターは画面の帯
+  const outline = it => { const p = pos.get(it.id), [w, h] = footprint(it); return it.cat === 'monitor' ? [X(p.x), Y(p.y + body3d(it).pz), w * S / 2, 1.1 * S] : [X(p.x), Y(p.y), w * S / 2, h * S / 2]; };
+  const exitPt = (it, dx, dy) => { const [cx, cy, hw, hh] = outline(it), L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, t = Math.min(Math.abs(ux) > 1e-6 ? hw / Math.abs(ux) : 1e9, Math.abs(uy) > 1e-6 ? hh / Math.abs(uy) : 1e9); return [cx + ux * t, cy + uy * t, ux, uy]; };
+  const perHost = new Map();
+  const PORT_SHORT = { tb: 'TB', usbc: 'USB-C', usba: 'USB-A', hdmi: 'HDMI', dp: 'DP', bt: 'BT' };
   const cables = [];
   for (const it of items) {
     const h = it.link && byId(it.link.h);
@@ -3584,14 +3592,24 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
     const kind = cableKind(it, h), wl = kind === 'wireless', on = relEdge(it);
     if (wl && !on) continue;   // ワイヤレスは、選んだときだけ点線で
     const warn = sevOf(it, checks), stroke = warn ? (warn.sev === 'error' ? C.crit : C.warn) : col[kind];
-    let d, lp;
-    if (wl || Math.hypot(a[0] - b[0], a[1] - b[1]) < 22 * S) { d = route([b, a]); lp = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; }
-    else {
+    let d, lp, ea, eb;
+    if (tray && !wl && Math.hypot(a[0] - b[0], a[1] - b[1]) >= 22 * S) {
+      // 机の奥を通す: 奥へ進んで、奥の端に沿って横へ、つなぎ先の真上から下ろす
       const cy = Y(1.4 + (lane.get(it.id) % 7) * .8);
-      d = route([b, [b[0], cy], [a[0], cy], a]); lp = [b[0], (b[1] + cy) / 2];
+      eb = exitPt(it, 0, cy - b[1]); ea = exitPt(h, 0, cy - a[1]);
+      d = route([[eb[0], eb[1]], [b[0], cy], [a[0], cy], [ea[0], ea[1]]]); lp = [b[0], (b[1] + cy) / 2];
+    } else {
+      // まっすぐ: 機材からつなぎ先へ、ゆるく曲げた線（同じつなぎ先の線は左右に振り分けて重ならないように）
+      const k = perHost.get(h.id) || 0; perHost.set(h.id, k + 1);
+      const len = Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, nx = -(a[1] - b[1]) / len, ny = (a[0] - b[0]) / len;
+      const bend = Math.min(60, len * .16) * (k % 2 ? -1 : 1) * (.7 + Math.floor(k / 2) * .45);
+      const c = [(a[0] + b[0]) / 2 + nx * bend, (a[1] + b[1]) / 2 + ny * bend];
+      eb = exitPt(it, c[0] - b[0], c[1] - b[1]); ea = exitPt(h, c[0] - a[0], c[1] - a[1]);
+      d = `M ${f1(eb[0])} ${f1(eb[1])} Q ${f1(c[0])} ${f1(c[1])} ${f1(ea[0])} ${f1(ea[1])}`;
+      lp = [(eb[0] + 2 * c[0] + ea[0]) / 4, (eb[1] + 2 * c[1] + ea[1]) / 4];
     }
     const dim = selIt && !on;
-    cables.push({ it, h, d, kind, stroke, dim, on, lp, wl });
+    cables.push({ it, h, d, kind, stroke, dim, on, lp, wl, ea, eb });
   }
   for (const c of cables.filter(x => x.dim).concat(cables.filter(x => !x.dim))) {   // つながりは上に
     const sw = (c.wl ? 2 : c.on ? 4 : 3) * KL;
@@ -3601,6 +3619,16 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
     if (!c.dim && (c.it.link.v === 'usbc' || c.it.link.v === 'tb') && c.it.spec.pdW && c.h.cat === 'computer') {
       const ps = powerSource(c.h);
       if (ps.kind === 'pd' && ps.item === c.it) out.push(`<path${forExport ? '' : ' class="flow rev"'} d="${c.d}" fill="none" stroke="${C.warn}" stroke-width="${f1(1.6 * KL)}" stroke-linecap="round"${forExport ? ' stroke-dasharray="3 11"' : ''}/>`);
+    }
+    // 両端の点と、つなぎ先の側のポート名（機材の上に重ねて、どこに刺さっているか分かるように）
+    if (!c.wl) {
+      const op = c.dim ? .25 : 1, r = 3.2 * KL;
+      ends.push(`<g opacity="${op}" pointer-events="none"><circle cx="${f1(c.eb[0])}" cy="${f1(c.eb[1])}" r="${f1(r)}" fill="${c.stroke}" stroke="${C.page}" stroke-width="${f1(1.2 * KL)}"/><circle cx="${f1(c.ea[0])}" cy="${f1(c.ea[1])}" r="${f1(r)}" fill="${c.stroke}" stroke="${C.page}" stroke-width="${f1(1.2 * KL)}"/></g>`);
+      const pt = PORT_SHORT[c.it.link.p];
+      if (pt && !c.dim && !(c.on || (showAll && !selIt))) {
+        const fs = 8.5 * KL, tw = textW(pt, fs) + 7 * KL, tx = c.ea[0] + c.ea[2] * (tw / 2 + 6 * KL), ty = c.ea[1] + c.ea[3] * (8 * KL + 4);
+        ends.push(`<g pointer-events="none"><rect x="${f1(tx - tw / 2)}" y="${f1(ty - 6.5 * KL)}" width="${f1(tw)}" height="${f1(13 * KL)}" rx="${f1(6.5 * KL)}" fill="${C.card}" stroke="${c.stroke}" stroke-width="1"/><text x="${f1(tx)}" y="${f1(ty + 3 * KL)}" text-anchor="middle" fill="${C.text}" font-family='${FM}' font-size="${f1(fs)}">${pt}</text></g>`);
+      }
     }
     if (c.on || (showAll && !selIt)) {
       const t = edgeLabel({ from: { it: c.h }, to: { it: c.it } }), tw = textW(t, 10.5) + 12;
@@ -3677,8 +3705,10 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
     // 番号
     const nb = nums.get(it.id);
     if (nb && !forExport) {
-      const r = 8.5 * K, mon = it.cat === 'monitor', cxN = useNum ? x + ww / 2 : x + r * .6, cyN = useNum ? (mon ? Y(p.y + body3d(it).pz) : y + hh / 2) : y + r * .6;
-      out.push(`<circle cx="${f1(cxN)}" cy="${f1(cyN)}" r="${f1(r)}" fill="${it.id === sel ? C.fg : C.text}" stroke="${C.page}" stroke-width="${f1(1.5 * KL)}"/><text x="${f1(cxN)}" y="${f1(cyN + r * .38)}" text-anchor="middle" fill="${C.page}" font-family='${FM}' font-size="${f1(r * 1.05)}" font-weight="700">${nb}</text>`);
+      const r = 8.5 * K, mon = it.cat === 'monitor', onMon = /^(monbar|webcam)$/.test(kindOf(it));
+      // モニターに載せたライト・カメラの番号は、モニターの番号と重ならないよう少し上に
+      const cxN = useNum ? x + ww / 2 + (onMon ? ww * .25 : 0) : x + r * .6, cyN = useNum ? (mon ? Y(p.y + body3d(it).pz) : onMon ? y - r * 1.3 : y + hh / 2) : y + r * .6;
+      badges.push(`<circle cx="${f1(cxN)}" cy="${f1(cyN)}" r="${f1(r)}" pointer-events="none" fill="${it.id === sel ? C.fg : C.text}" stroke="${C.page}" stroke-width="${f1(1.5 * KL)}"/><text x="${f1(cxN)}" y="${f1(cyN + r * .38)}" text-anchor="middle" fill="${C.page}" font-family='${FM}' font-size="${f1(r * 1.05)}" font-weight="700">${nb}</text>`);
     }
     if (useNum) { out.push('</g>'); continue; }
     // 名前: 中に収まれば中、収まらなければ下に。モニターに載せたライト・カメラは選んだときだけ
@@ -3693,6 +3723,8 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
     else { const tw = textW(nm, fsUse) + 8 * K; out.push(`<rect x="${f1(x + ww / 2 - tw / 2)}" y="${f1(ty - fsUse * .95)}" width="${f1(tw)}" height="${f1(fsUse * 1.3)}" rx="4" fill="${C.page}" opacity=".85"/><text x="${f1(x + ww / 2)}" y="${f1(ty)}" text-anchor="middle" fill="${C.text}" font-family='${FS}' font-size="${f1(fsUse)}" font-weight="500">${esc2(nm)}</text>`); }
     out.push('</g>');
   }
+  out.push(ends.join(''));
+  out.push(badges.join(''));   // 番号は線の端より上に
   out.push(labels.join(''));
   // 選んだ機材の枠（画面だけ）
   const sp = selIt && pos.get(sel);
@@ -3708,7 +3740,7 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
 }
 
 // 画面の配置図: 机のまわりだけを映し、拡大・移動できる（書き出しの画像は deskSVG の全体）
-const d2 = { view: null, sel: null, raf: 0 };
+const d2 = { view: null, sel: null, hover: null, raf: 0, route: (() => { try { return localStorage.getItem('desk-setup:route') || 'direct'; } catch (e) { return 'direct'; } })() };
 // 「名前・ケーブル名」の表示: 3D は名前を出す、机の配置はケーブル名を選んだ機材のぶんだけ（すべては切り替えで）
 const labelPref = { desk: false, '3d': true, tree: true };
 function renderDesk() {
@@ -3728,7 +3760,7 @@ function renderDesk() {
   const hw = host.clientWidth || 600, hh = host.clientHeight || 400, v = d2.view;
   const px = Math.min(hw / v.w, hh / v.h);
   d2.K = Math.max(1, Math.min(3.2, .95 / px));
-  const r = deskSVG(C, false, d2.sel, d2.K);
+  const r = deskSVG(C, false, d2.sel || d2.hover, d2.K);   // マウスを乗せた機材も、選んだときと同じようにつながりを出す
   const box = host.querySelector('.d2-svg');
   box.innerHTML = r.svg;
   const svg = box.querySelector('svg');
@@ -3851,8 +3883,12 @@ function buildDesk2d(wrap) {
     const on = itemAt(e.clientX, e.clientY, mouse ? 3 : 4), nearSel = !mouse && d2.sel && itemAt(e.clientX, e.clientY, 40, d2.sel);
     gest = { mode: 'pending', x0: e.clientX, y0: e.clientY, hit, target: on || nearSel || null, slop: mouse ? 3 : 8 };
   });
+  el.addEventListener('pointerleave', () => { if (d2.hover) { d2.hover = null; renderDeskSoon(); } });
   el.addEventListener('pointermove', e => {
-    if (!ptrs.has(e.pointerId)) return;
+    if (!ptrs.has(e.pointerId)) {
+      if (e.pointerType === 'mouse' && !d2.sel) { const id = itemAt(e.clientX, e.clientY, 6); if (id !== d2.hover) { d2.hover = id; renderDeskSoon(); } }
+      return;
+    }
     const [px, py] = ptrs.get(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]);
     if (!gest) return;
     if (gest.mode === 'two') {
@@ -3932,6 +3968,7 @@ function wireDesk() {
     if (w >= 40 && w <= 400 && d >= 40 && d <= 200) { state.desk = { w, d }; save(); d2.view = null; if (wireMode === '3d') openWiring(); else renderDesk(); }
   };
   $('#deskW').addEventListener('change', size); $('#deskD').addEventListener('change', size);
+  $('#deskRoute').addEventListener('change', e => { d2.route = e.target.value === 'tray' ? 'tray' : 'direct'; try { localStorage.setItem('desk-setup:route', d2.route); } catch (err) {} renderDesk(); });
   $('#deskLabels').addEventListener('change', () => {
     labelPref[wireMode] = $('#deskLabels').checked;
     if (wireMode === 'desk') renderDesk();
@@ -4619,6 +4656,7 @@ async function openWiring() {
   $('#deskSize').hidden = wireMode === 'tree';
   $('#deskAuto').hidden = wireMode !== 'desk';
   $('#deskLabelsText').textContent = wireMode === '3d' ? '名前' : 'ケーブル名をすべて';
+  $('#routeWrap').hidden = wireMode !== 'desk'; $('#deskRoute').value = d2.route;
   $('#deskLabels').checked = labelPref[wireMode] !== false;
   $('#deskW').value = state.desk.w; $('#deskD').value = state.desk.d;
   if (wireMode !== '3d') { stop3D(); if (wireMode === 'tree') setFull(false); }
