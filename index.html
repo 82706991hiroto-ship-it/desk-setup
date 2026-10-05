@@ -128,7 +128,8 @@
   .mini-bar { display: none; }
   @media (max-width: 900px) {
     .tab-narrow { display: inline-block; }
-    .tab { padding: 6px 13px; }
+    .tabs .tab { padding: 6px 11px; white-space: nowrap; flex: none; }
+    .tabs { max-width: 100%; overflow-x: auto; }
     #listView[data-sub="list"] > .side { display: none; }
     #listView[data-sub="check"] > .main { display: none; }
     #listView[data-sub="list"] > .main { padding-bottom: 64px; }
@@ -475,11 +476,16 @@
   .sel-name { font-size: 13px; font-weight: 600; min-width: 0; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sel-bar .t3-btn { box-shadow: none; }
   @media (max-width: 560px) { .sel-name { max-width: 88px; } .sel-bar .t3-btn { min-width: 40px; height: 40px; padding: 0; } }
-  dialog.dlg.full { width: 100vw; max-width: 100vw; height: 100vh; height: 100dvh; max-height: none; margin: 0; border: 0; border-radius: 0; overflow: hidden; }
-  dialog.dlg.full .dlg-body { height: 100%; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 8px; padding: 10px 12px max(10px, env(safe-area-inset-bottom)); }
-  dialog.dlg.full .wire-wrap { max-height: none; min-height: 0; }
-  dialog.dlg.full .three-wrap { height: 100%; min-height: 0; }
-  dialog.dlg.full #wireHint { display: none; }
+  /* 配線・3D のタブ。全画面ボタンで画面いっぱいに */
+  .wire-layout { padding-bottom: 40px; }
+  .wire-card { padding: 0; }
+  .wire-card .wire-wrap { max-height: none; }
+  .wire-card.full { position: fixed; inset: 0; z-index: 40; margin: 0; border: 0; border-radius: 0; overflow: hidden; box-shadow: none; }
+  .wire-card.full .dlg-body { height: 100%; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 8px; padding: max(10px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)); }
+  .wire-card.full .wire-wrap { max-height: none; min-height: 0; }
+  .wire-card.full .three-wrap { height: 100%; min-height: 0; }
+  .wire-card.full #wireHint, .wire-card.full .dlg-head { display: none; }
+  @media (max-width: 900px) { .wire-card .three-wrap { height: max(360px, calc(100dvh - 330px)); } }
   .three-load { position: absolute; inset: 0; display: grid; place-items: center; color: var(--text-2); font-size: 13px; }
   .wire-empty { padding: 40px 16px; text-align: center; color: var(--text-2); }
   .snaps { display: grid; gap: 6px; margin-top: 12px; }
@@ -571,8 +577,9 @@
 
   <nav class="tabs" role="tablist" aria-label="表示の切り替え">
     <button class="tab" role="tab" type="button" data-tab="list" aria-selected="true">構成</button>
+    <button class="tab" role="tab" type="button" data-tab="wire" aria-selected="false">配線・3D</button>
     <button class="tab tab-narrow" role="tab" type="button" data-tab="check" aria-selected="false">チェック<span class="tab-badge" id="checkBadge" hidden></span></button>
-    <button class="tab" role="tab" type="button" data-tab="share" aria-selected="false">共有・記録</button>
+    <button class="tab" role="tab" type="button" data-tab="share" aria-selected="false">共有</button>
     <button class="tab" role="tab" type="button" data-tab="photo" aria-selected="false">写真</button>
   </nav>
 
@@ -633,6 +640,26 @@
       </section>
 
     </aside>
+  </div>
+
+  <div class="wire-layout" id="wireView" hidden>
+  <section class="card wire-card" id="wireDlg" aria-labelledby="wireTitle">
+    <div class="dlg-body">
+      <div class="dlg-head"><h2 id="wireTitle">配線・3D</h2><span class="fine" style="margin:0">机の配置・3D・つながり図</span></div>
+      <div class="wire-bar">
+        <span class="seg" id="wireMode"><button type="button" data-v="desk">机の配置</button><button type="button" data-v="3d">3D</button><button type="button" data-v="tree">つながり図</button></span>
+        <span class="desk-size" id="deskSize">天板
+          <label><input class="text" type="number" id="deskW" min="40" max="400" step="5" inputmode="numeric" aria-label="天板の幅（cm）"><span>×</span></label>
+          <label><input class="text" type="number" id="deskD" min="40" max="200" step="5" inputmode="numeric" aria-label="天板の奥行（cm）"><span>cm</span></label>
+          <label class="toggle"><input type="checkbox" id="deskLabels" checked> <span id="deskLabelsText">ケーブル名</span></label>
+          <button class="link-btn" type="button" id="deskAuto">自動で並べ直す</button>
+        </span>
+      </div>
+      <div class="wire-wrap" id="wireWrap"></div>
+      <div class="ex-foot"><button class="btn primary" type="button" id="wireSave">画像を保存</button></div>
+      <p class="fine" style="margin:0" id="wireHint">機材はドラッグで好きな場所に動かせます。つながり方は、構成リストの「接続先」で変えられます。</p>
+    </div>
+  </section>
   </div>
 
   <div class="share-layout" id="shareView" hidden>
@@ -731,23 +758,6 @@
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <datalist id="shopList"><option value="Amazon"><option value="楽天市場"><option value="Yahoo!ショッピング"><option value="公式ストア"><option value="メルカリ"></datalist>
-<dialog class="dlg dlg-wide" id="wireDlg" aria-labelledby="wireTitle">
-  <div class="dlg-body">
-    <div class="dlg-head"><h2 id="wireTitle">配線図</h2><button class="x" type="button" data-close aria-label="閉じる">×</button></div>
-    <div class="wire-bar">
-      <span class="seg" id="wireMode"><button type="button" data-v="desk">机の配置</button><button type="button" data-v="3d">3D</button><button type="button" data-v="tree">つながり図</button></span>
-      <span class="desk-size" id="deskSize">天板
-        <label><input class="text" type="number" id="deskW" min="40" max="400" step="5" inputmode="numeric" aria-label="天板の幅（cm）"><span>×</span></label>
-        <label><input class="text" type="number" id="deskD" min="40" max="200" step="5" inputmode="numeric" aria-label="天板の奥行（cm）"><span>cm</span></label>
-        <label class="toggle"><input type="checkbox" id="deskLabels" checked> <span id="deskLabelsText">ケーブル名</span></label>
-        <button class="link-btn" type="button" id="deskAuto">自動で並べ直す</button>
-      </span>
-    </div>
-    <div class="wire-wrap" id="wireWrap"></div>
-    <div class="ex-foot"><button class="btn primary" type="button" id="wireSave">画像を保存</button></div>
-    <p class="fine" style="margin:0" id="wireHint">機材はドラッグで好きな場所に動かせます。つながり方は、構成リストの「接続先」で変えられます。</p>
-  </div>
-</dialog>
 <dialog class="dlg" id="rankDlg" aria-labelledby="rankDlgTitle">
   <div class="dlg-body">
     <div class="dlg-head"><h2 id="rankDlgTitle">人気の機材</h2><button class="x" type="button" data-close aria-label="閉じる">×</button></div>
@@ -2632,7 +2642,8 @@ function exportPhoto() {
 // タブ: 構成 / チェック（スマホだけ。PC では構成の横に出る）/ 共有・記録 / 写真
 const NARROW = matchMedia('(max-width: 900px)');
 function setTab(t) {
-  if (!['list', 'check', 'share', 'photo'].includes(t)) t = 'list';
+  if (!['list', 'wire', 'check', 'share', 'photo'].includes(t)) t = 'list';
+  const was = tab;
   if (t === 'check' && !NARROW.matches) t = 'list';
   tab = t;
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
@@ -2640,10 +2651,15 @@ function setTab(t) {
   lv.hidden = t !== 'list' && t !== 'check'; lv.dataset.sub = t === 'check' ? 'check' : 'list';
   $('#listActions').hidden = t !== 'list';
   $('#shareView').hidden = t !== 'share';
+  $('#wireView').hidden = t !== 'wire';
+  if (was === 'wire' && t !== 'wire') { stop3D(); setFull(false); }
+  if (t === 'wire' && (was !== 'wire' || !$('#wireWrap').childElementCount)) openWiring();
   $('#photoView').hidden = t !== 'photo';
   syncMiniBar();
-  if (t !== 'photo') window.scrollTo({ top: Math.min(window.scrollY, $('.tabs').offsetTop - 8) });
-  const shown = t === 'photo' ? $('#photoView') : t === 'share' ? $('#shareView') : $('#listView');
+  // スマホの配線・3D は、タブのすぐ下から画面いっぱいに使えるようにスクロールしておく
+  if (t === 'wire' && NARROW.matches) window.scrollTo({ top: $('.tabs').offsetTop - 8 });
+  else if (t !== 'photo') window.scrollTo({ top: Math.min(window.scrollY, $('.tabs').offsetTop - 8) });
+  const shown = t === 'photo' ? $('#photoView') : t === 'share' ? $('#shareView') : t === 'wire' ? $('#wireView') : $('#listView');
   shown.classList.remove('view-in'); shown.offsetWidth; shown.classList.add('view-in');
   try { localStorage.setItem('desk-setup:tab', t); } catch (e) {}
   if (t === 'photo') renderPhoto();
@@ -2653,7 +2669,7 @@ function wirePhoto() {
   document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
   $('#miniBar').addEventListener('click', e => {
     const b = e.target.closest('[data-go]'); if (b) setTab(b.dataset.go);
-    if (e.target.closest('[data-wire]')) $('#wireBtn').click();
+    if (e.target.closest('[data-wire]')) setTab('wire');
   });
   NARROW.addEventListener('change', () => setTab(tab));
   document.querySelectorAll('[data-photo-file]').forEach(inp => inp.addEventListener('change', e => {
@@ -3771,7 +3787,7 @@ function wireDesk() {
   const wrap = $('#wireWrap');
   // 配置図のキーボード操作: 矢印で選んだ機材を 1cm ずつ、Esc で選択を外す
   document.addEventListener('keydown', e => {
-    if (wireMode !== 'desk' || !d2.sel || !$('#wireDlg').open || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+    if (wireMode !== 'desk' || !d2.sel || tab !== 'wire' || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
     const dir = { ArrowLeft: 'l', ArrowUp: 'u', ArrowDown: 'd', ArrowRight: 'r' }[e.key];
     if (dir) { e.preventDefault(); d2.nudge(dir); }
     else if (e.key === 'Escape') { e.preventDefault(); d2.select(null); }
@@ -4449,9 +4465,10 @@ function roundRect(w, h, r) {
 // 3D を画面いっぱいに（スマホでは最初から）
 function setFull(on) {
   const d = $('#wireDlg'); d.classList.toggle('full', on);
+  document.documentElement.style.overflow = on ? 'hidden' : '';
   const b = $('#t3Full'); if (b) { b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? '全画面をやめる' : '全画面で表示'); }
 }
-function syncFull() { setFull((wireMode === '3d' || wireMode === 'desk') && matchMedia('(max-width: 560px)').matches); }
+function syncFull() { setFull($('#wireDlg').classList.contains('full') && wireMode !== 'tree'); }
 function stop3D() {
   if (!three) return;
   cancelAnimationFrame(three.raf); if (three.ro) three.ro.disconnect();
@@ -4467,9 +4484,8 @@ async function openWiring() {
   $('#deskAuto').hidden = wireMode !== 'desk';
   $('#deskLabelsText').textContent = wireMode === '3d' ? '名前' : 'ケーブル名';
   $('#deskW').value = state.desk.w; $('#deskD').value = state.desk.d;
-  if (wireMode !== '3d') { stop3D(); if (wireMode !== 'desk') setFull(false); }
+  if (wireMode !== '3d') { stop3D(); if (wireMode === 'tree') setFull(false); }
   if (wireMode === '3d') {
-    const d0 = $('#wireDlg'); if (!d0.open) d0.showModal();
     $('#wireHint').textContent = '機材はドラッグで動かせます。選ぶと矢印ボタン（キーボードの矢印キー）で 2cm ずつ動かせます。天板の外まで動かすと床に置きます。置き場所は「机の配置」と共通です。高さや形は目安です。';
     if (!deskItems().length) { wrap.innerHTML = '<div class="wire-empty">机に置く機材がまだありません。構成リストで機材を追加してください。</div>'; $('#wireSave').disabled = true; return; }
     $('#wireSave').disabled = !(await open3D(wrap));
@@ -4486,7 +4502,6 @@ async function openWiring() {
     $('#wireSave').disabled = !cv;
     $('#wireHint').textContent = '各機材の「接続先」から作っています。つながり方を変えたいときは、構成リストで接続先を選び直してください。';
   }
-  const d = $('#wireDlg'); if (!d.open) d.showModal();
 }
 
 // ---- 記録と比較 ----
@@ -4562,8 +4577,9 @@ function openDiff(fromId) {
 function wireSnaps() {
   loadSnaps(); renderSnaps();
   document.querySelectorAll('dialog [data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
-  document.querySelectorAll('#wireDlg, #diffDlg, #rankDlg').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
-  $('#wireBtn').addEventListener('click', openWiring);
+  document.querySelectorAll('#diffDlg, #rankDlg').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
+  $('#wireBtn').addEventListener('click', () => setTab('wire'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#wireDlg').classList.contains('full') && !e.defaultPrevented) setFull(false); });
   $('#rankBtn').addEventListener('click', openRanking);
   // 集計サーバーをつなぐまでは、利用者ランキングのタブを出さない
   if (!RANK_API) { $('#rankMode').style.display = 'none'; rankMode = 'creator'; $('#rankNote').textContent = 'デスク紹介のブログ・note・YouTube で、よく使われている機材です。'; }
@@ -4577,7 +4593,6 @@ function wireSnaps() {
     if (e.target.closest('[data-rank-send]')) { if (await sendRank()) { toast('ランキングに送りました'); await loadUserRank(); renderRanking(); } return; }
     if (e.target.closest('[data-rank-leave]')) { if (!confirm('ランキングへの参加をやめて、送った内容を消しますか？')) return; await leaveRank(); await loadUserRank(); renderRanking(); }
   });
-  $('#wireDlg').addEventListener('close', () => { stop3D(); setFull(false); });
   $('#wireSave').addEventListener('click', async () => {
     let cv = null;
     try { cv = wireMode === '3d' ? (three && three.renderer.domElement) : wireMode === 'desk' ? await deskPNG() : await drawWiring(); } catch (e) { toast('画像を作れませんでした'); return; }
@@ -4650,7 +4665,7 @@ function wireTheme() {
     applyTheme(root.dataset.theme === 'light' ? 'dark' : 'light', true);
     const b = $('#themeBtn'); b.innerHTML = b.innerHTML; // アイコンの回転をもう一度
     clearTimeout(root._tt); root._tt = setTimeout(() => root.classList.remove('theming'), 400);
-    if ($('#wireDlg').open) openWiring();
+    if (tab === 'wire') openWiring();
   });
   // 自分で選ぶまでは、端末の設定の変化についていく
   if (window.matchMedia) matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
