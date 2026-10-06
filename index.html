@@ -391,6 +391,10 @@
   .desk-size[hidden] { display: none; }
   .desk-svg { display: block; width: 100%; height: auto; touch-action: none; user-select: none; -webkit-user-select: none; }
   .d2-svg { position: absolute; inset: 0; }
+  .sel-bar.t3-selbar { position: static; margin: 8px auto 0; box-shadow: 0 2px 8px rgba(0,0,0,.12); gap: 6px; }
+  .sel-bar.t3-selbar .t3-btn { height: 38px; min-width: 38px; }
+  .wire-card.full .sel-bar.t3-selbar { position: absolute; bottom: max(14px, env(safe-area-inset-bottom)); z-index: 2; flex-wrap: nowrap; overflow-x: auto; max-width: calc(100% - 20px); justify-content: flex-start; }
+  .wire-card.full .sel-bar.t3-selbar > * { flex: none; }
   .sel-bar.d2-selbar { position: static; margin: 8px auto 0; box-shadow: 0 2px 8px rgba(0,0,0,.12); flex-wrap: nowrap; gap: 6px; }
   .sel-bar.d2-selbar .t3-btn { min-width: 38px; height: 38px; padding: 0; }
   .sel-bar.d2-selbar .sel-name { max-width: 90px; }
@@ -543,10 +547,10 @@
   .wire-card { padding: 0; }
   .wire-card .wire-wrap { max-height: none; }
   .wire-card.full { position: fixed; inset: 0; z-index: 40; margin: 0; border: 0; border-radius: 0; overflow: hidden; box-shadow: none; }
-  .wire-card.full .dlg-body { height: 100%; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 8px; padding: max(10px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)); }
+  .wire-card.full .dlg-body { height: 100%; grid-template-rows: auto minmax(0, 1fr); gap: 8px; padding: max(10px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)); }
   .wire-card.full .wire-wrap { max-height: none; min-height: 0; }
   .wire-card.full .three-wrap { height: 100%; min-height: 0; }
-  .wire-card.full #wireHint, .wire-card.full .dlg-head { display: none; }
+  .wire-card.full #wireHint, .wire-card.full .dlg-head, .wire-card.full .ex-foot { display: none; }   /* 画像の保存は全画面をやめてから */
   @media (max-width: 900px) { .wire-card .three-wrap { height: max(360px, calc(100dvh - 330px)); } }
   .three-load { position: absolute; inset: 0; display: grid; place-items: center; color: var(--text-2); font-size: 13px; }
   .wire-empty { padding: 40px 16px; text-align: center; color: var(--text-2); }
@@ -4469,7 +4473,7 @@ async function open3D(wrap) {
       <span class="t3-group"><button type="button" class="t3-btn" data-zoom="1" aria-label="縮小">−</button><button type="button" class="t3-btn" data-zoom="-1" aria-label="拡大">＋</button></span>
       <button type="button" class="t3-btn t3-full" id="t3Full" aria-pressed="false" aria-label="全画面で表示"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="i-in" d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/><path class="i-out" d="M6 2v4H2M14 6h-4V2M10 14v-4h4M2 10h4v4"/></svg></button>
     </div>
-    <div class="sel-bar" id="t3Sel" hidden>
+    <div class="sel-bar t3-selbar" id="t3Sel" hidden>
       <span class="sel-name" id="t3SelName"></span>
       <span class="t3-group" role="group" aria-label="少しずつ動かす"><button type="button" class="t3-btn" data-nudge="l" aria-label="左へ">←</button><button type="button" class="t3-btn" data-nudge="u" aria-label="奥へ">↑</button><button type="button" class="t3-btn" data-nudge="d" aria-label="手前へ">↓</button><button type="button" class="t3-btn" data-nudge="r" aria-label="右へ">→</button></span>
       <button type="button" class="t3-btn" id="t3Rot" hidden>縦にする</button>
@@ -4539,15 +4543,17 @@ async function open3D(wrap) {
 
   // 選択
   let selId = null;
+  // 選んだ機材の操作は、3D に重ねず下に出す（全画面のときだけ下に重ねる）
   const selBar = holder.querySelector('#t3Sel'), hint = holder.querySelector('#t3Hint');
+  holder.after(selBar);
   const select = id => {
     selId = id && byId(id) ? id : null;
-    selBar.hidden = !selId; hint.hidden = !!selId;
-    if (selId) holder.querySelector('#t3SelName').textContent = byId(selId).name;
+    selBar.hidden = !selId;
+    if (selId) selBar.querySelector('#t3SelName').textContent = byId(selId).name;
     // アームのモニター: 届く範囲を見せ、高さと「動かしてみる」を出す
     const sr = selId && three.world.groups.get(selId), rig = sr && sr.rig;
-    holder.querySelector('#t3Arm').hidden = !rig;
-    const selIt = selId && byId(selId), rb = holder.querySelector('#t3Rot');
+    selBar.querySelector('#t3Arm').hidden = !rig;
+    const selIt = selId && byId(selId), rb = selBar.querySelector('#t3Rot');
     rb.hidden = !(selIt && selIt.cat === 'monitor');
     if (!rb.hidden) rb.textContent = monLook(selIt).v ? '横にする' : '縦にする';
     for (const o of three.world.groups.values()) if (o.rig && o.rig.reach) o.rig.reach.visible = !!rig && Math.abs(o.rig.px - rig.px) < .01;
