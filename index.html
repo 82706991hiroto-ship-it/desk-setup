@@ -1900,7 +1900,8 @@ function undoOnce() {
   state = deserialize(JSON.parse(prev)); undo.last = prev; undo.at = 0;
   if (!shared) try { localStorage.setItem(STORE_KEY, prev); } catch (e) {}
   syncHead(); render(); syncUndo();
-  if (tab === 'wire') { if (wireMode === 'desk' && $('#wireWrap .d2-wrap')) renderDesk(); else openWiring(); }
+  // 配線・3D を開いていたら、その場で（視点や拡大はそのまま）描き直す
+  if (tab === 'wire') { if (wireMode === 'desk' && $('#wireWrap .d2-wrap')) renderDesk(); else if (wireMode === '3d' && three && three.refresh) three.refresh(); else openWiring(); }
   toast('一つ戻しました');
 }
 function save(typing) {
@@ -4632,6 +4633,14 @@ async function open3D(wrap) {
     if (three && three.renderer === renderer) { const old = three.world; three.world = makeWorld(); orbit.target = three.world.center; disposeScene(old.scene); if (selId) select(selId); }
   };
   three.cleanup.push(() => { if (rebuildT) { clearTimeout(rebuildT); save(); } });
+  // 「一つ戻す」など、外で変わった構成を、今の視点・選択のままつくり直す
+  three.refresh = () => {
+    clearTimeout(rebuildT); rebuildT = 0;
+    if (!three || three.renderer !== renderer) return;
+    const old = three.world; three.world = makeWorld(); orbit.target = three.world.center; disposeScene(old.scene);
+    demo = null; spin = null;
+    select(selId && byId(selId) ? selId : null);
+  };
   // 画面で見た向きの前後左右を、机の縦横どちらかに合わせて 2cm ずつ
   const nudge = dir => {
     const it = selId && byId(selId); if (!it) return;
