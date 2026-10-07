@@ -1879,16 +1879,18 @@ async function shareUrl() {
 }
 
 // ---- 一つ戻る ----
-// 保存のたびに前の状態を積む。続けて行った変更（文字の入力やドラッグ・矢印の連打）は 0.8 秒以内ならまとめて1回にする
-const undo = { stack: [], last: null, at: 0 };
+// 保存のたびに前の状態を積む（1操作 = 1回）。文字の入力だけは、続けて打った分をまとめて1回にする
+const undo = { stack: [], last: null, at: 0, typing: false };
 function resetUndo() { undo.stack = []; undo.last = JSON.stringify(serialize()); undo.at = 0; syncUndo(); }
 function syncUndo() { const b = $('#undoBtn'); if (b) b.disabled = !undo.stack.length; }
-function trackUndo() {
+function trackUndo(typing) {
   const cur = JSON.stringify(serialize());
   if (undo.last !== null && cur !== undo.last) {
     const now = Date.now();
-    if (now - undo.at > 800) { undo.stack.push(undo.last); if (undo.stack.length > 60) undo.stack.shift(); }
-    undo.at = now;
+    // 同じ入力欄に続けて打った分だけまとめる（欄が変わったら別の1回）
+    const a = typing && document.activeElement, key = a ? (a.id || (a.dataset.f || a.dataset.lf || '') + '@' + ((a.closest('.item') || {}).dataset || {}).id + (a.dataset.li || '')) : '';
+    if (!(key && undo.typing === key && now - undo.at < 1500)) { undo.stack.push(undo.last); if (undo.stack.length > 60) undo.stack.shift(); }
+    undo.at = now; undo.typing = key;
   }
   undo.last = cur; syncUndo();
 }
@@ -1901,15 +1903,15 @@ function undoOnce() {
   if (tab === 'wire') { if (wireMode === 'desk' && $('#wireWrap .d2-wrap')) renderDesk(); else openWiring(); }
   toast('一つ戻しました');
 }
-function save() {
-  trackUndo();
+function save(typing) {
+  trackUndo(typing);
   if (shared) return;
   try { localStorage.setItem(STORE_KEY, JSON.stringify(serialize())); } catch (e) {}
 }
 function loadLocal() {
   try { const raw = localStorage.getItem(STORE_KEY); return raw ? deserialize(JSON.parse(raw)) : emptyState(); } catch (e) { return emptyState(); }
 }
-function commit(full) { save(); if (full) render(); else renderSide(); }
+function commit(full) { save(!full); if (full) render(); else renderSide(); }   // full でない = 文字の入力中
 
 function toast(msg, ms = 2200) {
   const t = $('#toast'); t.textContent = msg; t.classList.add('show');
@@ -2099,13 +2101,13 @@ function wire() {
     const lf = e.target.dataset.lf;
     if (lf) {
       const it = byId(e.target.closest('.item').dataset.id); const l = it && it.links[Number(e.target.dataset.li)];
-      if (l) { l[lf] = e.target.value.slice(0, lf === 'u' ? 500 : 20); save(); }
+      if (l) { l[lf] = e.target.value.slice(0, lf === 'u' ? 500 : 20); save(true); }
       return;
     }
     const f = e.target.dataset.f, card = e.target.closest('.item'); if (!f || !card) return;
     const it = byId(card.dataset.id); if (!it) return;
     if (f === 'name') { it.name = e.target.value; commit(false); }
-    if (f === 'memo') { it.memo = e.target.value.slice(0, 80); save(); }
+    if (f === 'memo') { it.memo = e.target.value.slice(0, 80); save(true); }
     if (f === 'price') {
       const digits = e.target.value.replace(/[^\d]/g, '');
       it.price = digits ? Math.min(Number(digits), 1e9) : null;
@@ -4638,6 +4640,7 @@ async function open3D(wrap) {
     let [ax, az] = { u: [fx, fz], d: [-fx, -fz], r: [-fz, fx], l: [fz, -fx] }[dir];
     if (Math.abs(ax) >= Math.abs(az)) { ax = Math.sign(ax); az = 0; } else { az = Math.sign(az); ax = 0; }
     setPos(it, it.pos.x + ax * 2, it.pos.y + az * 2, onDeskNow(it) ? 14 : 0);
+    save();   // 1回押すごとに「一つ戻す」の1回分
     clearTimeout(rebuildT); rebuildT = setTimeout(() => { rebuildT = 0; commit(); }, 450);
   };
   // アームのモニターの高さ（3cm ずつ。画面の下が天板より下にならない）
@@ -4646,6 +4649,7 @@ async function open3D(wrap) {
     freezeAll();
     it.lift = Math.max(Math.max(-20, Math.ceil(1 - body3d(it).stand)), Math.min(30, (it.lift || 0) + d * 3));
     gr.rig.lift = it.lift; setPos(it, it.pos.x, it.pos.y);
+    save();
     clearTimeout(rebuildT); rebuildT = setTimeout(() => { rebuildT = 0; commit(); }, 450);
   };
   // 「動かしてみる」: 手前に引き出す → 左右に振る → 戻す、を数秒で見せる（保存はしない）
