@@ -3531,7 +3531,9 @@ function autoDesk(items, W, D, fixed) {
   spk.forEach((a, i) => { const hw = fp.get(a.id)[0] / 2 + 4; put(a, i ? (right + hw <= W - 6 ? right + hw : W + 10) : (left - hw >= 6 ? left - hw : -10), 14); });
   if (mons[0]) {
     const m0 = pos.get(mons[0].id), py = m0.y - fp.get(mons[0].id)[1] * .2;   // 画面の位置（スタンドの少し奥）
-    kind('webcam').forEach((c, i) => put(c, m0.x + 32 + i * 14, py));
+    // Web カメラはモニターの上の内側（端からはみ出して隣のモニターとの間に来ないように）
+    const mw0 = fp.get(mons[0].id)[0];
+    kind('webcam').forEach((c, i) => put(c, m0.x + Math.min(18, Math.max(0, mw0 / 2 - fp.get(c.id)[0] / 2 - 4)) - i * 14, py));
     kind('monbar').forEach(l => put(l, m0.x, py));
   }
   kind('lightbar').forEach((l, i) => put(l, i ? Math.min(W - 6, right + 6) : Math.max(6, left - 6), 8));
@@ -4277,7 +4279,8 @@ function build3d(C, light) {
     const g = new T.Group(); g.position.set(X, base, Z);
     let topY = b.h, mounted = false;
     // モニターライトやWebカメラを載せるモニター（近くにあるもの）
-    const monNear = () => items.find(m => m.cat === 'monitor' && pos.get(m.id) && Math.abs(pos.get(m.id).x - p.x) < 40 && Math.abs(pos.get(m.id).y - p.y) < 14);
+    const monNear = () => items.filter(m => m.cat === 'monitor' && pos.get(m.id) && Math.abs(pos.get(m.id).x - p.x) < 40 && Math.abs(pos.get(m.id).y - p.y) < 14)
+      .sort((a, b) => Math.abs(pos.get(a.id).x - p.x) - Math.abs(pos.get(b.id).x - p.x))[0];   // いちばん近いモニター
     if (b.kind === 'monitor') {
       const standH = b.stand, sh = b.ph, cy = standH + sh / 2, body = tone(it, dark);
       if (b.arm) {
@@ -4371,7 +4374,10 @@ function build3d(C, light) {
       if (mon) {
         const mb = body3d(mon), mp = pos.get(mon.id);
         mounted = true;
-        g.position.set(X, DH + mb.h + (mb.arm ? mon.lift || 0 : 0) + (b.kind === 'monbar' ? 1.5 : 0), mp.y - D / 2 + mb.pz);
+        // 載せる物はモニターの幅の中に収める（端からはみ出すと、隣のモニターにつながって見える）
+        const half = Math.max(0, (mb.w - b.w) / 2);
+        const Xm = Math.max(mp.x - W / 2 - half, Math.min(mp.x - W / 2 + half, X));
+        g.position.set(Xm, DH + mb.h + (mb.arm ? mon.lift || 0 : 0) + (b.kind === 'monbar' ? 1.5 : 0), mp.y - D / 2 + mb.pz);
       }
       if (b.kind === 'monbar') {
         const bar = box(b.w, 2.5, 3, tone(it, dark)); bar.position.set(0, mounted ? 0 : 1.25, 0); g.add(bar);
