@@ -616,6 +616,17 @@
   .check small { color: var(--text-2); font-size: 12px; display: block; overflow-wrap: anywhere; }
   .fine { font-size: 11px; color: var(--muted); margin: 12px 0 0; }
   .share-btns { display: grid; gap: 8px; }
+  .cables { display: grid; gap: 8px; }
+  .cable { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; display: grid; gap: 2px; background: var(--page); }
+  .cable-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .cable-top b { font-size: 13px; font-weight: 600; }
+  .cable-len { font: 700 13px var(--font-mono); white-space: nowrap; color: var(--accent-fg); }
+  .cable-spec { font-size: 12px; color: var(--text); }
+  .cable-who { font-size: 11px; color: var(--text-2); }
+  .cable-note { font-size: 11px; color: var(--warn); }
+  .cable-inc summary { font-size: 12px; }
+  .cable-inc .cable { margin-top: 6px; opacity: .85; }
+  #cableCard[hidden] { display: none; }
   .toast {
     position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0;
     background: var(--text); color: var(--card); padding: 10px 18px; border-radius: 18px; font-size: 13px;
@@ -712,6 +723,13 @@
         <div class="checks" id="checks"></div>
         <button class="btn block" id="wireBtn" type="button" style="margin-top:12px">配線図を見る</button>
         <p class="fine">スペックは代表的な値からの目安です。購入前にメーカーの公式情報を確認してください。</p>
+      </section>
+
+      <section class="card" aria-labelledby="cableTitle" id="cableCard" hidden>
+        <h2 id="cableTitle">必要なケーブル <small id="cableCount"></small></h2>
+        <div class="cables" id="cableList"></div>
+        <button class="btn block" id="cableCopy" type="button" style="margin-top:10px">買い物リストをコピー</button>
+        <p class="fine">長さは、配置図の位置から机の上をはわせた長さに余裕を足した目安です。規格は、いまのつなぎ方で一番良く映るためのものです。</p>
       </section>
 
     </aside>
@@ -1055,12 +1073,12 @@ const CATALOG = [
   { id: 'xiaomi-lightbar', cat: 'lighting', name: 'Xiaomi Mi モニター掛け式ライト', spec: { conn: ['usbc'], chargeW: 5 }, ref: 6280 },
   { id: 'key-light-air-mk2', cat: 'lighting', name: 'Elgato Key Light Air MK.2', spec: { conn: ['usbc'], chargeW: 30 }, ref: 26160, note: '仕様の一部は販売店の情報です' },
 
-  { id: 'ergotron-lx',  cat: 'arm', name: 'エルゴトロン LX モニターアーム',         spec: { conn: [] } },
-  { id: 'amazon-arm',   cat: 'arm', name: 'Amazonベーシック モニターアーム',        spec: { conn: [] } },
+  { id: 'ergotron-lx',  cat: 'arm', name: 'エルゴトロン LX モニターアーム',         spec: { conn: [], loadMin: 3.2, loadMax: 11.3, clampMin: 1, clampMax: 6, maxInch: 34 } },
+  { id: 'amazon-arm',   cat: 'arm', name: 'Amazonベーシック モニターアーム',        spec: { conn: [], loadMin: 3.2, loadMax: 11.3, clampMin: 1, clampMax: 6, maxInch: 32 }, note: '耐荷重・クランプの範囲は、同じ作りのエルゴトロン LX からの目安です' },
   { id: 'laptop-stand', cat: 'arm', name: 'ノートPCスタンド（縦置き）',             spec: { conn: [] } },
-  { id: 'cofo-arm-pro', cat: 'arm', name: 'COFO Monitor Arm Pro（シングル）', spec: { conn: [] }, ref: 21980 },
-  { id: 'flo-arm', cat: 'arm', name: 'Herman Miller Flo モニターアーム', spec: { conn: [] }, ref: 51700, note: '仕様の一部は販売店・レビューの情報です' },
-  { id: 'ergotron-hx', cat: 'arm', name: 'エルゴトロン HX デスクモニターアーム', spec: { conn: [] }, ref: 43205, note: '仕様の一部は販売店・レビューの情報です' },
+  { id: 'cofo-arm-pro', cat: 'arm', name: 'COFO Monitor Arm Pro（シングル）', spec: { conn: [], loadMin: 2, loadMax: 10, clampMin: 1, clampMax: 8, maxInch: 34 }, ref: 21980, note: '耐荷重・クランプの範囲は推定です。購入前に公式の仕様を確認してください' },
+  { id: 'flo-arm', cat: 'arm', name: 'Herman Miller Flo モニターアーム', spec: { conn: [], loadMin: 2.3, loadMax: 9, clampMin: 1, clampMax: 6, maxInch: 32 }, ref: 51700, note: '耐荷重・クランプの範囲は推定です。購入前に公式の仕様を確認してください' },
+  { id: 'ergotron-hx', cat: 'arm', name: 'エルゴトロン HX デスクモニターアーム', spec: { conn: [], loadMin: 9.1, loadMax: 19.1, clampMin: 1, clampMax: 6, maxInch: 49 }, ref: 43205, note: '仕様の一部は販売店・レビューの情報です' },
 
   { id: 'flexispot-e7', cat: 'furniture', name: 'FlexiSpot E7 電動昇降デスク',      spec: { conn: [] } },
   { id: 'aeron',        cat: 'furniture', name: 'Herman Miller アーロンチェア',     spec: { conn: [] } },
@@ -1113,7 +1131,7 @@ let state = emptyState();
 let shared = false;
 let activeCat = '';
 
-function emptyState() { return { title: '', handle: '', items: [], seq: 0, desk: { w: 140, d: 70 } }; }
+function emptyState() { return { title: '', handle: '', items: [], seq: 0, desk: { w: 140, d: 70, t: 2.5 } }; }   // t: 天板の厚み (cm)
 const byId = id => state.items.find(i => i.id === id);
 const clone = o => JSON.parse(JSON.stringify(o));
 
@@ -1346,6 +1364,78 @@ function powerSource(c) {
   return { kind: 'adapter' };
 }
 
+// ---- 必要なケーブル（買い物リスト） ----
+const CABLE_LEN = [0.5, 1, 1.5, 2, 3, 5];
+// 2つの機材の間のケーブルの長さの目安（m）: 机の上をはわせる（縦横の和）＋ 床・机の下へ下ろす分 ＋ モニターの差し込み口までの高さ ＋ 余裕
+function cableLen(a, b) {
+  const pos = deskPositions(), W = state.desk.w, D = state.desk.d, pa = pos.get(a.id), pb = pos.get(b.id);
+  if (!pa || !pb) return null;
+  const off = (it, p) => { const [w, d] = footprint(it); return p.x + w / 2 < 0 || p.x - w / 2 > W || p.y + d / 2 < 0 || p.y - d / 2 > D || underDesk(it); };
+  let cm = Math.abs(pa.x - pb.x) + Math.abs(pa.y - pb.y);
+  if (off(a, pa) !== off(b, pb)) cm += 75;   // 机の上と床・机の下の間
+  for (const it of [a, b]) if (it.cat === 'monitor') cm += monLook(it).a ? 45 : 12;   // 画面の裏の差し込み口まで（アームは腕に沿わせる）
+  const need = cm * 1.1 + 10;
+  return { cm: Math.round(cm), m: CABLE_LEN.find(l => l * 100 >= need) || Math.ceil(need / 100) };
+}
+// つなぎ方 → 買うケーブルの名前と規格。bundled は付属品で足りることが多いもの
+function cableFor(it, h) {
+  const v = it.link.v, mon = it.cat === 'monitor';
+  if (v === 'bt' || v === 'receiver') return null;
+  if (mon) {
+    const sig = monitorSignal(it), need = needGbps(it.spec), s = it.spec;
+    const dpVer = sig === 'dp2.1' && need > LINK_CAP['dp1.4'] * (s.dsc ? 3 : 1) ? 'DP 2.1（DP80 / UHBR20）' : 'DP 1.4（8K 対応表記）';
+    const hdmiVer = sig === 'hdmi2.1' && need > LINK_CAP['hdmi2.0'] ? 'Ultra High Speed（HDMI 2.1・48Gbps）' : 'Premium High Speed（HDMI 2.0・18Gbps）';
+    const pd = s.pdW > 0 ? `・${s.pdW > 60 ? '100W（5A）' : '60W'} 給電対応` : '';
+    if (v === 'tb') return { name: 'Thunderbolt 4 / 5 ケーブル', spec: `40Gbps 以上${pd}`, note: '1m を超えると、長さに対応したアクティブケーブルが必要になることがあります' };
+    if (v === 'usbc') return { name: 'USB-C ケーブル（映像対応）', spec: `USB 3.2 Gen 2 以上 または USB4 / Thunderbolt${pd}`, note: '充電専用の USB-C ケーブルでは映りません' };
+    if (v === 'c2dp') return { name: 'USB-C → DisplayPort ケーブル', spec: dpVer };
+    if (v === 'c2hdmi') return { name: 'USB-C → HDMI 変換ケーブル', spec: sig === 'hdmi2.1' || need > LINK_CAP['hdmi2.0'] ? 'HDMI 2.1 対応（4K 120Hz 以上）' : '4K 60Hz 対応（HDMI 2.0）' };
+    if (v === 'hdmi') return { name: 'HDMI ケーブル', spec: hdmiVer };
+    if (v === 'dp') return { name: 'DisplayPort ケーブル', spec: dpVer };
+  }
+  if (it.cat === 'dock') return { name: it.spec.up === 'tb' ? 'Thunderbolt 4 / 5 ケーブル' : 'USB-C ケーブル（映像・データ対応）', spec: it.spec.up === 'tb' ? '40Gbps 以上' : 'USB 3.2 Gen 2 以上', bundled: true, note: 'ドックに付属していることが多いです' };
+  const toCharger = h.cat === 'charger';
+  const ends = v === 'usba' ? 'USB-A' : h.spec.ports && (h.spec.ports.usbc || h.spec.ports.tb) && it.link.p !== 'usba' ? 'USB-C' : 'USB-A';
+  return { name: `${ends} ケーブル（${toCharger ? '充電' : 'データ'}用）`, spec: toCharger ? '機材の端子に合うもの' : 'USB 2.0 以上', bundled: true, note: '機材に付属していることが多いです' };
+}
+function cableList() {
+  const rows = [];
+  for (const it of state.items) {
+    const h = it.link && byId(it.link.h); if (!h) continue;
+    const c = cableFor(it, h); if (!c) continue;
+    rows.push({ ...c, len: cableLen(it, h), who: `${it.name} ↔ ${h.name}` });
+  }
+  // PC の充電（充電器から）
+  for (const pc of state.items.filter(i => i.cat === 'computer' && i.spec.chargeW)) {
+    const ps = powerSource(pc);
+    if (ps.kind === 'charger') rows.push({ name: 'USB-C ケーブル（充電用）', spec: pc.spec.chargeW > 100 ? '240W（EPR）対応' : pc.spec.chargeW > 60 ? '100W（5A）対応' : '60W 対応', len: cableLen(pc, ps.item), who: `${pc.name} ↔ ${ps.item.name}`, note: '60W を超える充電には、100W（5A）表記のケーブルが必要です' });
+  }
+  // 同じケーブル・同じ長さはまとめる
+  const map = new Map();
+  for (const r of rows) {
+    const k = [r.name, r.spec, r.len && r.len.m, !!r.bundled].join('|');
+    if (!map.has(k)) map.set(k, { ...r, n: 0, whos: [] });
+    const g = map.get(k); g.n++; g.whos.push(r.who + (r.len ? `（約 ${(r.len.cm / 100).toFixed(1)}m）` : ''));
+  }
+  return [...map.values()];
+}
+function renderCables() {
+  const card = $('#cableCard'); if (!card) return;
+  const list = cableList(), buy = list.filter(c => !c.bundled), inc = list.filter(c => c.bundled);
+  card.hidden = !list.length;
+  if (!list.length) return;
+  $('#cableCount').textContent = `買うもの ${buy.reduce((s, c) => s + c.n, 0)}本`;
+  const row = c => `<div class="cable"><div class="cable-top"><b>${esc(c.name)}</b><span class="cable-len">${c.len ? c.len.m + 'm' : '—'} × ${c.n}</span></div>
+    <div class="cable-spec">${esc(c.spec)}</div><div class="cable-who">${c.whos.map(esc).join('<br>')}</div>${c.note ? `<div class="cable-note">${esc(c.note)}</div>` : ''}</div>`;
+  $('#cableList').innerHTML = (buy.length ? buy.map(row).join('') : '<p class="hint">買い足す必要があるケーブルはありません。</p>')
+    + (inc.length ? `<details class="more cable-inc"><summary>付属のケーブルで足りることが多いもの（${inc.reduce((s, c) => s + c.n, 0)}本）</summary>${inc.map(row).join('')}</details>` : '');
+}
+function cableText() {
+  const list = cableList(), buy = list.filter(c => !c.bundled), inc = list.filter(c => c.bundled);
+  const line = c => `・${c.name}［${c.spec}］ ${c.len ? c.len.m + 'm' : ''} × ${c.n}\n  （${c.whos.join(' / ')}）`;
+  return `【必要なケーブル】${state.title ? ' ' + state.title : ''}\n` + (buy.length ? buy.map(line).join('\n') : '（なし）') + (inc.length ? `\n\n【付属品で足りることが多いもの】\n` + inc.map(line).join('\n') : '') + '\n\n長さは配置からの目安です。';
+}
+
 // ---- 接続チェック ----
 function runChecks() {
   const out = [];
@@ -1465,6 +1555,21 @@ function runChecks() {
       push('warn', `${ch.name}: 同時に充電すると出力が足りません`, `合計 約${draw}W / 最大 ${ch.spec.totalW}W。同時に充電すると1台あたりの出力が下がります。`, [ch.id, ...all.map(a => a.id)]);
     } else {
       push('ok', `${ch.name}: 合計 約${draw}W / ${ch.spec.totalW}W`, `${all.length}台を充電`, [ch.id]);
+    }
+  }
+
+  // モニターアーム: 重さ・画面サイズ・VESA・天板の厚み
+  const tCm = (state.desk && state.desk.t) || 2.5;
+  for (const a of state.items.filter(i => i.cat === 'arm' && (i.mount || []).length)) {
+    const as = armSpec(a), mons = a.mount.map(byId).filter(Boolean), est = as.est ? '（仕様は一般的な目安。アームの「スペックを編集」で実物の値に）' : '';
+    if (tCm < as.clampMin || tCm > as.clampMax) push('error', `${a.name}: 天板の厚み ${tCm}cm はクランプで挟めません`, `挟める厚みは ${as.clampMin}〜${as.clampMax}cm です。グロメット（穴あけ）取り付けや補強プレートを検討してください。${est}`, [a.id]);
+    for (const m of mons) {
+      const w = monKg(m), inch = monInch(m), wTxt = `${w.est ? '約' : ''}${w.kg}kg`, wNote = w.est ? `重さは ${inch}インチからの目安です。モニターの「スペックを編集」で、スタンドなしの重さを入れると正確になります。` : '';
+      if (noVesa(m)) { push('error', `${m.name}: VESA マウントに対応していません`, `アームに付けるには VESA マウント対応のモデルかアダプタが必要です。`, [m.id, a.id]); continue; }
+      if (w.kg > as.loadMax) push('error', `${a.name}: ${m.name}（${wTxt}）は重すぎます`, `支えられるのは ${as.loadMin}〜${as.loadMax}kg です。画面が下がってきます。${wNote}${est}`, [m.id, a.id]);
+      else if (w.kg < as.loadMin) push('warn', `${a.name}: ${m.name}（${wTxt}）は軽すぎます`, `${as.loadMin}kg 未満だと、ばねが強すぎて画面が上がってきます。${wNote}${est}`, [m.id, a.id]);
+      else if (inch > as.maxInch) push('warn', `${a.name}: ${inch}インチは対応サイズ（${as.maxInch}インチまで）を超えています`, `重さは範囲内ですが、画面が大きいと腕に当たったり、傾きやすくなります。${est}`, [m.id, a.id]);
+      else push('ok', `${a.name}: ${m.name}（${wTxt}）を支えられます`, `耐荷重 ${as.loadMin}〜${as.loadMax}kg ・ 天板 ${tCm}cm（${as.clampMin}〜${as.clampMax}cm）。${wNote}${est}`, [m.id, a.id]);
     }
   }
 
@@ -1655,6 +1760,8 @@ function itemHTML(it, checks) {
       <label>USB-C 映像入力${sel('in.usbc', s.in.usbc, [['', 'なし'], ['dp1.4', 'あり']])}</label>
       <label>USB-C 給電 (W)<input class="text" data-f="pdW" inputmode="numeric" value="${s.pdW || 0}"></label>
       <label style="align-self:end"><span class="toggle"><input type="checkbox" data-f="dsc"${s.dsc ? ' checked' : ''}> DSC 対応</span></label>
+      <label>重さ スタンドなし (kg)<input class="text" data-f="kg" inputmode="decimal" value="${s.kg || ''}" placeholder="約${monKg(it).kg}（目安）"></label>
+      <label style="align-self:end"><span class="toggle"><input type="checkbox" data-f="novesa"${s.novesa ? ' checked' : ''}> VESA 非対応</span></label>
     </div></details>`);
   }
   if (listCompact) parts.push(`<button class="link-btn fold-btn" type="button" data-fold="${it.id}">たたむ ▴</button>`);
@@ -1680,6 +1787,13 @@ function specEditor(it) {
   if (it.cat === 'dock') return sel('up', 'PC とのつなぎ方', s.up, [['tb', 'Thunderbolt'], ['usbc', 'USB-C']]) + num('pdW', 'PC への給電 (W)', s.pdW || 0)
     + ports(['tb', 'usbc', 'usba', 'hdmi', 'dp']) + outs();
   if (it.cat === 'charger') return ports(['usbc', 'usba']) + num('totalW', '合計の出力 (W)', s.totalW || 0) + num('portW', '1ポートの最大 (W)', s.portW || 0);
+  if (it.cat === 'arm') {
+    const a = armSpec(it);
+    return num('loadMin', '耐荷重の下限 (kg)', a.loadMin, .1) + num('loadMax', '耐荷重の上限 (kg)', a.loadMax, .1)
+      + num('clampMin', 'クランプ: 天板の厚み 最小 (cm)', a.clampMin, .1) + num('clampMax', 'クランプ: 天板の厚み 最大 (cm)', a.clampMax, .1)
+      + num('maxInch', '画面サイズの上限 (インチ)', a.maxInch) + num('deskT', 'あなたの天板の厚み (cm)', (state.desk && state.desk.t) || 2.5, .1)
+      + `<span class="hint full">アームのパッケージや公式サイトの「対応重量」「取り付け可能な天板の厚さ」を入れてください。2台用は1本の腕あたりの重さです。</span>`;
+  }
   if (DESK_SKIP.has(it.cat)) return '';
   const conn = s.conn || [];
   return `<div class="full conn-row">${Object.entries(CONN_LABEL).map(([k, l]) => `<span class="toggle"><input type="checkbox" data-f="conn.${k}"${conn.includes(k) ? ' checked' : ''}> ${l}</span>`).join('')}</div>`
@@ -1747,6 +1861,7 @@ function renderSide() {
   if (cnt('ok')) pills.push(`<span class="pill ok">OK ${cnt('ok')}</span>`);
   if (planned(state.items).length) pills.push(`<span class="pill">買う予定込み</span>`);
   $('#summary').innerHTML = pills.join('');
+  renderCables();
   $('#miniTotal').textContent = yen(total);
   $('#miniPills').innerHTML = pills[0] && !pills[0].includes('買う予定') ? pills[0] : '';
   const bad = cnt('error') || cnt('warn'), badge = $('#checkBadge');
@@ -1794,6 +1909,7 @@ function serialize(forShare = false) {
   return {
     v: 1, t: state.title || undefined, u: state.handle || undefined,
     dk: state.desk && (state.desk.w !== 140 || state.desk.d !== 70) ? [state.desk.w, state.desk.d] : undefined,
+    dt: state.desk && state.desk.t && state.desk.t !== 2.5 ? state.desk.t : undefined,
     i: state.items.map(it => {
       const base = it.cid && catalogById(it.cid);
       const o = { id: it.id };
@@ -1826,7 +1942,8 @@ function deserialize(o) {
   const st = emptyState();
   st.title = String(o.t || '').slice(0, 40);
   st.handle = String(o.u || '').slice(0, 30);
-  if (Array.isArray(o.dk) && o.dk.every(n => Number.isFinite(n) && n >= 40 && n <= 400)) st.desk = { w: o.dk[0], d: o.dk[1] };
+  if (Array.isArray(o.dk) && o.dk.every(n => Number.isFinite(n) && n >= 40 && n <= 400)) st.desk = { w: o.dk[0], d: o.dk[1], t: 2.5 };
+  if (Number.isFinite(o.dt) && o.dt > 0 && o.dt <= 15) st.desk.t = o.dt;
   let max = -1;
   for (const x of Array.isArray(o.i) ? o.i : []) {
     const base = x.c && catalogById(x.c);
@@ -2178,6 +2295,10 @@ function wire() {
     if (f === 'up') s.up = v === 'usbc' ? 'usbc' : 'tb';
     if (f === 'totalW') s.totalW = int(0, 500);
     if (f === 'portW') s.portW = int(0, 300);
+    if (['loadMin', 'loadMax', 'clampMin', 'clampMax', 'maxInch'].includes(f)) { const n = parseFloat(v); s[f] = n > 0 && n <= 200 ? Math.round(n * 10) / 10 : 0; it._open = true; }
+    if (f === 'deskT') { const n = parseFloat(v); if (n > 0 && n <= 15) state.desk.t = Math.round(n * 10) / 10; it._open = true; }
+    if (f === 'kg') { const n = parseFloat(v); s.kg = n > 0 && n <= 60 ? Math.round(n * 10) / 10 : 0; it._open = true; }
+    if (f === 'novesa') { s.novesa = e.target.checked; it._open = true; }
     if (f.startsWith('conn.')) {
       const k = f.slice(5), on = e.target.checked, cur = new Set(s.conn || []);
       if (on) cur.add(k); else cur.delete(k);
@@ -3492,6 +3613,17 @@ function autoMount(a) {
   const free = state.items.filter(m => m.cat === 'monitor' && !armOf(m));
   a.mount = free.slice(0, armCap(a)).map(m => m.id); a.px = null;
 }
+// アームの仕様（耐荷重 kg・クランプで挟める天板の厚み cm・画面サイズの上限 inch）。入っていなければ一般的な目安
+const ARM_DEFAULT = { loadMin: 2, loadMax: 9, clampMin: 1, clampMax: 8.5, maxInch: 32 };
+function armSpec(a) { const s = a.spec || {}, o = {}; for (const k in ARM_DEFAULT) o[k] = s[k] > 0 ? s[k] : ARM_DEFAULT[k]; o.est = !(s.loadMax > 0); return o; }
+// モニターの重さ（スタンドなし kg）。入っていなければ画面の面積からの目安（ウルトラワイドは対角のわりに面積が小さい）
+function monInch(m) { const n = inchOf(m.name); if (n) return n; const b = body3d(m), w = Math.max(b.w, b.ph), h = Math.min(b.w, b.ph); return Math.round(Math.hypot(w - 1.4, h - 2.4) / 2.54); }
+function monKg(m) {
+  if (m.spec.kg > 0) return { kg: m.spec.kg, est: false };
+  const i = monInch(m), r = m.spec.w / m.spec.h || 16 / 9, area = i * i * r / (1 + r * r);   // 画面の面積（平方インチ）
+  return { kg: Math.round(0.0145 * area * 10) / 10, est: true };
+}
+const noVesa = m => /Studio Display|Pro Display XDR/i.test(m.name) && !/VESA/i.test(m.name) || m.spec.novesa;
 // アームの腕1本の長さ（cm）。下の腕と上の腕で、届く範囲はこの2倍まで
 const armSeg = m => { const a = armOf(m); return a && /LX|HX/i.test(a.name) ? 30 : 25; };
 // アームの支柱の位置（cm）。2台を支えるアームは、2台の間に1本
@@ -4963,6 +5095,10 @@ function wireSnaps() {
   document.querySelectorAll('dialog [data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
   document.querySelectorAll('#diffDlg, #rankDlg').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
   $('#wireBtn').addEventListener('click', () => setTab('wire'));
+  $('#cableCopy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(cableText()); toast('買い物リストをコピーしました'); }
+    catch (e) { toast('コピーできませんでした'); }
+  });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#wireDlg').classList.contains('full') && !e.defaultPrevented) setFull(false); });
   $('#rankBtn').addEventListener('click', openRanking);
   // 集計サーバーをつなぐまでは、利用者ランキングのタブを出さない
