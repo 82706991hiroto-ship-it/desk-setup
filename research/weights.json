@@ -1,0 +1,295 @@
+{
+  "checked": "2026-10-08",
+  "monitors": {
+    "studio-display": {
+      "kg_panel": 5.5,
+      "kg_with_stand": 6.3,
+      "vesa": "adapter-model",
+      "src": [
+        "https://support.apple.com/kb/SP864"
+      ],
+      "note": "Apple サポートの 2022 年版仕様表。kg_panel=VESAマウントアダプタ版(スタンドなし別モデル)の本体重量 5.5kg。kg_with_stand=傾き調整スタンド版 6.3kg(傾き・高さ調整スタンド版は 7.7kg)。VESA は 100x100mm 対応の「VESA マウントアダプタ」版を選ぶ別構成(購入時に選択)。"
+    },
+    "studio-display-tb5": {
+      "kg_panel": 5.4,
+      "kg_with_stand": 6.3,
+      "vesa": "adapter-model",
+      "src": [
+        "https://www.apple.com/jp/studio-display/specs/",
+        "https://www.apple.com/jo/studio-display/specs/"
+      ],
+      "note": "2026 年の Thunderbolt 5 版(日本の Apple 公式仕様ページ、Thunderbolt 5 ポート記載)。kg_panel=VESA マウントアダプタ版 5.4kg。kg_with_stand=傾き調整スタンド版 6.3kg(傾き・高さ調整スタンド版は 7.6kg)。VESA は 100x100mm 対応のアダプタ版(別構成)。初代(2022)は 5.5/6.3/7.7kg で数値が違う。"
+    },
+    "studio-display-xdr": {
+      "kg_panel": 6.3,
+      "kg_with_stand": 8.5,
+      "vesa": "adapter-model",
+      "src": [
+        "https://www.apple.com/jp/studio-display-xdr/specs/",
+        "https://www.apple.com/in/studio-display-xdr/specs/"
+      ],
+      "note": "Apple 公式に存在(Pro Display XDR とは別製品)。日本の公式: 傾き・高さ調整スタンド搭載 8.5kg、VESA マウントアダプタ搭載 6.3kg。kg_panel=VESA アダプタ版 6.3kg。インド公式ページは 8.48kg / 6.30kg(同じ値の小数表記)。VESA は 100x100mm 対応のアダプタ版(別構成)。"
+    },
+    "u2723qe": {
+      "kg_panel": 4.48,
+      "kg_with_stand": 6.64,
+      "vesa": "100x100",
+      "src": [
+        "https://dl.dell.com/content/manual12109242-dell-u2723qe-monitor-user-s-guide.pdf?language=en-us"
+      ],
+      "note": "Dell 公式ユーザーズガイド(U2723QX/U2723QE/U3223QE 共通、英語・グローバル版)。Weight without stand assembly 4.48kg、with stand and cables 6.64kg。VESA 100x100(VESAカバーの裏)。日本語版ガイドは未確認。"
+    },
+    "u2724de": {
+      "kg_panel": 5.23,
+      "kg_with_stand": 7.37,
+      "vesa": "100x100",
+      "src": [
+        "https://dl.dell.com/content/manual17050394-dell-ultrasharp-27-thunderbolt-hub-monitor-u2724de-user-s-guide.pdf?language=en-us"
+      ],
+      "note": "Dell 公式ユーザーズガイド(英語・グローバル版)。Weight without stand assembly 5.23kg、with stand and cables 7.37kg。VESA 100x100。"
+    },
+    "u2725qe": {
+      "kg_panel": 5.22,
+      "kg_with_stand": 7.06,
+      "vesa": "100x100",
+      "src": [
+        "https://dl.dell.com/content/manual8442610-dell-ultrasharp-32-4k-thunderbolt-hub-monitor-u3225qe-user-s-guide.pdf?language=en-us"
+      ],
+      "note": "Dell 公式ユーザーズガイド(U2725QE/U3225QE 共通、英語・グローバル版)。27インチ列: without stand assembly 5.22kg、with stand and cables 7.06kg。VESA 100x100。"
+    },
+    "u3225qe": {
+      "kg_panel": 6.52,
+      "kg_with_stand": 9.34,
+      "vesa": "100x100",
+      "src": [
+        "https://dl.dell.com/content/manual8442610-dell-ultrasharp-32-4k-thunderbolt-hub-monitor-u3225qe-user-s-guide.pdf?language=en-us"
+      ],
+      "note": "同上ガイドの32インチ列: without stand assembly 6.52kg、with stand and cables 9.34kg。VESA 100x100。"
+    },
+    "u3425we": {
+      "kg_panel": 7.78,
+      "kg_with_stand": 10.81,
+      "vesa": "100x100",
+      "src": [
+        "https://inquirecontent2.ingrammicro.com/User-Manual/1081754978.pdf"
+      ],
+      "note": "Dell 公式ガイド PDF(Rev. A00、Ingram Micro の配布サーバー経由で取得。dl.dell.com の同ファイルは URL 未特定)。Weight without stand assembly 7.78kg、with stand and cables 10.81kg。VESA 100x100(VESAカバーの裏)。"
+    },
+    "u3223qe": {
+      "kg_panel": 5.65,
+      "kg_with_stand": 10.36,
+      "vesa": "100x100",
+      "src": [
+        "https://dl.dell.com/content/manual12109242-dell-u2723qe-monitor-user-s-guide.pdf?language=en-us"
+      ],
+      "note": "U2723QE と共通ガイドの32インチ列: without stand assembly 5.65kg、with stand and cables 10.36kg。VESA 100x100。列の対応(27インチ=左、32インチ=右)は 27インチ値が Dell 公式販売ページの値と一致することで確認。"
+    },
+    "u4021qw": {
+      "kg_panel": 9.5,
+      "kg_with_stand": 13.8,
+      "vesa": "100x100",
+      "src": [
+        "https://dl.dell.com/manuals/all-products/esuprt_electronics_accessories/esuprt_electronics_accessories_monitors/dell-u4021qw-monitor_User's-Guide_en-us.pdf"
+      ],
+      "note": "Dell 公式ユーザーズガイド(Rev. A00, 英語)。Weight without stand assembly 9.5kg、with stand and cables 13.8kg。VESA 100x100。"
+    },
+    "27up850n": {
+      "kg_panel": 4.1,
+      "kg_with_stand": 5.9,
+      "vesa": "100x100",
+      "src": [
+        "https://www.lg.com/ca_en/monitors/uhd-4k-5k/27up850n-w/"
+      ],
+      "note": "LG カナダ公式仕様: Weight without Stand 4.1kg / with Stand 5.9kg / Wall Mountable 100x100。LG 日本の仕様ページは未確認(地域で型番末尾が違う場合あり)。"
+    },
+    "27up850k": {
+      "kg_panel": 4.1,
+      "kg_with_stand": 5.9,
+      "vesa": "100x100",
+      "src": [
+        "https://www.lg.com/uk/monitors/uhd-4k-5k/27up850k-w/"
+      ],
+      "note": "LG 英国公式仕様: without Stand 4.1kg / with Stand 5.9kg / Wall Mountable 100x100。LG 日本の仕様ページは未確認。"
+    },
+    "32un880k": {
+      "kg_panel": 6.5,
+      "kg_with_stand": 10.3,
+      "vesa": "100x100",
+      "src": [
+        "https://www.lg.com/uk/monitors/uhd-4k-5k/32un880k-b/"
+      ],
+      "note": "LG 英国公式仕様: without Stand 6.5kg / with Stand 10.3kg / Wall Mountable 100x100。Ergo はアーム一体型スタンド。kg_panel はスタンド(アーム)を外した本体のみの重さで、VESA にはアーム一体スタンドを外してから別アームを付ける。日本の LG ページは未確認。"
+    },
+    "32gs95ue": {
+      "kg_panel": 5.6,
+      "kg_with_stand": 9.0,
+      "vesa": "100x100",
+      "src": [
+        "https://www.lg.com/uk/monitors/gaming/32gs95ue-b/"
+      ],
+      "note": "LG 英国公式仕様: without Stand 5.6kg / with Stand 9kg / Wall Mountable 100x100。日本の LG ページは未確認。"
+    },
+    "27gr93u": {
+      "kg_panel": 4.5,
+      "kg_with_stand": 6.4,
+      "vesa": "100x100",
+      "src": [
+        "https://www.lg.com/au/monitors/ultragear-gaming/27gr93u-b/",
+        "https://www.lg.com/hk_en/monitors/gaming/27gr93u-b/"
+      ],
+      "note": "LG オーストラリア・香港の公式仕様(同値): without Stand 4.5kg / with Stand 6.4kg / Wall Mountable 100x100。日本の LG ページは未確認。"
+    },
+    "pa279crv": {
+      "kg_panel": 4.07,
+      "kg_with_stand": 5.78,
+      "vesa": "100x100",
+      "src": [
+        "https://www.asus.com/displays-desktops/monitors/proart/proart-display-pa279crv/techspec/"
+      ],
+      "note": "ASUS グローバル公式: Net Weight without Stand 4.07kg / Net Weight 5.78kg(スタンド込み)/ VESA Wall Mounting 100x100mm。地域で数値が変わる旨の注記あり。"
+    },
+    "pg27ucdm": {
+      "kg_panel": 4.97,
+      "kg_with_stand": 7.62,
+      "vesa": "100x100",
+      "src": [
+        "https://rog.asus.com/monitors/27-to-31-5-inches/rog-swift-oled-pg27ucdm/spec/"
+      ],
+      "note": "ASUS ROG 公式: Net Weight without Stand 4.97kg / with Stand 7.62kg / VESA Wall Mounting 100x100mm(重さは地域差あり)。"
+    },
+    "mb16acv": {
+      "kg_panel": 0.9,
+      "kg_with_stand": null,
+      "vesa": "none",
+      "src": [
+        "https://www.asus.com/displays-desktops/monitors/zenscreen/zenscreen-mb16acv/techspec/"
+      ],
+      "note": "ASUS 公式: Net Weight 0.9kg(モバイルモニター、固定スタンドなし)。VESA マウントの記載は公式仕様になく、1/4インチ三脚ネジのみ記載のため \"none\" とした(「VESA 非対応」と明記はされていない)。kg_with_stand は公式に記載なし。"
+    },
+    "odyssey-g9": {
+      "kg_panel": 9.2,
+      "kg_with_stand": 12.9,
+      "vesa": "100x100",
+      "src": [
+        "https://www.samsung.com/ca/monitors/gaming/odyssey-oled-g9-g95sc-49-inch-240hz-curved-dual-qhd-ls49cg954snxza/"
+      ],
+      "note": "Samsung カナダ公式 G95SC(LS49CG954SNXZA): Set Weight without Stand 9.2kg / with Stand 12.9kg / Wall Mount 100x100。シンガポール版(LS49CG954SEXXS)は 8.8/12.6kg と地域で違うという検索結果あり(そのページ自体は未確認)。G93SC は未調査。日本の Samsung ページは未確認。"
+    },
+    "pd2706u": {
+      "kg_panel": 5.3,
+      "kg_with_stand": 8.3,
+      "vesa": "100x100",
+      "src": [
+        "https://www.benq.com/en-us/monitor/professional/pd2706u/spec.html"
+      ],
+      "note": "BenQ 米国公式: Net Weight (w/o Base) 5.3kg / Net Weight 8.3kg / VESA Wall Mount 100x100mm。"
+    },
+    "ex271uz": {
+      "kg_panel": 5.14,
+      "kg_with_stand": 7.43,
+      "vesa": "100x100",
+      "src": [
+        "https://www.benq.com/en-us/monitor/gaming/ex271uz/spec.html"
+      ],
+      "note": "BenQ 米国公式: Net Weight (w/o Base) 5.14kg / Net Weight 7.43kg / VESA Wall Mount 100x100mm。"
+    },
+    "ev2785": {
+      "kg_panel": 4.9,
+      "kg_with_stand": 8.2,
+      "vesa": "100x100",
+      "src": [
+        "https://www.eizo.com/products/flexscan/ev2785/"
+      ],
+      "note": "EIZO グローバル公式: Net Weight (Without Stand) 4.9kg / Net Weight 8.2kg / Hole Spacing (VESA Standard) 100x100mm。EIZO 日本ページは未取得。"
+    },
+    "ev3240x": {
+      "kg_panel": 6.7,
+      "kg_with_stand": 9.4,
+      "vesa": "100x100",
+      "src": [
+        "https://www.eizo.com/products/flexscan/ev3240x/"
+      ],
+      "note": "EIZO グローバル公式: Net Weight (Without Stand) 6.7kg / Net Weight 9.4kg / Hole Spacing (VESA Standard) 100x100mm。EIZO 日本ページは未取得。"
+    },
+    "innocn-27d1u": {
+      "kg_panel": null,
+      "kg_with_stand": null,
+      "vesa": null,
+      "src": [
+        "https://pc.watch.impress.co.jp/docs/news/2039520.html",
+        "https://www.amazon.co.jp/dp/B0FFMTYJ24"
+      ],
+      "note": "メーカー公式の仕様ページ/マニュアルが見つからず公式に記載なし。参考(不採用): PC Watch の記事は「重量 3.95kg」とするがスタンド有無が不明。Amazon.co.jp の商品名に「VESA規格対応」とあるがパターン(75/100)の記載なし。"
+    }
+  },
+  "arms": {
+    "ergotron-lx": {
+      "load_min_kg": 3.2,
+      "load_max_kg": 11.3,
+      "clamp_min_cm": null,
+      "clamp_max_cm": 6.0,
+      "grommet_max_cm": 5.7,
+      "max_inch": 34,
+      "vesa": "75x75, 100x100",
+      "src": [
+        "https://media.ergotron.com/reserved/resources/05-056-ea-orig.pdf",
+        "https://www.ergotron.com/portals/0/literature/contract/choose-clamp-attachment-en.pdf"
+      ],
+      "note": "45-241-026(2ピースクランプ+グロメット付き、現行)。仕様表: 7-25 lbs (3.2-11.3 kg)、≤34\"、VESA MIS-D/MIS-C。『デスク取付の選び方』PDF(LX Desk Mount Monitor Arm の列)に2ピースクランプ <2.4\" (60mm)、グロメット <2.25\" (57mm) とあり、下限は記載なし。別売ローTop-mount C-clamp は 0.98-1.38\" (25-35mm)。日本の Ergotron ページは取得不可(403)"
+    },
+    "ergotron-hx": {
+      "load_min_kg": 9.1,
+      "load_max_kg": 19.1,
+      "clamp_min_cm": 1.6,
+      "clamp_max_cm": 6.6,
+      "grommet_max_cm": 5.7,
+      "max_inch": 49,
+      "vesa": "MIS-D/E/F (see website)",
+      "src": [
+        "https://media.ergotron.com/reserved/resources/05-hxarms-ea-orig.pdf",
+        "https://www.ergotron.com/portals/0/literature/contract/choose-clamp-attachment-en.pdf"
+      ],
+      "note": "45-475-026/-216/-224(シングル、クランプ+グロメット付き)。仕様表: 20-42 lbs (9,1-19,1 kg)、≤49\"、VESA は公式表記が \"MIS-D/E/F See website\" のため原文のまま。『デスク取付の選び方』PDF(HX Desk Monitor Arm)に標準2ピースクランプ 0.6\"-2.59\" (16-66mm)、グロメット <2.25\" (57mm)。日本の Ergotron ページは取得不可(403)"
+    },
+    "amazon-arm": {
+      "load_min_kg": null,
+      "load_max_kg": 11.3,
+      "clamp_min_cm": null,
+      "clamp_max_cm": null,
+      "grommet_max_cm": null,
+      "max_inch": 32,
+      "vesa": "75x75, 100x100",
+      "src": [
+        "https://www.amazon.co.jp/gp/product/B00MIBN16O"
+      ],
+      "note": "Amazon.co.jp 商品ページ(ASIN B00MIBN16O、製品型番 K001387 とされる)の記載: 32インチ・11.3kgまで、VESA MIS-D/MIS-C(100x100/75x75)。Amazon の販売ページなので『販売店』情報。下限荷重・天板厚みは取得できた範囲では記載なし。検索結果では取説のクランプ範囲を 0.4-2.4 inch としていたが、取説原文を直接確認できていないため不採用。『エルゴトロン LX のOEM』はコミュニティの情報で公式裏付けなし。Amazonベーシックには別モデル(10kg/7kg)あり"
+    },
+    "cofo-arm-pro": {
+      "load_min_kg": 2.5,
+      "load_max_kg": 14.0,
+      "clamp_min_cm": 1.0,
+      "clamp_max_cm": 5.0,
+      "grommet_max_cm": 5.5,
+      "max_inch": 40,
+      "vesa": "75x75, 100x100",
+      "src": [
+        "https://cofo.jp/products/monitorarm-pro"
+      ],
+      "note": "COFO 日本公式: 天板厚さ クランプ10-50mm、グロメット10-55mm(grommet 下限は10mm)。耐荷重 約2.5kg〜14kg(各アーム)、推奨モニターサイズ 17-40インチ。シングル/デュアル共通の仕様欄。"
+    },
+    "flo-arm": {
+      "load_min_kg": 2.0,
+      "load_max_kg": 7.0,
+      "clamp_min_cm": 0.0,
+      "clamp_max_cm": 6.5,
+      "grommet_max_cm": null,
+      "max_inch": 34,
+      "vesa": "75x75, 100x100",
+      "src": [
+        "https://www.hermanmiller.com/content/dam/hermanmiller/documents/product_literature/product_sheets/flo_monitor_arm_product_sheet.pdf",
+        "https://eustore.hermanmiller.com/products/flo-monitor-arm"
+      ],
+      "note": "Herman Miller 公式(商品シート: 2-7kg、34インチまで(フラット/曲面1000R以上)、VESA準拠。EU公式ストア: VESA 75&100、16:9は32\"まで・21:9は34\"まで)。クランプは2種: Split Clamp 0-65mm、Top Mount Clamp 12-25mm(上記は Split の範囲)。グロメット取付は公式に記載なし。日本の Herman Miller ページには仕様の数値記載なし"
+    }
+  }
+}

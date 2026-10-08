@@ -961,13 +961,13 @@ const CATALOG = [
   { id: 'mbp14-m1max', ...MAC('MacBook Pro 14" (M1 Max)', { ports: { tb: 3, hdmi: 1 }, out: { tb: 'dp1.4', hdmi: 'hdmi2.0' }, maxDisp: 4, chargeW: 96, magsafe: true }), note: '公式に記載がないため推定: HDMI は 2.0 相当（公式の最大出力が 4K60Hz のため）' },
   { id: 'mbp14-m3', ...MAC('MacBook Pro 14" (M3)', { ports: { tb: 2, hdmi: 1 }, out: { tb: 'dp1.4', hdmi: 'hdmi2.1' }, maxDisp: 1, chargeW: 70, magsafe: true }), note: '公式に記載がないため推定: HDMI は 2.1 相当（公式の最大出力から）' },
 
-  { id: 'studio-display', cat: 'monitor', name: 'Apple Studio Display（初代）', spec: { w: 5120, h: 2880, hz: 60, in: { tb: 'dp1.4' }, pdW: 96, dsc: true, ports: { usbc: 3 } } },
-  { id: 'u2723qe',  cat: 'monitor', name: 'Dell U2723QE',            spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: true, ports: { usba: 5, usbc: 1 } } },
-  { id: 'u2724de',  cat: 'monitor', name: 'Dell U2724DE',            spec: { w: 2560, h: 1440, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { tb: 1, usba: 4, usbc: 1 } } },
-  { id: '27up850n', cat: 'monitor', name: 'LG 27UP850N-W',           spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 2 } }, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当' },
-  { id: 'pa279crv', cat: 'monitor', name: 'ASUS ProArt PA279CRV',    spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 96, dsc: false, ports: { usba: 3, usbc: 1 } }, ref: 68800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当。仕様の一部は販売店の情報です' },
-  { id: '32gs95ue', cat: 'monitor', name: 'LG UltraGear 32GS95UE',   spec: { w: 3840, h: 2160, hz: 240, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true, ports: { usba: 2 } }, note: '公式に記載がないため推定: HDMI は 2.1 相当' },
-  { id: 'odyssey-g9', cat: 'monitor', name: 'Samsung Odyssey OLED G9 49"', spec: { w: 5120, h: 1440, hz: 240, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true } },
+  { id: 'studio-display', cat: 'monitor', name: 'Apple Studio Display（初代）', spec: { kg: 5.5, vesa: 'adapter', w: 5120, h: 2880, hz: 60, in: { tb: 'dp1.4' }, pdW: 96, dsc: true, ports: { usbc: 3 } } },
+  { id: 'u2723qe',  cat: 'monitor', name: 'Dell U2723QE',            spec: { kg: 4.48, w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: true, ports: { usba: 5, usbc: 1 } } },
+  { id: 'u2724de',  cat: 'monitor', name: 'Dell U2724DE',            spec: { kg: 5.23, w: 2560, h: 1440, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { tb: 1, usba: 4, usbc: 1 } } },
+  { id: '27up850n', cat: 'monitor', name: 'LG 27UP850N-W',           spec: { kg: 4.1, w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 2 } }, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当' },
+  { id: 'pa279crv', cat: 'monitor', name: 'ASUS ProArt PA279CRV',    spec: { kg: 4.07, w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 96, dsc: false, ports: { usba: 3, usbc: 1 } }, ref: 68800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当。仕様の一部は販売店の情報です' },
+  { id: '32gs95ue', cat: 'monitor', name: 'LG UltraGear 32GS95UE',   spec: { kg: 5.6, w: 3840, h: 2160, hz: 240, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true, ports: { usba: 2 } }, note: '公式に記載がないため推定: HDMI は 2.1 相当' },
+  { id: 'odyssey-g9', cat: 'monitor', name: 'Samsung Odyssey OLED G9 49"', spec: { kg: 9.2, w: 5120, h: 1440, hz: 240, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true } },
   { id: 'generic-4k60',   cat: 'monitor', name: '4K 60Hz モニター（HDMI・DP）',        spec: { w: 3840, h: 2160, hz: 60,  in: { hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 0, dsc: false } },
   { id: 'generic-4k60c',  cat: 'monitor', name: '4K 60Hz モニター（USB-C 65W給電）',   spec: { w: 3840, h: 2160, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 65, dsc: false, ports: { usba: 2 } } },
   { id: 'generic-4k144',  cat: 'monitor', name: '4K 144Hz ゲーミングモニター',         spec: { w: 3840, h: 2160, hz: 144, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true } },
@@ -975,22 +975,22 @@ const CATALOG = [
   { id: 'generic-uw',     cat: 'monitor', name: '34" ウルトラワイド 3440×1440 100Hz', spec: { w: 3440, h: 1440, hz: 100, in: { hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 0, dsc: false } },
   { id: 'generic-fhd',    cat: 'monitor', name: 'フルHD 60Hz モニター',                spec: { w: 1920, h: 1080, hz: 60,  in: { hdmi: 'hdmi1.4' }, pdW: 0, dsc: false } },
   { id: 'portable',       cat: 'monitor', name: 'モバイルモニター 15.6" フルHD',       spec: { w: 1920, h: 1080, hz: 60,  in: { usbc: 'dp1.4', hdmi: 'hdmi1.4' }, pdW: 0, dsc: false } },
-  { id: 'u2725qe', cat: 'monitor', name: 'Dell U2725QE', spec: { w: 3840, h: 2160, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 140, dsc: true, ports: { tb: 1, usbc: 2, usba: 5 } }, ref: 102886 },
-  { id: 'u3225qe', cat: 'monitor', name: 'Dell U3225QE', spec: { w: 3840, h: 2160, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 140, dsc: true, ports: { tb: 1, usbc: 2, usba: 5 } }, ref: 138969 },
-  { id: 'u3425we', cat: 'monitor', name: 'Dell U3425WE', spec: { w: 3440, h: 1440, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { tb: 1, usbc: 2, usba: 5 } }, ref: 138969 },
-  { id: '27up850k', cat: 'monitor', name: 'LG 27UP850K-W', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 2 } }, ref: 43610, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当' },
-  { id: '32un880k', cat: 'monitor', name: 'LG 32UN880K-B（Ergo）', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 60, dsc: false, ports: { usba: 2 } }, ref: 94800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当' },
-  { id: '27gr93u', cat: 'monitor', name: 'LG UltraGear 27GR93U-B', spec: { w: 3840, h: 2160, hz: 144, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true, ports: { usba: 2 } }, note: '公式に記載がないため推定: HDMI は 2.1 相当' },
-  { id: 'pd2706u', cat: 'monitor', name: 'BenQ PD2706U', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 3, usbc: 1 } }, ref: 72400, note: '公式に記載がないため推定: USB-C は DP 1.4 相当' },
-  { id: 'ex271uz', cat: 'monitor', name: 'BenQ MOBIUZ EX271UZ', spec: { w: 3840, h: 2160, hz: 240, in: { usbc: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 90, dsc: true, ports: { usba: 2, usbc: 1 } }, ref: 154800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、DSC 対応（高リフレッシュの4Kのため）。仕様の一部は販売店・レビューの情報です' },
-  { id: 'pg27ucdm', cat: 'monitor', name: 'ASUS ROG Swift OLED PG27UCDM', spec: { w: 3840, h: 2160, hz: 240, in: { usbc: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp2.1' }, pdW: 90, dsc: true, ports: { usba: 3 } }, ref: 179818, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、DSC 対応（高リフレッシュの4Kのため）。仕様の一部は販売店・レビューの情報です' },
-  { id: 'ev2785', cat: 'monitor', name: 'EIZO FlexScan EV2785', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 60, dsc: false, ports: { usba: 2 } }, ref: 129800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当、DisplayPort は DP 1.4 相当' },
-  { id: 'ev3240x', cat: 'monitor', name: 'EIZO FlexScan EV3240X', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 94, dsc: false, ports: { usba: 3, usbc: 1 } }, ref: 116964, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当、DisplayPort は DP 1.4 相当' },
-  { id: 'studio-display-tb5', cat: 'monitor', name: 'Apple Studio Display（Thunderbolt 5）', spec: { w: 5120, h: 2880, hz: 60, in: { tb: 'dp2.1' }, pdW: 96, dsc: false, ports: { tb: 1, usbc: 2 } }, ref: 269800, note: '公式に記載がないため推定: Thunderbolt の映像は DP 2.1 相当' },
-  { id: 'studio-display-xdr', cat: 'monitor', name: 'Apple Studio Display XDR', spec: { w: 5120, h: 2880, hz: 120, in: { tb: 'dp2.1' }, pdW: 140, dsc: false, ports: { tb: 1, usbc: 2 } }, ref: 479800, note: '公式に記載がないため推定: Thunderbolt の映像は DP 2.1 相当' },
-  { id: 'mb16acv', cat: 'monitor', name: 'ASUS ZenScreen MB16ACV', spec: { w: 1920, h: 1080, hz: 60, in: { usbc: 'dp1.4' }, pdW: 0, dsc: false }, ref: 28500, note: '公式に記載がないため推定: USB-C は DP 1.4 相当。仕様の一部は販売店・レビューの情報です' },
-  { id: 'u3223qe', cat: 'monitor', name: 'Dell U3223QE', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: true, ports: { usba: 5, usbc: 1 } } },
-  { id: 'u4021qw', cat: 'monitor', name: 'Dell U4021QW', spec: { w: 5120, h: 2160, hz: 60, in: { tb: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 5, usbc: 1 } } },
+  { id: 'u2725qe', cat: 'monitor', name: 'Dell U2725QE', spec: { kg: 5.22, w: 3840, h: 2160, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 140, dsc: true, ports: { tb: 1, usbc: 2, usba: 5 } }, ref: 102886 },
+  { id: 'u3225qe', cat: 'monitor', name: 'Dell U3225QE', spec: { kg: 6.52, w: 3840, h: 2160, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 140, dsc: true, ports: { tb: 1, usbc: 2, usba: 5 } }, ref: 138969 },
+  { id: 'u3425we', cat: 'monitor', name: 'Dell U3425WE', spec: { kg: 7.78, w: 3440, h: 1440, hz: 120, in: { tb: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { tb: 1, usbc: 2, usba: 5 } }, ref: 138969 },
+  { id: '27up850k', cat: 'monitor', name: 'LG 27UP850K-W', spec: { kg: 4.1, w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 2 } }, ref: 43610, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当' },
+  { id: '32un880k', cat: 'monitor', name: 'LG 32UN880K-B（Ergo）', spec: { kg: 6.5, w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 60, dsc: false, ports: { usba: 2 } }, ref: 94800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当' },
+  { id: '27gr93u', cat: 'monitor', name: 'LG UltraGear 27GR93U-B', spec: { kg: 4.5, w: 3840, h: 2160, hz: 144, in: { hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 0, dsc: true, ports: { usba: 2 } }, note: '公式に記載がないため推定: HDMI は 2.1 相当' },
+  { id: 'pd2706u', cat: 'monitor', name: 'BenQ PD2706U', spec: { kg: 5.3, w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 3, usbc: 1 } }, ref: 72400, note: '公式に記載がないため推定: USB-C は DP 1.4 相当' },
+  { id: 'ex271uz', cat: 'monitor', name: 'BenQ MOBIUZ EX271UZ', spec: { kg: 5.14, w: 3840, h: 2160, hz: 240, in: { usbc: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp1.4' }, pdW: 90, dsc: true, ports: { usba: 2, usbc: 1 } }, ref: 154800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、DSC 対応（高リフレッシュの4Kのため）。仕様の一部は販売店・レビューの情報です' },
+  { id: 'pg27ucdm', cat: 'monitor', name: 'ASUS ROG Swift OLED PG27UCDM', spec: { kg: 4.97, w: 3840, h: 2160, hz: 240, in: { usbc: 'dp1.4', hdmi: 'hdmi2.1', dp: 'dp2.1' }, pdW: 90, dsc: true, ports: { usba: 3 } }, ref: 179818, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、DSC 対応（高リフレッシュの4Kのため）。仕様の一部は販売店・レビューの情報です' },
+  { id: 'ev2785', cat: 'monitor', name: 'EIZO FlexScan EV2785', spec: { kg: 4.9, w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 60, dsc: false, ports: { usba: 2 } }, ref: 129800, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当、DisplayPort は DP 1.4 相当' },
+  { id: 'ev3240x', cat: 'monitor', name: 'EIZO FlexScan EV3240X', spec: { kg: 6.7, w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 94, dsc: false, ports: { usba: 3, usbc: 1 } }, ref: 116964, note: '公式に記載がないため推定: USB-C は DP 1.4 相当、HDMI は 2.0 相当、DisplayPort は DP 1.4 相当' },
+  { id: 'studio-display-tb5', cat: 'monitor', name: 'Apple Studio Display（Thunderbolt 5）', spec: { kg: 5.4, vesa: 'adapter', w: 5120, h: 2880, hz: 60, in: { tb: 'dp2.1' }, pdW: 96, dsc: false, ports: { tb: 1, usbc: 2 } }, ref: 269800, note: '公式に記載がないため推定: Thunderbolt の映像は DP 2.1 相当' },
+  { id: 'studio-display-xdr', cat: 'monitor', name: 'Apple Studio Display XDR', spec: { kg: 6.3, vesa: 'adapter', w: 5120, h: 2880, hz: 120, in: { tb: 'dp2.1' }, pdW: 140, dsc: false, ports: { tb: 1, usbc: 2 } }, ref: 479800, note: '公式に記載がないため推定: Thunderbolt の映像は DP 2.1 相当' },
+  { id: 'mb16acv', cat: 'monitor', name: 'ASUS ZenScreen MB16ACV', spec: { kg: 0.9, novesa: true, w: 1920, h: 1080, hz: 60, in: { usbc: 'dp1.4' }, pdW: 0, dsc: false }, ref: 28500, note: '公式に記載がないため推定: USB-C は DP 1.4 相当。仕様の一部は販売店・レビューの情報です' },
+  { id: 'u3223qe', cat: 'monitor', name: 'Dell U3223QE', spec: { kg: 5.65, w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: true, ports: { usba: 5, usbc: 1 } } },
+  { id: 'u4021qw', cat: 'monitor', name: 'Dell U4021QW', spec: { kg: 9.5, w: 5120, h: 2160, hz: 60, in: { tb: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 90, dsc: false, ports: { usba: 5, usbc: 1 } } },
   { id: 'innocn-27d1u', cat: 'monitor', name: 'INNOCN 27D1U', spec: { w: 3840, h: 2160, hz: 60, in: { usbc: 'dp1.4', hdmi: 'hdmi2.0', dp: 'dp1.4' }, pdW: 65, dsc: false }, ref: 32500, note: '公式に記載がないため推定: USB-C は DP 1.4 相当。仕様の一部は販売店・レビューの情報です' },
 
   { id: 'caldigit-ts4', cat: 'dock', name: 'CalDigit TS4',                         spec: { up: 'tb', ports: { tb: 2, usbc: 3, usba: 5, dp: 1 }, out: { tb: 'dp1.4', dp: 'dp1.4' }, pdW: 98 } },
@@ -1073,12 +1073,12 @@ const CATALOG = [
   { id: 'xiaomi-lightbar', cat: 'lighting', name: 'Xiaomi Mi モニター掛け式ライト', spec: { conn: ['usbc'], chargeW: 5 }, ref: 6280 },
   { id: 'key-light-air-mk2', cat: 'lighting', name: 'Elgato Key Light Air MK.2', spec: { conn: ['usbc'], chargeW: 30 }, ref: 26160, note: '仕様の一部は販売店の情報です' },
 
-  { id: 'ergotron-lx',  cat: 'arm', name: 'エルゴトロン LX モニターアーム',         spec: { conn: [], loadMin: 3.2, loadMax: 11.3, clampMin: 1, clampMax: 6, maxInch: 34 } },
-  { id: 'amazon-arm',   cat: 'arm', name: 'Amazonベーシック モニターアーム',        spec: { conn: [], loadMin: 3.2, loadMax: 11.3, clampMin: 1, clampMax: 6, maxInch: 32 }, note: '耐荷重・クランプの範囲は、同じ作りのエルゴトロン LX からの目安です' },
+  { id: 'ergotron-lx',  cat: 'arm', name: 'エルゴトロン LX モニターアーム',         spec: { conn: [], loadMin: 3.2, loadMax: 11.3, clampMin: null, clampMax: 6, grommetMax: 5.7, maxInch: 34 }, note: 'アームの仕様はエルゴトロン公式（45-241-026）。クランプで挟める厚みの下限は公式に記載なし' },
+  { id: 'amazon-arm',   cat: 'arm', name: 'Amazonベーシック モニターアーム',        spec: { conn: [], loadMin: null, loadMax: 11.3, clampMin: null, clampMax: null, maxInch: 32 }, note: 'Amazon の販売ページの値（32インチ・11.3kg まで）。重さの下限と、挟める天板の厚みは記載なし' },
   { id: 'laptop-stand', cat: 'arm', name: 'ノートPCスタンド（縦置き）',             spec: { conn: [] } },
-  { id: 'cofo-arm-pro', cat: 'arm', name: 'COFO Monitor Arm Pro（シングル）', spec: { conn: [], loadMin: 2, loadMax: 10, clampMin: 1, clampMax: 8, maxInch: 34 }, ref: 21980, note: '耐荷重・クランプの範囲は推定です。購入前に公式の仕様を確認してください' },
-  { id: 'flo-arm', cat: 'arm', name: 'Herman Miller Flo モニターアーム', spec: { conn: [], loadMin: 2.3, loadMax: 9, clampMin: 1, clampMax: 6, maxInch: 32 }, ref: 51700, note: '耐荷重・クランプの範囲は推定です。購入前に公式の仕様を確認してください' },
-  { id: 'ergotron-hx', cat: 'arm', name: 'エルゴトロン HX デスクモニターアーム', spec: { conn: [], loadMin: 9.1, loadMax: 19.1, clampMin: 1, clampMax: 6, maxInch: 49 }, ref: 43205, note: '仕様の一部は販売店・レビューの情報です' },
+  { id: 'cofo-arm-pro', cat: 'arm', name: 'COFO Monitor Arm Pro（シングル）', spec: { conn: [], loadMin: 2.5, loadMax: 14, clampMin: 1, clampMax: 5, grommetMax: 5.5, maxInch: 40 }, ref: 21980, note: 'アームの仕様は COFO 公式（天板 クランプ 10〜50mm・グロメット 10〜55mm）' },
+  { id: 'flo-arm', cat: 'arm', name: 'Herman Miller Flo モニターアーム', spec: { conn: [], loadMin: 2, loadMax: 7, clampMin: 0, clampMax: 6.5, maxInch: 34 }, ref: 51700, note: 'アームの仕様は Herman Miller 公式（Split Clamp 0〜65mm。16:9 は 32インチまで、21:9 は 34インチまで）' },
+  { id: 'ergotron-hx', cat: 'arm', name: 'エルゴトロン HX デスクモニターアーム', spec: { conn: [], loadMin: 9.1, loadMax: 19.1, clampMin: 1.6, clampMax: 6.6, grommetMax: 5.7, maxInch: 49 }, ref: 43205, note: 'アームの仕様はエルゴトロン公式（標準クランプ 16〜66mm・グロメット 57mm まで）' },
 
   { id: 'flexispot-e7', cat: 'furniture', name: 'FlexiSpot E7 電動昇降デスク',      spec: { conn: [] } },
   { id: 'aeron',        cat: 'furniture', name: 'Herman Miller アーロンチェア',     spec: { conn: [] } },
@@ -1561,15 +1561,22 @@ function runChecks() {
   // モニターアーム: 重さ・画面サイズ・VESA・天板の厚み
   const tCm = (state.desk && state.desk.t) || 2.5;
   for (const a of state.items.filter(i => i.cat === 'arm' && (i.mount || []).length)) {
-    const as = armSpec(a), mons = a.mount.map(byId).filter(Boolean), est = as.est ? '（仕様は一般的な目安。アームの「スペックを編集」で実物の値に）' : '';
-    if (tCm < as.clampMin || tCm > as.clampMax) push('error', `${a.name}: 天板の厚み ${tCm}cm はクランプで挟めません`, `挟める厚みは ${as.clampMin}〜${as.clampMax}cm です。グロメット（穴あけ）取り付けや補強プレートを検討してください。${est}`, [a.id]);
+    const as = armSpec(a), mons = a.mount.map(byId).filter(Boolean), est = as.est ? '（アームの仕様は一般的な目安。アームの「スペックを編集」で実物の値に）' : '';
+    const range = (lo, hi, u) => lo ? `${lo}〜${hi}${u}` : `${hi}${u} まで`;
+    if (as.clampMax) {
+      if (tCm < as.clampMin || tCm > as.clampMax) push('error', `${a.name}: 天板の厚み ${tCm}cm はクランプで挟めません`, `クランプで挟めるのは ${range(as.clampMin, as.clampMax, 'cm')} です。${as.grommetMax && tCm <= as.grommetMax ? `天板に穴をあけるグロメット取り付けなら ${as.grommetMax}cm まで対応しています。` : '補強プレートや別売のクランプを検討してください。'}${est}`, [a.id]);
+    } else push('info', `${a.name}: 挟める天板の厚みは公表されていません`, `天板 ${tCm}cm が取り付けられるか、製品の説明書で確かめてください。`, [a.id]);
     for (const m of mons) {
-      const w = monKg(m), inch = monInch(m), wTxt = `${w.est ? '約' : ''}${w.kg}kg`, wNote = w.est ? `重さは ${inch}インチからの目安です。モニターの「スペックを編集」で、スタンドなしの重さを入れると正確になります。` : '';
-      if (noVesa(m)) { push('error', `${m.name}: VESA マウントに対応していません`, `アームに付けるには VESA マウント対応のモデルかアダプタが必要です。`, [m.id, a.id]); continue; }
-      if (w.kg > as.loadMax) push('error', `${a.name}: ${m.name}（${wTxt}）は重すぎます`, `支えられるのは ${as.loadMin}〜${as.loadMax}kg です。画面が下がってきます。${wNote}${est}`, [m.id, a.id]);
-      else if (w.kg < as.loadMin) push('warn', `${a.name}: ${m.name}（${wTxt}）は軽すぎます`, `${as.loadMin}kg 未満だと、ばねが強すぎて画面が上がってきます。${wNote}${est}`, [m.id, a.id]);
-      else if (inch > as.maxInch) push('warn', `${a.name}: ${inch}インチは対応サイズ（${as.maxInch}インチまで）を超えています`, `重さは範囲内ですが、画面が大きいと腕に当たったり、傾きやすくなります。${est}`, [m.id, a.id]);
-      else push('ok', `${a.name}: ${m.name}（${wTxt}）を支えられます`, `耐荷重 ${as.loadMin}〜${as.loadMax}kg ・ 天板 ${tCm}cm（${as.clampMin}〜${as.clampMax}cm）。${wNote}${est}`, [m.id, a.id]);
+      const w = monKg(m), inch = monInch(m), wTxt = `${w.est ? '約' : ''}${w.kg}kg`;
+      const wNote = w.est ? `重さは ${inch}インチの画面からの目安です。モニターの「スペックを編集」で、スタンドなしの重さを入れると正確になります。` : 'モニターの重さはメーカー公表値（スタンドなし）です。';
+      const vs = noVesa(m);
+      if (vs === 'none') { push('error', `${m.name}: VESA マウントに対応していません`, `ネジ穴（VESA）がないので、モニターアームには付けられません。`, [m.id, a.id]); continue; }
+      if (vs === 'adapter') push('warn', `${m.name}: アームには「VESA マウントアダプタ」版が必要です`, `スタンド付きの版はアームに付けられません。購入時に VESA マウントアダプタ版を選んでください。`, [m.id, a.id]);
+      if (as.loadMax && w.kg > as.loadMax) push('error', `${a.name}: ${m.name}（${wTxt}）は重すぎます`, `支えられるのは ${range(as.loadMin, as.loadMax, 'kg')} です。画面が下がってきます。${wNote}${est}`, [m.id, a.id]);
+      else if (as.loadMin && w.kg < as.loadMin) push('warn', `${a.name}: ${m.name}（${wTxt}）は軽すぎます`, `${as.loadMin}kg 未満だと、ばねが強すぎて画面が上がってきます。${wNote}${est}`, [m.id, a.id]);
+      else if (as.maxInch && inch > as.maxInch) push('warn', `${a.name}: ${inch}インチは対応サイズ（${as.maxInch}インチまで）を超えています`, `重さは範囲内ですが、画面が大きいと腕に当たったり、傾きやすくなります。${est}`, [m.id, a.id]);
+      else if (as.loadMax) push('ok', `${a.name}: ${m.name}（${wTxt}）を支えられます`, `耐荷重 ${range(as.loadMin, as.loadMax, 'kg')}${as.clampMax ? ` ・ 天板 ${tCm}cm（${range(as.clampMin, as.clampMax, 'cm')}）` : ''}。${wNote}${est}`, [m.id, a.id]);
+      else push('info', `${a.name}: 耐荷重が公表されていません`, `${m.name}（${wTxt}）が付けられるか、製品の説明書で確かめてください。`, [m.id, a.id]);
     }
   }
 
@@ -1773,7 +1780,7 @@ const CONN_LABEL = { bt: 'Bluetooth', receiver: 'USB レシーバー', usbc: 'US
 function specEditor(it) {
   if (it.cat === 'monitor') return '';   // モニターは下の専用の欄
   const s = it.spec, P = s.ports || {}, O = s.out || {};
-  const num = (f, label, v, step = 1) => `<label>${label}<input class="text" data-f="${f}" inputmode="${step < 1 ? 'decimal' : 'numeric'}" value="${v ?? 0}"></label>`;
+  const num = (f, label, v, step = 1, ph = '') => `<label>${label}<input class="text" data-f="${f}" inputmode="${step < 1 ? 'decimal' : 'numeric'}" value="${v ?? 0}"${ph ? ` placeholder="${ph}"` : ''}></label>`;
   const sel = (f, label, cur, list) => `<label>${label}<select class="text" data-f="${f}">${list.map(([v, l]) => `<option value="${v}"${(cur || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>`;
   const tog = (f, label, on) => `<label style="align-self:end"><span class="toggle"><input type="checkbox" data-f="${f}"${on ? ' checked' : ''}> ${label}</span></label>`;
   const ports = keys => keys.map(k => num('ports.' + k, `${PORT_LABEL[k]} の数`, P[k] || 0)).join('');
@@ -1788,10 +1795,11 @@ function specEditor(it) {
     + ports(['tb', 'usbc', 'usba', 'hdmi', 'dp']) + outs();
   if (it.cat === 'charger') return ports(['usbc', 'usba']) + num('totalW', '合計の出力 (W)', s.totalW || 0) + num('portW', '1ポートの最大 (W)', s.portW || 0);
   if (it.cat === 'arm') {
-    const a = armSpec(it);
-    return num('loadMin', '耐荷重の下限 (kg)', a.loadMin, .1) + num('loadMax', '耐荷重の上限 (kg)', a.loadMax, .1)
-      + num('clampMin', 'クランプ: 天板の厚み 最小 (cm)', a.clampMin, .1) + num('clampMax', 'クランプ: 天板の厚み 最大 (cm)', a.clampMax, .1)
-      + num('maxInch', '画面サイズの上限 (インチ)', a.maxInch) + num('deskT', 'あなたの天板の厚み (cm)', (state.desk && state.desk.t) || 2.5, .1)
+    const a = armSpec(it), z = v => v || '', U = '未公表';
+    return num('loadMin', '耐荷重の下限 (kg)', z(a.loadMin), .1, U) + num('loadMax', '耐荷重の上限 (kg)', z(a.loadMax), .1, U)
+      + num('clampMin', 'クランプ: 天板の厚み 最小 (cm)', z(a.clampMin), .1, U) + num('clampMax', 'クランプ: 天板の厚み 最大 (cm)', z(a.clampMax), .1, U)
+      + num('grommetMax', 'グロメット: 天板の厚み 最大 (cm)', z(a.grommetMax), .1, U)
+      + num('maxInch', '画面サイズの上限 (インチ)', z(a.maxInch), 1, U) + num('deskT', 'あなたの天板の厚み (cm)', (state.desk && state.desk.t) || 2.5, .1)
       + `<span class="hint full">アームのパッケージや公式サイトの「対応重量」「取り付け可能な天板の厚さ」を入れてください。2台用は1本の腕あたりの重さです。</span>`;
   }
   if (DESK_SKIP.has(it.cat)) return '';
@@ -2295,9 +2303,11 @@ function wire() {
     if (f === 'up') s.up = v === 'usbc' ? 'usbc' : 'tb';
     if (f === 'totalW') s.totalW = int(0, 500);
     if (f === 'portW') s.portW = int(0, 300);
-    if (['loadMin', 'loadMax', 'clampMin', 'clampMax', 'maxInch'].includes(f)) { const n = parseFloat(v); s[f] = n > 0 && n <= 200 ? Math.round(n * 10) / 10 : 0; it._open = true; }
+    if (['loadMin', 'loadMax', 'clampMin', 'clampMax', 'grommetMax', 'maxInch'].includes(f)) {
+      if (!('loadMax' in s)) Object.assign(s, { loadMin: ARM_DEFAULT.loadMin, loadMax: ARM_DEFAULT.loadMax, clampMin: ARM_DEFAULT.clampMin, clampMax: ARM_DEFAULT.clampMax, maxInch: ARM_DEFAULT.maxInch });   // 自分で入れたら目安ではなくなる
+      const n = parseFloat(v); s[f] = n > 0 && n <= 200 ? Math.round(n * 10) / 10 : 0; it._open = true; }
     if (f === 'deskT') { const n = parseFloat(v); if (n > 0 && n <= 15) state.desk.t = Math.round(n * 10) / 10; it._open = true; }
-    if (f === 'kg') { const n = parseFloat(v); s.kg = n > 0 && n <= 60 ? Math.round(n * 10) / 10 : 0; it._open = true; }
+    if (f === 'kg') { const n = parseFloat(v); s.kg = n > 0 && n <= 60 ? Math.round(n * 100) / 100 : 0; it._open = true; }
     if (f === 'novesa') { s.novesa = e.target.checked; it._open = true; }
     if (f.startsWith('conn.')) {
       const k = f.slice(5), on = e.target.checked, cur = new Set(s.conn || []);
@@ -3614,8 +3624,14 @@ function autoMount(a) {
   a.mount = free.slice(0, armCap(a)).map(m => m.id); a.px = null;
 }
 // アームの仕様（耐荷重 kg・クランプで挟める天板の厚み cm・画面サイズの上限 inch）。入っていなければ一般的な目安
-const ARM_DEFAULT = { loadMin: 2, loadMax: 9, clampMin: 1, clampMax: 8.5, maxInch: 32 };
-function armSpec(a) { const s = a.spec || {}, o = {}; for (const k in ARM_DEFAULT) o[k] = s[k] > 0 ? s[k] : ARM_DEFAULT[k]; o.est = !(s.loadMax > 0); return o; }
+// カタログのアームはメーカー公表値（null は公表されていない）。自分で足したアームは一般的な目安
+const ARM_DEFAULT = { loadMin: 2, loadMax: 9, clampMin: 1, clampMax: 8.5, grommetMax: 0, maxInch: 32 };
+function armSpec(a) {
+  const s = a.spec || {};
+  if (!('loadMax' in s)) return { ...ARM_DEFAULT, est: true };
+  const n = k => (typeof s[k] === 'number' && s[k] > 0 ? s[k] : 0);
+  return { loadMin: n('loadMin'), loadMax: n('loadMax'), clampMin: n('clampMin'), clampMax: n('clampMax'), grommetMax: n('grommetMax'), maxInch: n('maxInch'), est: false };
+}
 // モニターの重さ（スタンドなし kg）。入っていなければ画面の面積からの目安（ウルトラワイドは対角のわりに面積が小さい）
 function monInch(m) { const n = inchOf(m.name); if (n) return n; const b = body3d(m), w = Math.max(b.w, b.ph), h = Math.min(b.w, b.ph); return Math.round(Math.hypot(w - 1.4, h - 2.4) / 2.54); }
 function monKg(m) {
@@ -3623,7 +3639,8 @@ function monKg(m) {
   const i = monInch(m), r = m.spec.w / m.spec.h || 16 / 9, area = i * i * r / (1 + r * r);   // 画面の面積（平方インチ）
   return { kg: Math.round(0.0145 * area * 10) / 10, est: true };
 }
-const noVesa = m => /Studio Display|Pro Display XDR/i.test(m.name) && !/VESA/i.test(m.name) || m.spec.novesa;
+// VESA: 'none' 付けられない / 'adapter' VESA マウントアダプタ版を選ぶ必要がある（Apple） / '' そのまま付けられる
+const noVesa = m => m.spec.novesa ? 'none' : m.spec.vesa === 'adapter' || /Studio Display|Pro Display XDR/i.test(m.name) && !/VESA/i.test(m.name) ? 'adapter' : '';
 // アームの腕1本の長さ（cm）。下の腕と上の腕で、届く範囲はこの2倍まで
 const armSeg = m => { const a = armOf(m); return a && /LX|HX/i.test(a.name) ? 30 : 25; };
 // アームの支柱の位置（cm）。2台を支えるアームは、2台の間に1本
