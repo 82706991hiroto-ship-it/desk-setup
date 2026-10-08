@@ -744,6 +744,7 @@
         <span class="desk-size" id="deskSize">天板
           <label><input class="text" type="number" id="deskW" min="40" max="400" step="5" inputmode="numeric" aria-label="天板の幅（cm）"><span>×</span></label>
           <label><input class="text" type="number" id="deskD" min="40" max="200" step="5" inputmode="numeric" aria-label="天板の奥行（cm）"><span>cm</span></label>
+          <label id="eyeWrap" title="机の手前の端から、座ったときの目まで。モニターまでの距離の計算に使います">目まで<input class="text" type="number" id="deskEye" min="0" max="60" step="5" inputmode="numeric" aria-label="机の手前の端から目まで（cm）"><span>cm</span></label>
           <label id="routeWrap">線<select class="text" id="deskRoute" aria-label="線の描き方"><option value="direct">まっすぐ</option><option value="tray">机の奥を通す</option></select></label>
         <label class="toggle"><input type="checkbox" id="deskLabels" checked> <span id="deskLabelsText">ケーブル名</span></label>
           <button class="link-btn" type="button" id="deskAuto">自動で並べ直す</button>
@@ -995,6 +996,7 @@ const CATALOG = [
 
   { id: 'caldigit-ts4', cat: 'dock', name: 'CalDigit TS4',                         spec: { up: 'tb', ports: { tb: 2, usbc: 3, usba: 5, dp: 1 }, out: { tb: 'dp1.4', dp: 'dp1.4' }, pdW: 98 } },
   { id: 'tb4-dock',     cat: 'dock', name: 'Thunderbolt 4 ドック',                  spec: { up: 'tb', ports: { tb: 3, usba: 4, hdmi: 1 }, out: { tb: 'dp1.4', hdmi: 'hdmi2.0' }, pdW: 90 } },
+  { id: 'usb-switch',   cat: 'dock', name: 'USB 切替器（KVM・PC 2台・USB-A 4ポート）', spec: { up: 'usba', kvm: true, ports: { usba: 4 }, out: {}, pdW: 0 }, note: 'PC 2台でキーボード・マウスなどを共有する、よくある USB 切替器の仕様（特定の製品ではありません）。映像は切り替えないので、モニターは入力切替で' },
   { id: 'hub-4k60',     cat: 'dock', name: 'USB-C ハブ（HDMI 4K60Hz・PD 100W）',   spec: { up: 'usbc', ports: { hdmi: 1, usba: 3, usbc: 1 }, out: { hdmi: 'hdmi2.0' }, pdW: 85 } },
   { id: 'hub-4k30',     cat: 'dock', name: 'USB-C ハブ（HDMI 4K30Hz・PD 100W）',   spec: { up: 'usbc', ports: { hdmi: 1, usba: 2, usbc: 1 }, out: { hdmi: 'hdmi1.4' }, pdW: 85 } },
   { id: 'caldigit-ts5plus', cat: 'dock', name: 'CalDigit TS5 Plus', spec: { up: 'tb', ports: { tb: 2, usbc: 5, usba: 5, dp: 1 }, out: { tb: 'dp2.1', dp: 'dp2.1' }, pdW: 140 }, note: '公式に記載がないため推定: Thunderbolt の映像出力は DP 2.1 相当' },
@@ -1127,17 +1129,18 @@ const DEFAULT_CONN = {
 
 // ---- 状態 ----
 const STORE_KEY = 'desk-setup:v1';
+const EYE_DEFAULT = 15;   // 机の手前の端から、座った人の目まで (cm)
 let state = emptyState();
 let shared = false;
 let activeCat = '';
 
-function emptyState() { return { title: '', handle: '', items: [], seq: 0, desk: { w: 140, d: 70, t: 2.5 } }; }   // t: 天板の厚み (cm)
+function emptyState() { return { title: '', handle: '', items: [], seq: 0, desk: { w: 140, d: 70, t: 2.5, e: EYE_DEFAULT } }; }   // t: 天板の厚み、e: 手前の端から目まで (cm)
 const byId = id => state.items.find(i => i.id === id);
 const clone = o => JSON.parse(JSON.stringify(o));
 
 function newItem(cat, name, spec, cid) {
   return { id: (state.seq++).toString(36), cid: cid || null, cat, name, price: null, spec: clone(spec), link: null, power: 'auto', clam: false,
-    _exp: true, pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '', place: '', mount: [], lift: 0, px: null, plan: false };
+    _exp: true, pkind: 'paid', pdate: '', tot: '', memo: '', links: [], dim: null, color: '', mon: '', place: '', mount: [], lift: 0, px: null, plan: false, link2: null };
 }
 // ドックを足したとき、つなぎ直せる機材があれば知らせる
 function dockHint(it) {
@@ -1176,7 +1179,7 @@ function addCustom(cat, name) {
 // 追加した機材のつなぎ先を自動で選ぶ。空いているポートを優先し、モニターは出せるリフレッシュレート、
 // 同じならドック・ハブ（PC のポートを空けておく）を選ぶ
 function linkScore(it, o) {
-  const used = (hid, p) => state.items.filter(i => i !== it && i.link && i.link.h === hid && i.link.p === p).length;
+  const used = (hid, p) => edgeViews().filter(v => v.id !== it.id && v.link.h === hid && v.link.p === p).length;
   // 充電に使うポート（MagSafe がなく、モニターやドックから給電されていない PC）
   const reserved = (h, p) => h.cat === 'computer' && h.spec.chargeW && !h.spec.magsafe && !pdSources(h).length && p === (h.spec.ports.tb ? 'tb' : 'usbc') ? 1 : 0;
   const free = o => o.p === 'bt' || used(o.h, o.p) + reserved(o.host, o.p) < ((o.host.spec.ports || {})[o.p] || 0);
@@ -1282,6 +1285,12 @@ function linkOptions(it) {
       if (P.dp && O.dp && s.in.dp) add('dp', 'dp', 'DisplayPort ケーブル');
     } else if (it.cat === 'dock') {
       if (h.cat !== 'computer' && h.cat !== 'dock') continue;
+      if (s.up === 'usba') {   // USB 切替器など: USB-B の口に USB ケーブル
+        if (P.usba) add('usba', 'usba', 'USB-A ↔ USB-B ケーブル');
+        if (P.usbc) add('usbc', 'usbc', 'USB-C ↔ USB-B ケーブル');
+        else if (P.tb) add('tb', 'usbc', 'USB-C ↔ USB-B ケーブル');
+        continue;
+      }
       if (P.tb) add('tb', 'tb', s.up === 'tb' ? 'Thunderbolt ケーブル' : 'USB-C ケーブル');
       if (s.up === 'usbc' && P.usbc) add('usbc', 'usbc', 'USB-C ケーブル');
     } else {
@@ -1300,10 +1309,44 @@ function linkOptions(it) {
 }
 const linkKey = l => l ? `${l.h}|${l.p}|${l.v}` : '';
 
+// ---- PC 2台の切り替え ----
+// link2: 2台目の PC からのつなぎ先。モニター（2つ目の入力）、USB 切替器（KVM）、ワイヤレスの機材（Bluetooth のマルチペアリング・2つ目のレシーバー）
+const isKvm = it => it.cat === 'dock' && !!it.spec.kvm;
+function canSecond(it) {
+  if (state.items.filter(i => i.cat === 'computer').length < 2) return false;
+  return it.cat === 'monitor' || isKvm(it) || (it.cat !== 'computer' && it.cat !== 'charger' && it.cat !== 'dock' && (it.spec.conn || []).some(c => c === 'bt' || c === 'receiver'));
+}
+// 1本目・2本目のつながりを、つなぎ先ごとの「見かけの機材」にする（2本目は link を link2 に差し替えたコピー）
+function edgeViews(items = state.items) {
+  const out = [];
+  for (const it of items) { if (it.link) out.push(it); if (it.link2) out.push({ ...it, link: it.link2, _sec: true }); }
+  return out;
+}
+const kidsOf = hid => edgeViews().filter(v => v.link.h === hid);
+// そのつながりの先で使える PC（ドック・切替器をたどる。モニターの USB ハブは、モニターを USB-C / Thunderbolt でつないだ PC だけ）
+function pcsVia(it, l, depth = 0) {
+  const h = l && byId(l.h); if (!h || depth > 12) return [];
+  if (h.cat === 'computer') return [h];
+  const ls = h.cat === 'monitor' && it.cat !== 'monitor' ? [h.link, h.link2].filter(x => x && (x.v === 'usbc' || x.v === 'tb')) : [h.link, h.link2];
+  return [...new Set(ls.flatMap(x => pcsVia(h, x, depth + 1)))];
+}
+function pcsOf(it) { return it.cat === 'computer' ? [it] : [...new Set([it.link, it.link2].flatMap(l => pcsVia(it, l)))]; }
+// 2台目の PC からのつなぎ先の候補: 1本目とは別の PC に届くもの
+function secondOptions(it) {
+  if (!canSecond(it)) return [];
+  const first = it.link ? pcsVia(it, it.link) : [];
+  return linkOptions(it).filter(o => (it.cat === 'monitor' || isKvm(it) || o.v === 'bt' || o.v === 'receiver') && linkKey(o) !== linkKey(it.link))
+    .filter(o => { const p = pcsVia(it, o); return p.length && !p.some(x => first.includes(x)); });
+}
+const INPUT_NAME = { tb: 'Thunderbolt', usbc: 'USB-C', c2dp: 'DisplayPort', dp: 'DisplayPort', c2hdmi: 'HDMI', hdmi: 'HDMI' };
+
 // 消えたホストや選べなくなった接続を外す
 function normalize() {
   for (const it of state.items) {
     if (it.link && !linkOptions(it).some(o => linkKey(o) === linkKey(it.link))) it.link = null;
+  }
+  for (const it of state.items) {
+    if (it.link2 && !secondOptions(it).some(o => linkKey(o) === linkKey(it.link2))) it.link2 = null;
   }
   // アームが支えるモニター: 消えたものを外し、1台のモニターは1つのアームだけ
   const taken = new Set();
@@ -1352,7 +1395,7 @@ function reachHz(m) {
 function resName(s) { return RES_NAME[`${s.w}x${s.h}`] || `${s.w}×${s.h}`; }
 
 function pdSources(c) {
-  return state.items.filter(i => i.link && i.link.h === c.id && (i.link.v === 'usbc' || i.link.v === 'tb') && (i.cat === 'monitor' || i.cat === 'dock') && i.spec.pdW > 0);
+  return state.items.filter(i => [i.link, i.link2].some(l => l && l.h === c.id && (l.v === 'usbc' || l.v === 'tb')) && (i.cat === 'monitor' || i.cat === 'dock') && i.spec.pdW > 0);
 }
 function powerSource(c) {
   const p = c.power || 'auto';
@@ -1360,7 +1403,7 @@ function powerSource(c) {
   if (p === 'adapter') return { kind: 'adapter' };
   const it = byId(p);
   if (it && it.cat === 'charger') return { kind: 'charger', item: it, W: Math.min(it.spec.portW, it.spec.totalW) };
-  if (it && pdSources(c).includes(it)) return { kind: 'pd', item: it, W: it.spec.pdW };
+  if (it && pdSources(c).some(x => x.id === it.id)) return { kind: 'pd', item: it, W: it.spec.pdW };
   return { kind: 'adapter' };
 }
 
@@ -1393,6 +1436,7 @@ function cableFor(it, h) {
     if (v === 'hdmi') return { name: 'HDMI ケーブル', spec: hdmiVer };
     if (v === 'dp') return { name: 'DisplayPort ケーブル', spec: dpVer };
   }
+  if (it.cat === 'dock' && it.spec.up === 'usba') return { name: `${it.link.p === 'usba' ? 'USB-A' : 'USB-C'} ↔ USB-B ケーブル`, spec: 'USB 2.0 以上', bundled: true, note: '切替器に付属していることが多いです（PC の数だけ）' };
   if (it.cat === 'dock') return { name: it.spec.up === 'tb' ? 'Thunderbolt 4 / 5 ケーブル' : 'USB-C ケーブル（映像・データ対応）', spec: it.spec.up === 'tb' ? '40Gbps 以上' : 'USB 3.2 Gen 2 以上', bundled: true, note: 'ドックに付属していることが多いです' };
   const toCharger = h.cat === 'charger';
   const ends = v === 'usba' ? 'USB-A' : h.spec.ports && (h.spec.ports.usbc || h.spec.ports.tb) && it.link.p !== 'usba' ? 'USB-C' : 'USB-A';
@@ -1400,8 +1444,8 @@ function cableFor(it, h) {
 }
 function cableList() {
   const rows = [];
-  for (const it of state.items) {
-    const h = it.link && byId(it.link.h); if (!h) continue;
+  for (const it of edgeViews()) {
+    const h = byId(it.link.h); if (!h) continue;
     const c = cableFor(it, h); if (!c) continue;
     rows.push({ ...c, len: cableLen(it, h), who: `${it.name} ↔ ${h.name}` });
   }
@@ -1436,6 +1480,27 @@ function cableText() {
   return `【必要なケーブル】${state.title ? ' ' + state.title : ''}\n` + (buy.length ? buy.map(line).join('\n') : '（なし）') + (inc.length ? `\n\n【付属品で足りることが多いもの】\n` + inc.map(line).join('\n') : '') + '\n\n長さは配置からの目安です。';
 }
 
+// ---- 目からモニターまで ----
+// 目の位置: 机の手前の端から state.desk.e cm（座った人）、左右はキーボードの真ん中（なければ机の真ん中）
+function eyePoint(pos) {
+  const kb = state.items.find(i => i.cat === 'keyboard' && pos.get(i.id)), p = kb && pos.get(kb.id);
+  const e = Number.isFinite(state.desk.e) ? state.desk.e : EYE_DEFAULT;
+  return { x: p && p.x > 0 && p.x < state.desk.w ? p.x : state.desk.w / 2, y: state.desk.d + e };
+}
+// 画面までの距離と、おすすめの範囲。近い側は画面の横の広がりが 60°（曲面は 70°）に収まる距離で、40cm より近くはしない。
+// ret: 画素の粒が見えなくなる距離（画素1つが視角 1分）
+function viewOf(m, pos, eye) {
+  const p = pos.get(m.id), W = state.desk.w, D = state.desk.d; if (!p) return null;
+  const b = body3d(m); if (b.kind !== 'monitor') return null;
+  if (p.x < 0 || p.x > W || p.y < 0 || p.y > D) return null;   // 床などに置いたもの
+  const sy = p.y + b.pz, dx = p.x - eye.x, dy = eye.y - sy, d = Math.round(Math.hypot(dx, dy));
+  if (dy <= 0) return null;
+  const w = b.w - 1.4, lim = (b.curved ? 70 : 60) * Math.PI / 360;
+  const lo = Math.max(40, Math.round(w / 2 / Math.tan(lim))), hi = Math.max(lo + 20, Math.round(w * 1.5));
+  const pxW = monLook(m).v ? Math.min(m.spec.w, m.spec.h) : Math.max(m.spec.w, m.spec.h);
+  return { d, lo, hi, ang: Math.round(2 * Math.atan(w / 2 / d) * 180 / Math.PI), side: Math.round(Math.atan(Math.abs(dx) / dy) * 180 / Math.PI), ret: Math.round(w / pxW * 3438), inch: monInch(m), sx: p.x, sy };
+}
+
 // ---- 接続チェック ----
 function runChecks() {
   const out = [];
@@ -1451,7 +1516,7 @@ function runChecks() {
     if (!usage.has(k)) usage.set(k, []);
     usage.get(k).push(who);
   };
-  for (const it of state.items) if (it.link) use(it.link.h, it.link.p, it.id);
+  for (const v of edgeViews()) use(v.link.h, v.link.p, v.id);
   for (const c of comps) {
     if (!c.spec.chargeW) continue;
     const ps = powerSource(c);
@@ -1470,7 +1535,7 @@ function runChecks() {
 
   // 外部ディスプレイの台数
   for (const c of comps) {
-    const mons = monitors.filter(m => m.link && rootOf(m) === c);
+    const mons = monitors.filter(m => m.link && rootOf(m) === c || m.link2 && rootOf({ ...m, link: m.link2 }) === c);
     if (!mons.length) continue;
     const lim = c.clam && c.spec.clamDisp ? c.spec.clamDisp : c.spec.maxDisp;
     if (mons.length > lim) {
@@ -1492,14 +1557,17 @@ function runChecks() {
   }
 
   // モニターごとの帯域と、PC側ポートの出力上限
-  for (const m of monitors) {
+  const views = monitors.flatMap(m => m.link2 ? [m, { ...m, link: m.link2, _sec: true }] : [m]);
+  for (const m of views) {
     if (!m.link) { push('info', `${m.name}: 接続先が未設定です`, '', [m.id]); continue; }
     const r = reachHz(m);
     if (!r) continue;
     const s = m.spec, need = needGbps(s);
     const rn = `${resName(s)} ${s.hz}Hz`;
+    // 2台の PC につないだモニターは、どちらの PC からか分かるように
+    const who = m.link2 || m._sec ? `${m.name}（${r.pc ? r.pc.name : byId(m.link.h).name} から）` : m.name;
     if (r.hz >= s.hz) {
-      push('ok', `${m.name}: ${rn} で表示できます`, `${LINK_LABEL[r.sig]}${r.dsc && need > LINK_CAP[r.sig] ? '（DSC圧縮）' : ''}`, [m.id]);
+      push('ok', `${who}: ${rn} で表示できます`, `${LINK_LABEL[r.sig]}${r.dsc && need > LINK_CAP[r.sig] ? '（DSC圧縮）' : ''}`, [m.id]);
       continue;
     }
     const shown = REFRESH.filter(x => x <= Math.floor(r.hz)).pop() || Math.floor(r.hz);
@@ -1511,13 +1579,13 @@ function runChecks() {
       return t && t.hz >= s.hz;
     });
     if (better) d += `「${better.host.name} の ${PORT_LABEL[better.p]} ← ${better.label}」なら ${s.hz}Hz で出せます。`;
-    push(shown >= 60 ? 'warn' : 'error', `${m.name}: 最大 約${shown}Hz になります`, d, [m.id]);
+    push(shown >= 60 ? 'warn' : 'error', `${who}: 最大 約${shown}Hz になります`, d, [m.id]);
   }
 
   // モニターのUSBハブ
   for (const m of monitors) {
-    const kids = state.items.filter(i => i.link && i.link.h === m.id);
-    if (kids.length && !(m.link && (m.link.v === 'usbc' || m.link.v === 'tb'))) {
+    const kids = kidsOf(m.id);
+    if (kids.length && ![m.link, m.link2].some(l => l && (l.v === 'usbc' || l.v === 'tb'))) {
       push('warn', `${m.name} の USB ポートは今の接続だと使えません`,
         'HDMI・DisplayPort だけの接続では USB ハブが動きません。USB-C（または USB-B）ケーブルでも PC につないでください。', [m.id, ...kids.map(k => k.id)]);
     }
@@ -1525,7 +1593,7 @@ function runChecks() {
 
   // ドックの接続
   for (const d of state.items.filter(i => i.cat === 'dock')) {
-    const kids = state.items.filter(i => i.link && i.link.h === d.id);
+    const kids = kidsOf(d.id);
     if (!d.link && kids.length) push('warn', `${d.name} が PC につながっていません`, 'ドックの接続先を選んでください。', [d.id]);
   }
 
@@ -1546,7 +1614,7 @@ function runChecks() {
 
   // 充電器の合計出力
   for (const ch of state.items.filter(i => i.cat === 'charger')) {
-    const devs = state.items.filter(i => i.link && i.link.h === ch.id);
+    const devs = kidsOf(ch.id);
     const comp = comps.filter(c => c.spec.chargeW && powerSource(c).item === ch);
     const all = [...devs, ...comp];
     if (!all.length) continue;
@@ -1577,6 +1645,67 @@ function runChecks() {
       else if (as.maxInch && inch > as.maxInch) push('warn', `${a.name}: ${inch}インチは対応サイズ（${as.maxInch}インチまで）を超えています`, `重さは範囲内ですが、画面が大きいと腕に当たったり、傾きやすくなります。${est}`, [m.id, a.id]);
       else if (as.loadMax) push('ok', `${a.name}: ${m.name}（${wTxt}）を支えられます`, `耐荷重 ${range(as.loadMin, as.loadMax, 'kg')}${as.clampMax ? ` ・ 天板 ${tCm}cm（${range(as.clampMin, as.clampMax, 'cm')}）` : ''}。${wNote}${est}`, [m.id, a.id]);
       else push('info', `${a.name}: 耐荷重が公表されていません`, `${m.name}（${wTxt}）が付けられるか、製品の説明書で確かめてください。`, [m.id, a.id]);
+    }
+  }
+
+  // PC が2台: それぞれの PC で使えるモニター・キーボード・マウスと、切り替え方
+  if (comps.length >= 2) {
+    const how = (i, c) => {
+      const l = [i.link, i.link2].find(x => x && pcsVia(i, x).includes(c)), h = l && byId(l.h);
+      if (!l) return '';
+      if (i.cat === 'monitor') return `${INPUT_NAME[l.v] || l.v} 入力`;
+      if (l.v === 'bt') return 'Bluetooth';
+      if (l.v === 'receiver') return 'レシーバー';
+      return !h || h === c ? '有線' : isKvm(h) ? '切替器経由' : h.cat === 'monitor' ? 'モニターの USB 経由' : `${h.name} 経由`;
+    };
+    for (const c of comps) {
+      const got = cat => state.items.filter(i => i.cat === cat && pcsOf(i).includes(c));
+      const ms = got('monitor'), kb = got('keyboard'), mo = got('mouse');
+      const desk = /^(tower|smallpc)$/.test(kindOf(c)) || c.clam;   // 本体に画面・キーボードがない（ノートは蓋を閉じたとき）
+      const miss = desk ? [!ms.length && 'モニター', !kb.length && 'キーボード', !mo.length && 'マウス'].filter(Boolean) : [];
+      const list = [...ms, ...kb, ...mo].map(i => `${i.name}（${how(i, c)}）`).join('、');
+      if (miss.length) {
+        const tip = miss.includes('モニター') ? 'モニターの「2台目の PC から」で、もう1つの入力（HDMI・DisplayPort など）につなげます。' : '';
+        const tip2 = miss.some(x => x !== 'モニター') ? 'Bluetooth で切り替えられるキーボード・マウスなら、カードの「2台目の PC から」で設定できます。有線のものは USB 切替器（カタログで「切替器」）か、USB-C で2台をつなげるモニターの USB ハブにつなぐと共有できます。' : '';
+        push('warn', `${c.name}: ${miss.join('・')}がつながっていません`, `${list ? `使えるもの: ${list}。` : ''}${tip}${tip2}`, [c.id]);
+      } else push('ok', `${c.name}: 使えるもの`, list || '本体の画面とキーボードで使います。', [c.id]);
+    }
+    const sw = [], ids = [];
+    for (const m of monitors.filter(m => m.link && m.link2)) {
+      const a = INPUT_NAME[m.link.v], b = INPUT_NAME[m.link2.v];
+      sw.push(`${m.name} はモニターの入力切替（${a} ⇔ ${b}）`); ids.push(m.id);
+      if (a === b) {
+        const other = ['HDMI', 'DisplayPort', 'USB-C'].filter(x => x !== a && Object.keys(m.spec.in).some(k => m.spec.in[k] && INPUT_NAME[k] === x));
+        push('info', `${m.name}: 2台とも ${a} 入力です`, `${a} の入力が2つあるモデルか確かめてください。1つしかなければ、どちらかを${other.length ? `別の入力（${other.join('・')}）` : '別の入力'}につないでください。`, [m.id]);
+      }
+      const hubKids = kidsOf(m.id), usb = [m.link, m.link2].filter(l => l.v === 'usbc' || l.v === 'tb');
+      if (hubKids.length && usb.length === 2) sw.push(`${m.name} の USB ハブにつないだもの（${hubKids.map(k => k.name).join('、')}）は、入力と一緒に切り替わります（KVM 機能があるモデル）`);
+    }
+    for (const d of state.items.filter(isKvm)) {
+      if (d.link && d.link2) { sw.push(`${d.name} のボタンで、つないだ ${kidsOf(d.id).length}台がまとめて切り替わる`); ids.push(d.id); }
+      else if (d.link) push('info', `${d.name}: 2台目の PC が未設定です`, '切替器のカードの「2台目の PC から」で、もう1台の PC を選んでください。', [d.id]);
+    }
+    for (const i of state.items.filter(i => i.cat !== 'monitor' && !isKvm(i) && i.link && i.link2)) {
+      sw.push(`${i.name} は本体の切り替えボタン`); ids.push(i.id);
+      if (/Magic (Keyboard|Mouse|Trackpad)/i.test(i.name)) push('warn', `${i.name}: 切り替えボタンがありません`, 'Apple の Magic Keyboard・Mouse・Trackpad は一度に1台の PC にしかつながらず、PC を替えるたびに Bluetooth のつなぎ直し（またはケーブルでのペアリング）が必要です。よく切り替えるなら、複数の PC を覚えて切り替えられるモデル（Logicool の Easy-Switch など）が楽です。', [i.id]);
+      else push('info', `${i.name}: 2台の PC で使う`, '複数の PC を覚えて切り替えられる（マルチペアリング）モデルか、取扱説明書で確かめてください。', [i.id]);
+    }
+    if (sw.length) push('info', 'PC の切り替え方', sw.join('。') + '。', ids);
+  }
+
+  // 目からモニターまでの距離
+  {
+    const pos = deskPositions(), eye = eyePoint(pos);
+    for (const m of monitors) {
+      const v = viewOf(m, pos, eye); if (!v) continue;
+      const rangeTxt = `${v.inch}インチ ${resName(m.spec)} のおすすめは 約${v.lo}〜${v.hi}cm`;
+      const px = v.d < v.ret * .85 ? `この距離だと画素の粒（文字のギザギザ）が見えることがあります（約${v.ret}cm より離れると見えにくくなります）。` : '';
+      const ang = `画面の横の広がりは ${v.ang}°。`;
+      if (v.d < 40) push('warn', `${m.name}: 目から約${v.d}cm で近すぎます`, `厚生労働省のガイドラインでは、画面まで 40cm 以上離すことになっています。${rangeTxt}です。${px}`, [m.id]);
+      else if (v.d < v.lo - 3) push('warn', `${m.name}: 目から約${v.d}cm でやや近いです`, `${rangeTxt}です。${ang}近いと画面の端を見るのに目や首を大きく動かすことになり、疲れやすくなります。モニターを奥に置くか、大きさを見直してください。${px}`, [m.id]);
+      else if (v.d > v.hi + 10) push('info', `${m.name}: 目から約${v.d}cm で遠めです`, `${rangeTxt}です。文字が小さく見えるので、拡大表示（スケーリング）を上げるか、手前に寄せてください。`, [m.id]);
+      else push('ok', `${m.name}: 目から約${v.d}cm`, `${rangeTxt}です。${ang}${px}`, [m.id]);
+      if (v.side > 35) push('info', `${m.name}: 正面から ${v.side}° 横にあります`, '首を横に向けて見る位置です。長く見る画面は正面に置き、こちらはサブ（資料・チャットなど）にするのがおすすめです。', [m.id]);
     }
   }
 
@@ -1612,7 +1741,7 @@ function specText(it) {
   }
   if (it.cat === 'dock') {
     const ports = Object.entries(s.ports).filter(([, n]) => n).map(([p, n]) => `${PORT_LABEL[p]}×${n}`).join(' / ');
-    return `${s.up === 'tb' ? 'Thunderbolt' : 'USB-C'} 接続 · 給電 ${s.pdW}W · ${ports}`;
+    return `${s.kvm ? 'PC 2台の切替器 · ' : ''}${s.up === 'tb' ? 'Thunderbolt' : s.up === 'usba' ? 'USB' : 'USB-C'} 接続${s.pdW ? ` · 給電 ${s.pdW}W` : ''} · ${ports}`;
   }
   if (it.cat === 'charger') {
     const ports = Object.entries(s.ports).filter(([, n]) => n).map(([p, n]) => `${PORT_LABEL[p]}×${n}`).join(' / ');
@@ -1677,6 +1806,14 @@ function itemHTML(it, checks) {
           `<option value="${esc(linkKey(o))}"${linkKey(o) === cur ? ' selected' : ''}>${esc(o.v === 'bt' ? o.label : `${PORT_LABEL[o.p]} ← ${o.label}`)}</option>`).join('') + `</optgroup>`;
       }
       fields.push(`<label class="fld"><span>接続先</span><select class="text" data-f="link">${html}</select></label>`);
+      if (canSecond(it)) {
+        const o2 = secondOptions(it), cur2 = linkKey(it.link2), g2 = new Map();
+        for (const o of o2) { if (!g2.has(o.h)) g2.set(o.h, []); g2.get(o.h).push(o); }
+        let h2 = `<option value="">つながない</option>`;
+        for (const [hid, os] of g2) h2 += `<optgroup label="${esc(byId(hid).name)}">` + os.map(o => `<option value="${esc(linkKey(o))}"${linkKey(o) === cur2 ? ' selected' : ''}>${esc(o.v === 'bt' ? o.label : `${PORT_LABEL[o.p]} ← ${o.label}`)}</option>`).join('') + `</optgroup>`;
+        if (o2.length) fields.push(`<label class="fld"><span>2台目の PC から</span><select class="text" data-f="link2">${h2}</select></label>`);
+        else if (it.link) fields.push(`<span class="hint">${it.cat === 'monitor' ? 'もう1台の PC からつなげる入力がありません' : 'もう1台の PC にはつなげません'}</span>`);
+      }
     } else {
       fields.push(`<span class="hint">PC・ドック・充電器を追加すると接続先を選べます</span>`);
     }
@@ -1791,7 +1928,8 @@ function specEditor(it) {
     + num('maxDisp', '外部ディスプレイ（台）', s.maxDisp || 1) + num('chargeW', '推奨の給電 (W)', s.chargeW || 0)
     + tog('magsafe', 'MagSafe などで充電', s.magsafe) + tog('dsc', 'DSC 対応', s.dsc !== false)
     + `<span class="hint full">映像の欄は、そのポートから出せる映像の規格です。USB-C で映像が出ないなら「なし」にします。</span>`;
-  if (it.cat === 'dock') return sel('up', 'PC とのつなぎ方', s.up, [['tb', 'Thunderbolt'], ['usbc', 'USB-C']]) + num('pdW', 'PC への給電 (W)', s.pdW || 0)
+  if (it.cat === 'dock') return sel('up', 'PC とのつなぎ方', s.up, [['tb', 'Thunderbolt'], ['usbc', 'USB-C'], ['usba', 'USB（USB-B の口）']]) + num('pdW', 'PC への給電 (W)', s.pdW || 0)
+    + tog('kvm', 'PC 2台の切替器（KVM）', s.kvm)
     + ports(['tb', 'usbc', 'usba', 'hdmi', 'dp']) + outs();
   if (it.cat === 'charger') return ports(['usbc', 'usba']) + num('totalW', '合計の出力 (W)', s.totalW || 0) + num('portW', '1ポートの最大 (W)', s.portW || 0);
   if (it.cat === 'arm') {
@@ -1812,8 +1950,8 @@ function specEditor(it) {
 // 機材リストの表示: false 詳しく / true コンパクト（スマホでは最初からコンパクト）
 let listCompact = (() => { try { const v = localStorage.getItem('desk-setup:compact'); if (v != null) return v === '1'; } catch (e) {} return matchMedia('(max-width: 900px)').matches; })();
 function compactHTML(it, checks) {
-  const worst = sevOf(it, checks), h = it.link && byId(it.link.h);
-  const sub = [it.plan && '買う予定', h && `→ ${h.name}`].filter(Boolean).join(' · ');
+  const worst = sevOf(it, checks), h = it.link && byId(it.link.h), h2 = it.link2 && byId(it.link2.h);
+  const sub = [it.plan && '買う予定', h && `→ ${h.name}${h2 ? ` ／ ${h2.name}` : ''}`].filter(Boolean).join(' · ');
   return `<div class="item compact${worst ? ' sev-' + worst.sev : ''}${it.plan ? ' plan' : ''}" data-id="${it.id}"><button class="item-row" type="button" data-expand="${it.id}" aria-expanded="false" aria-label="${esc(it.name)} を開く">
     <span class="ir-name">${esc(it.name)}${sub ? `<small>${esc(sub)}</small>` : ''}</span>
     <span class="ir-price">${it.price != null ? yen(it.price) : '—'}</span>
@@ -1918,6 +2056,7 @@ function serialize(forShare = false) {
     v: 1, t: state.title || undefined, u: state.handle || undefined,
     dk: state.desk && (state.desk.w !== 140 || state.desk.d !== 70) ? [state.desk.w, state.desk.d] : undefined,
     dt: state.desk && state.desk.t && state.desk.t !== 2.5 ? state.desk.t : undefined,
+    de: state.desk && Number.isFinite(state.desk.e) && state.desk.e !== EYE_DEFAULT ? state.desk.e : undefined,
     i: state.items.map(it => {
       const base = it.cid && catalogById(it.cid);
       const o = { id: it.id };
@@ -1926,6 +2065,7 @@ function serialize(forShare = false) {
       if (it.price != null) o.p = it.price;
       if (!base || JSON.stringify(base.spec) !== JSON.stringify(it.spec)) o.s = it.spec;
       if (it.link) o.l = [it.link.h, it.link.p, it.link.v];
+      if (it.link2) o.l2 = [it.link2.h, it.link2.p, it.link2.v];
       if (it.power && it.power !== 'auto') o.w = it.power;
       if (it.clam) o.m = 1;
       if (it.plan) o.pl = 1;
@@ -1950,8 +2090,9 @@ function deserialize(o) {
   const st = emptyState();
   st.title = String(o.t || '').slice(0, 40);
   st.handle = String(o.u || '').slice(0, 30);
-  if (Array.isArray(o.dk) && o.dk.every(n => Number.isFinite(n) && n >= 40 && n <= 400)) st.desk = { w: o.dk[0], d: o.dk[1], t: 2.5 };
+  if (Array.isArray(o.dk) && o.dk.every(n => Number.isFinite(n) && n >= 40 && n <= 400)) st.desk = { w: o.dk[0], d: o.dk[1], t: 2.5, e: EYE_DEFAULT };
   if (Number.isFinite(o.dt) && o.dt > 0 && o.dt <= 15) st.desk.t = o.dt;
+  if (Number.isFinite(o.de) && o.de >= -20 && o.de <= 80) st.desk.e = o.de;
   let max = -1;
   for (const x of Array.isArray(o.i) ? o.i : []) {
     const base = x.c && catalogById(x.c);
@@ -1965,6 +2106,7 @@ function deserialize(o) {
       id, cid: base ? x.c : null, cat, name: String(x.n ?? (base ? base.name : CAT_LABEL[cat])).slice(0, 60),
       price: Number.isFinite(x.p) ? x.p : null, spec,
       link: Array.isArray(x.l) ? { h: String(x.l[0]), p: x.l[1], v: x.l[2] } : null,
+      link2: Array.isArray(x.l2) ? { h: String(x.l2[0]), p: x.l2[1], v: x.l2[2] } : null,
       power: x.w ? String(x.w) : 'auto', clam: !!x.m, plan: !!x.pl,
       pkind: x.pk === 'r' ? 'ref' : 'paid', pdate: /^\d{4}-\d{2}$/.test(x.pd || '') ? x.pd : '',
       tot: TOT_LABEL[x.tt] ? x.tt : '', memo: String(x.me || '').slice(0, 80),
@@ -2283,6 +2425,7 @@ function wire() {
     if (f === 'price') { e.target.value = it.price != null ? it.price.toLocaleString('ja-JP') : ''; return; }
     if (f === 'name') { if (!it.name.trim()) it.name = CAT_LABEL[it.cat]; commit(true); return; }
     if (f === 'link') { it.link = v ? (([h, p, vv]) => ({ h, p, v: vv }))(v.split('|')) : null; }
+    if (f === 'link2') { it.link2 = v ? (([h, p, vv]) => ({ h, p, v: vv }))(v.split('|')) : null; }
     if (f === 'pkind') it.pkind = v === 'ref' ? 'ref' : 'paid';
     if (f === 'pdate') it.pdate = /^\d{4}-\d{2}$/.test(v) ? v : '';
     if (f === 'tot') it.tot = TOT_LABEL[v] ? v : '';
@@ -2300,7 +2443,8 @@ function wire() {
     if (f === 'maxDisp') s.maxDisp = int(1, 16);
     if (f === 'chargeW') { const n = parseFloat(v); s.chargeW = n > 0 && n <= 300 ? n : 0; }
     if (f === 'magsafe') s.magsafe = e.target.checked;
-    if (f === 'up') s.up = v === 'usbc' ? 'usbc' : 'tb';
+    if (f === 'up') s.up = v === 'usbc' || v === 'usba' ? v : 'tb';
+    if (f === 'kvm') { s.kvm = e.target.checked; it._open = true; }
     if (f === 'totalW') s.totalW = int(0, 500);
     if (f === 'portW') s.portW = int(0, 300);
     if (['loadMin', 'loadMax', 'clampMin', 'clampMax', 'grommetMax', 'maxInch'].includes(f)) {
@@ -2314,7 +2458,7 @@ function wire() {
       if (on) cur.add(k); else cur.delete(k);
       s.conn = Object.keys(CONN_LABEL).filter(c => cur.has(c));
     }
-    if (f.startsWith('ports.') || f.startsWith('out.') || f.startsWith('conn.') || f === 'up') it._open = true;
+    if (f.startsWith('ports.') || f.startsWith('out.') || f.startsWith('conn.') || f === 'up' || f === 'kvm') it._open = true;
     if (f.startsWith('in.')) { const k = f.slice(3); if (v) s.in[k] = v; else delete s.in[k]; }
     commit(true);
   });
@@ -3206,6 +3350,11 @@ function wiringModel() {
     return n;
   };
   roots.forEach((r, i) => { if (i) row += 0.4; place(r, 0, null); });
+  // 2台目の PC からのつながり（並べ方は変えずに線だけ足す）
+  for (const it of state.items.filter(i => i.link2)) {
+    const a = nodes.find(n => n.it.id === it.link2.h), b = nodes.find(n => n.it === it);
+    if (a && b) edges.push({ from: a, to: { ...b, it: { ...it, link: it.link2, _sec: true } } });
+  }
   // ケーブルの数
   const cables = {}; let wireless = 0, pcCables = 0;
   for (const e of edges) {
@@ -3227,7 +3376,7 @@ function edgeLabel(e) {
   let t = `${PORT_SHORT[l.p] || l.p} ← ${CABLE_SHORT[l.v] || l.v}`;
   if ((l.v === 'usbc' || l.v === 'tb') && it.spec.pdW && e.from.it.cat === 'computer') {
     const ps = powerSource(e.from.it);
-    if (ps.kind === 'pd' && ps.item === it) t += ` · 給電${ps.W}W`;
+    if (ps.kind === 'pd' && ps.item.id === it.id) t += ` · 給電${ps.W}W`;
   }
   return t;
 }
@@ -3271,7 +3420,7 @@ async function drawWiring() {
     const x1 = a.x + NW, y1 = a.y + NH / 2, x2 = b.x, y2 = b.y + NH / 2;
     const bad = worst(e.to.it);
     x.strokeStyle = bad || (e.to.it.link.v === 'bt' || e.to.it.link.v === 'receiver' ? C.muted : C.fg);
-    x.lineWidth = 2; x.setLineDash(e.to.it.link.v === 'bt' ? [5, 5] : []);
+    x.lineWidth = 2; x.setLineDash(e.to.it.link.v === 'bt' ? [5, 5] : e.to.it._sec ? [10, 5] : []);   // 2台目の PC からの線は破線
     x.beginPath(); x.moveTo(x1, y1); x.bezierCurveTo(x1 + GAP * .5, y1, x2 - GAP * .5, y2, x2, y2); x.stroke();
     x.setLineDash([]);
     x.fillStyle = x.strokeStyle; x.beginPath(); x.arc(x2, y2, 3.5, 0, Math.PI * 2); x.fill();
@@ -3282,8 +3431,9 @@ async function drawWiring() {
     const t = edgeLabel(e);
     x.font = `400 11px ${M}`;
     const tw = Math.min(x.measureText(t).width, GAP - 24);
-    x.fillStyle = C.page; x.fillRect(x2 - 12 - tw - 6, y2 - 22, tw + 12, 16);
-    x.fillStyle = bad || C.sub; x.textAlign = 'right'; x.fillText(fit(t, GAP - 24), x2 - 12, y2 - 10); x.textAlign = 'left';
+    const ly = e.to.it._sec ? y2 + 20 : y2 - 10;   // 2台目の PC からの線のラベルは、線の端の下に
+    x.fillStyle = C.page; x.fillRect(x2 - 12 - tw - 6, ly - 12, tw + 12, 16);
+    x.fillStyle = bad || C.sub; x.textAlign = 'right'; x.fillText(fit(t, GAP - 24), x2 - 12, ly); x.textAlign = 'left';
   }
   // 箱
   for (const n of m.nodes) {
@@ -3610,7 +3760,7 @@ function lookColor(it) { return LOOK_COLORS[it.color] ? it.color : autoColor(it)
 // モニターの置き方: v 縦置き / c 曲面 / a モニターアーム
 // ドックの置き場所: u 机の下（天板の裏）/ t 机の上 / f 床。自動なら Thunderbolt ドックは机の下、USB-C ハブは机の上
 const PLACE_LABEL = { u: '机の下', t: '机の上', f: '床' };
-function autoPlace(it) { return it.spec.up === 'usbc' ? 't' : 'u'; }
+function autoPlace(it) { return it.spec.up === 'tb' ? 'u' : 't'; }   // 切替器や USB-C ハブは手の届く机の上
 function dockPlace(it) { return it.cat !== 'dock' ? '' : PLACE_LABEL[it.place] ? it.place : autoPlace(it); }
 const underDesk = it => dockPlace(it) === 'u';
 function monLook(it) { const m = it.mon || ''; return { v: m.includes('v'), c: m.includes('c'), a: m.includes('a') || !!armOf(it) }; }
@@ -3743,7 +3893,7 @@ function cableKind(it, host) {
 
 // 配置図の大きさ: 1cm = 7px、天板の左上が (ox, oy)
 function deskGeom() {
-  const S = 7, PADX = 34, TOP = 14, BOTM = 16;   // cm
+  const S = 7, PADX = 34, TOP = 14, BOTM = 22;   // cm
   return { S, RW: (state.desk.w + PADX * 2) * S, RH: (state.desk.d + TOP + BOTM + 10) * S, ox: PADX * S, oy: (TOP + 10) * S };
 }
 // 配置図の番号: 奥の列から、左から右へ
@@ -3765,8 +3915,9 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
   const X = x => ox + x * S, Y = y => oy + y * S;
   // 選んだ機材と、そのつながり（つなぎ先をたどった先と、これにつながっているもの）
   const selIt = !forExport && sel && byId(sel), selUp = selIt ? ancestors(selIt) : [];
-  const rel = new Set(selIt ? [sel, ...selUp.map(h => h.id), ...state.items.filter(i => i.link && i.link.h === sel).map(i => i.id)] : []);
-  const relEdge = it => !!selIt && (it === selIt || it.link.h === sel || selUp.includes(it));
+  const selUp2 = selIt && selIt.link2 ? [byId(selIt.link2.h), ...ancestors(byId(selIt.link2.h) || {})].filter(Boolean) : [];
+  const rel = new Set(selIt ? [sel, ...selUp.map(h => h.id), ...selUp2.map(h => h.id), ...kidsOf(sel).map(i => i.id)] : []);
+  const relEdge = it => !!selIt && (it.id === sel || it.link.h === sel || selUp.includes(byId(it.id)) || selUp2.includes(byId(it.id)));
   // 縮小して見ているとき（スマホなど）は、名前の代わりに番号（下の一覧と対応）
   const nums = deskNumbers(), useNum = !forExport && K >= 1.5;
   const out = [];
@@ -3796,6 +3947,18 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
   out.push(`<path d="M ${f1(X(W / 2) - 26 * KL)} ${f1(seatY)} q ${f1(26 * KL)} ${f1(22 * KL)} ${f1(52 * KL)} 0" fill="none" stroke="${C.muted}" stroke-width="${f1(1.5 * KL)}" stroke-linecap="round"/>`);
   out.push(`<text x="${f1(X(W / 2))}" y="${f1(seatY + 16 * KL + fsO)}" text-anchor="middle" fill="${C.muted}" font-family='${FS}' font-size="${f1(fsO)}">手前（座る側）</text>`);
   out.push(`<text x="${ox + 10}" y="${f1(Y(D) + 14 + 8 * K)}" fill="${C.muted}" font-family='${FM}' font-size="${f1(9.5 * K)}">${W}×${D}cm</text>`);
+  // 目の位置と、モニターの画面までの距離（点線）
+  const eye = eyePoint(pos), sights = items.filter(i => i.cat === 'monitor').map(m => ({ m, v: viewOf(m, pos, eye) })).filter(x => x.v);
+  if (sights.length) {
+    const ex = X(eye.x), ey = Y(Math.min(eye.y, D + 20));
+    for (const { m, v } of sights) {
+      const near = v.d < v.lo - 3, stroke = near ? C.warn : C.muted, dim = selIt && sel !== m.id ? .25 : .75;
+      const mx = X(v.sx), my = Y(v.sy) + 1.5 * S, t = `${v.d}cm`, fs = 10 * KL, tw = textW(t, fs) + 8 * KL, lx = ex + (mx - ex) * .5, ly = ey + (my - ey) * .5;
+      out.push(`<g opacity="${dim}" pointer-events="none"><line x1="${f1(ex)}" y1="${f1(ey)}" x2="${f1(mx)}" y2="${f1(my)}" stroke="${stroke}" stroke-width="${f1(1.3 * KL)}" stroke-dasharray="${f1(1.5 * KL)} ${f1(4 * KL)}" stroke-linecap="round"/>`
+        + `<rect x="${f1(lx - tw / 2)}" y="${f1(ly - 7 * KL)}" width="${f1(tw)}" height="${f1(14 * KL)}" rx="${f1(7 * KL)}" fill="${C.page}" stroke="${stroke}" stroke-width="1"/><text x="${f1(lx)}" y="${f1(ly + 3.5 * KL)}" text-anchor="middle" fill="${near ? C.warn : C.sub}" font-family='${FM}' font-size="${f1(fs)}">${t}</text></g>`);
+    }
+    out.push(`<g pointer-events="none"><title>目の位置</title><path d="M ${f1(ex - 9 * KL)} ${f1(ey)} Q ${f1(ex)} ${f1(ey - 8 * KL)} ${f1(ex + 9 * KL)} ${f1(ey)} Q ${f1(ex)} ${f1(ey + 8 * KL)} ${f1(ex - 9 * KL)} ${f1(ey)} Z" fill="${C.card}" stroke="${C.sub}" stroke-width="${f1(1.3 * KL)}"/><circle cx="${f1(ex)}" cy="${f1(ey)}" r="${f1(2.6 * KL)}" fill="${C.sub}"/></g>`);
+  }
 
   // ケーブルの端: モニターは画面の裏、それ以外は真ん中
   const end = it => { const p = pos.get(it.id); if (!p) return null; return it.cat === 'monitor' ? [X(p.x), Y(p.y + body3d(it).pz) - 1.5 * S] : [X(p.x), Y(p.y)]; };
@@ -3811,9 +3974,10 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
     const L = P[P.length - 1]; return d + ` L ${f1(L[0])} ${f1(L[1])}`;
   };
   // 有線は、机の奥の端に沿った「配線の通り道」を通す（ケーブルごとに少しずつずらす）。近いものどうしはまっすぐ
-  const wired = items.filter(it => { const h = it.link && byId(it.link.h); return h && pos.has(h.id) && cableKind(it, h) !== 'wireless'; })
+  const evs = edgeViews(items), ek = it => it.id + (it._sec ? '/2' : '');
+  const wired = evs.filter(it => { const h = byId(it.link.h); return h && pos.has(h.id) && cableKind(it, h) !== 'wireless'; })
     .sort((a, b) => pos.get(a.link.h).x - pos.get(b.link.h).x || pos.get(a.id).x - pos.get(b.id).x);
-  const lane = new Map(wired.map((it, i) => [it.id, i]));
+  const lane = new Map(wired.map((it, i) => [ek(it), i]));
   const labels = [], ends = [], badges = [], showAll = $('#deskLabels').checked, tray = d2.route === 'tray';
   // 機材の外形（画面上）: 線の端を外形の上に置くため。モニターは画面の帯
   const outline = it => { const p = pos.get(it.id), [w, h] = footprint(it); return it.cat === 'monitor' ? [X(p.x), Y(p.y + body3d(it).pz), w * S / 2, 1.1 * S] : [X(p.x), Y(p.y), w * S / 2, h * S / 2]; };
@@ -3821,8 +3985,8 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
   const perHost = new Map();
   const PORT_SHORT = { tb: 'TB', usbc: 'USB-C', usba: 'USB-A', hdmi: 'HDMI', dp: 'DP', bt: 'BT' };
   const cables = [];
-  for (const it of items) {
-    const h = it.link && byId(it.link.h);
+  for (const it of evs) {
+    const h = byId(it.link.h);
     if (!h || !pos.has(h.id)) continue;
     const a = end(h), b = end(it); if (!a || !b) continue;
     const kind = cableKind(it, h), wl = kind === 'wireless', on = relEdge(it);
@@ -3831,7 +3995,7 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
     let d, lp, ea, eb;
     if (tray && !wl && Math.hypot(a[0] - b[0], a[1] - b[1]) >= 22 * S) {
       // 机の奥を通す: 奥へ進んで、奥の端に沿って横へ、つなぎ先の真上から下ろす
-      const cy = Y(1.4 + (lane.get(it.id) % 7) * .8);
+      const cy = Y(1.4 + (lane.get(ek(it)) % 7) * .8);
       eb = exitPt(it, 0, cy - b[1]); ea = exitPt(h, 0, cy - a[1]);
       d = route([[eb[0], eb[1]], [b[0], cy], [a[0], cy], [ea[0], ea[1]]]); lp = [b[0], (b[1] + cy) / 2];
     } else {
@@ -3854,7 +4018,7 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
     // モニターから PC への給電は、逆向きに流れる線をもう1本
     if (!c.dim && (c.it.link.v === 'usbc' || c.it.link.v === 'tb') && c.it.spec.pdW && c.h.cat === 'computer') {
       const ps = powerSource(c.h);
-      if (ps.kind === 'pd' && ps.item === c.it) out.push(`<path${forExport ? '' : ' class="flow rev"'} d="${c.d}" fill="none" stroke="${C.warn}" stroke-width="${f1(1.6 * KL)}" stroke-linecap="round"${forExport ? ' stroke-dasharray="3 11"' : ''}/>`);
+      if (ps.kind === 'pd' && ps.item.id === c.it.id) out.push(`<path${forExport ? '' : ' class="flow rev"'} d="${c.d}" fill="none" stroke="${C.warn}" stroke-width="${f1(1.6 * KL)}" stroke-linecap="round"${forExport ? ' stroke-dasharray="3 11"' : ''}/>`);
     }
     // 両端の点と、つなぎ先の側のポート名（機材の上に重ねて、どこに刺さっているか分かるように）
     if (!c.wl) {
@@ -4025,7 +4189,7 @@ function portIcon(p) {
 function portSlots(h) {
   const P = h.spec.ports || {}, out = [];
   for (const p of PORT_ORDER) {
-    const n = P[p] || 0, occ = state.items.filter(i => i.link && i.link.h === h.id && i.link.p === p);
+    const n = P[p] || 0, occ = edgeViews().filter(i => i.link.h === h.id && i.link.p === p);
     for (let k = 0; k < Math.max(n, occ.length); k++) out.push({ p, occ: occ[k] || null, over: k >= n });
   }
   return out;
@@ -4046,7 +4210,7 @@ function renderPorts() {
   const it = d2.sel && byId(d2.sel);
   if (!it) { box.hidden = true; box.innerHTML = ''; return; }
   const slot = (h, s, mode) => {
-    const mine = s.occ === it, opts = mode === 'pick' ? linkOptions(it).filter(o => o.h === h.id && o.p === s.p && o.v !== 'bt') : [];
+    const mine = !!s.occ && s.occ.id === it.id && !s.occ._sec, opts = mode === 'pick' ? linkOptions(it).filter(o => o.h === h.id && o.p === s.p && o.v !== 'bt') : [];
     const can = opts.length && (!s.occ || mine) && !s.over;
     const occName = s.occ ? (mine ? 'つないでいる' : s.occ.name) : '空き';
     const pending = s.pend;
@@ -4121,8 +4285,8 @@ function renderDeskList() {
     const it = byId(id), h = it.link && byId(it.link.h), p = pos.get(id), [w, d] = footprint(it);
     const off = p.x - w / 2 < -1 || p.x + w / 2 > W + 1 || p.y - d / 2 < -1 || p.y + d / 2 > D + 1;
     const where = off ? '床' : underDesk(it) ? '机の下' : '';
-    const kids = state.items.filter(i => i.link && i.link.h === id).length;
-    const conn = h ? `→ ${h.name}（${edgeLabel({ from: { it: h }, to: { it } })}）` : '';
+    const kids = kidsOf(id).length, h2 = it.link2 && byId(it.link2.h);
+    const conn = (h ? `→ ${h.name}（${edgeLabel({ from: { it: h }, to: { it } })}）` : '') + (h2 ? ` ／ ${h2.name}（${edgeLabel({ from: { it: h2 }, to: { it: { ...it, link: it.link2 } } })}）` : '');
     const sub = [conn, kids ? `${kids}台がつながる` : '', where, it.plan ? '買う予定' : ''].filter(Boolean).join(' ・ ');
     return `<li data-pick="${it.id}"${it.id === d2.sel ? ' aria-current="true"' : ''}><span class="d2-num">${n}</span><span><b>${esc(it.name)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</span></li>`;
   });
@@ -4307,9 +4471,14 @@ function wireDesk() {
   });
   const size = () => {
     const w = parseInt($('#deskW').value, 10), d = parseInt($('#deskD').value, 10);
-    if (w >= 40 && w <= 400 && d >= 40 && d <= 200) { state.desk = { w, d }; save(); d2.view = null; if (wireMode === '3d') openWiring(); else renderDesk(); }
+    if (w >= 40 && w <= 400 && d >= 40 && d <= 200) { state.desk = { ...state.desk, w, d }; save(); d2.view = null; if (wireMode === '3d') openWiring(); else renderDesk(); }
   };
   $('#deskW').addEventListener('change', size); $('#deskD').addEventListener('change', size);
+  $('#deskEye').addEventListener('change', e => {
+    const n = parseFloat(e.target.value);
+    if (n >= 0 && n <= 60) { state.desk = { ...state.desk, e: Math.round(n) }; commit(true); renderDesk(); }
+    else e.target.value = Number.isFinite(state.desk.e) ? state.desk.e : EYE_DEFAULT;
+  });
   $('#deskRoute').addEventListener('change', e => { d2.route = e.target.value === 'tray' ? 'tray' : 'direct'; try { localStorage.setItem('desk-setup:route', d2.route); } catch (err) {} renderDesk(); });
   $('#deskLabels').addEventListener('change', () => {
     labelPref[wireMode] = $('#deskLabels').checked;
@@ -4608,8 +4777,8 @@ function build3d(C, light) {
   // ケーブル（机の裏を回るように少し垂らす）
   const colors = { video: C.fg, usb: C.sub, power: C.warn, wireless: C.muted };
   const flows = [];
-  for (const it of items) {
-    const h = it.link && byId(it.link.h);
+  for (const it of edgeViews(items)) {
+    const h = byId(it.link.h);
     const a = h && anchors.get(h.id), b = anchors.get(it.id);
     if (!a || !b) continue;
     const kind = cableKind(it, h);
@@ -4633,7 +4802,7 @@ function build3d(C, light) {
       const tube = new T.Mesh(new T.TubeGeometry(curve, 48, .45, 8, false), mat(col, { roughness: .4, emissive: col, emissiveIntensity: .15 }));
       tube.castShadow = true; scene.add(tube);
     }
-    const rev = (it.link.v === 'usbc' || it.link.v === 'tb') && h.cat === 'computer' && (() => { const ps = powerSource(h); return ps.kind === 'pd' && ps.item === it; })();
+    const rev = (it.link.v === 'usbc' || it.link.v === 'tb') && h.cat === 'computer' && (() => { const ps = powerSource(h); return ps.kind === 'pd' && ps.item.id === it.id; })();
     const n = kind === 'wireless' ? 2 : 3;
     for (let i = 0; i < n; i++) {
       const dot = new T.Mesh(new T.SphereGeometry(kind === 'wireless' ? .7 : .85, 12, 10), new T.MeshBasicMaterial({ color: rev ? C.warn : col }));
@@ -5014,9 +5183,9 @@ async function openWiring() {
   $('#deskSize').hidden = wireMode === 'tree';
   $('#deskAuto').hidden = wireMode !== 'desk';
   $('#deskLabelsText').textContent = wireMode === '3d' ? '名前' : 'ケーブル名をすべて';
-  $('#routeWrap').hidden = wireMode !== 'desk'; $('#deskRoute').value = d2.route;
+  $('#routeWrap').hidden = wireMode !== 'desk'; $('#eyeWrap').hidden = wireMode !== 'desk'; $('#deskRoute').value = d2.route;
   $('#deskLabels').checked = labelPref[wireMode] !== false;
-  $('#deskW').value = state.desk.w; $('#deskD').value = state.desk.d;
+  $('#deskW').value = state.desk.w; $('#deskD').value = state.desk.d; $('#deskEye').value = Number.isFinite(state.desk.e) ? state.desk.e : EYE_DEFAULT;
   if (wireMode !== '3d') { stop3D(); if (wireMode === 'tree') setFull(false); }
   if (wireMode === '3d') {
     $('#wireHint').textContent = '機材はドラッグで動かせます。選ぶと矢印ボタン（キーボードの矢印キー）で 2cm ずつ動かせます。天板の外まで動かすと床に置きます。置き場所は「机の配置」と共通です。高さや形は目安です。';
