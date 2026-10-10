@@ -264,6 +264,7 @@
 
   /* 追加 */
   .search-row { display: flex; gap: 8px; }
+  .search-row .btn { white-space: nowrap; }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0 0; }
   .chip {
     border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 3px 11px; font-size: 12px; color: var(--text-2);
@@ -279,6 +280,23 @@
   .result b { font-weight: 500; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .result small { color: var(--muted); font-size: 12px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .result .plus { color: var(--accent-fg); font-weight: 700; font-size: 18px; line-height: 1; }
+  .starter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; margin: 4px 0 16px; text-align: left; }
+  .starter { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 12px; padding: 10px 12px; text-align: left; cursor: pointer; font: inherit; }
+  .starter:hover { border-color: var(--accent-fg); }
+  .starter b { display: block; font-size: 14px; }
+  .starter small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+  .paste-box { margin-top: 10px; display: grid; gap: 8px; }
+  .paste-box textarea { min-height: 110px; resize: vertical; font: inherit; font-size: 13px; line-height: 1.6; }
+  .paste-row { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; padding: 8px 0; border-top: 1px solid var(--line); }
+  .paste-row input[type="checkbox"] { margin-top: 3px; }
+  .paste-row.off .pr-main { opacity: .45; }
+  .pr-src { font-size: 12px; color: var(--text-2); margin-bottom: 5px; overflow-wrap: anywhere; }
+  .pr-price { color: var(--accent-fg); font-family: "JetBrains Mono", ui-monospace, monospace; }
+  .pr-sel { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pr-sel select { flex: 1 1 200px; min-width: 0; padding: 6px 28px 6px 10px; font-size: 13px; }
+  .pr-sel select[data-pcat] { flex: 0 1 170px; }
+  .paste-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid var(--line); }
+  @media (max-width: 560px) { .search-row { flex-wrap: wrap; } .search-row #q { flex: 1 1 100%; } .search-row .btn { flex: 1 1 0; } }
   .custom { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); display: grid; grid-template-columns: 130px minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: center; }
   .custom-label { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
   @media (max-width: 760px) { .custom { grid-template-columns: 1fr auto; } .custom select { grid-column: 1 / -1; } }
@@ -691,6 +709,11 @@
         <div class="search-row">
           <input class="text" id="q" type="search" placeholder="機材名で検索（例: MacBook, U2723QE, HHKB）" autocomplete="off" aria-label="機材を検索">
           <button class="btn" id="rankBtn" type="button" title="人気の機材（ランキング）から選ぶ">人気の機材</button>
+          <button class="btn" id="pasteBtn" type="button" aria-expanded="false" aria-controls="pasteBox" title="メモやブログの機材リストを貼り付けて、まとめて追加">まとめて貼り付け</button>
+        </div>
+        <div class="paste-box" id="pasteBox" hidden>
+          <textarea class="text" id="pasteText" rows="5" placeholder="メモやブログの機材リストを貼り付けてください（1行に1つ）。例:&#10;MacBook Pro 14 M4 Pro ¥328,800&#10;Dell U2723QE 72,800円&#10;HHKB Hybrid Type-S 白" aria-label="機材リストを貼り付け"></textarea>
+          <div id="pasteRows"></div>
         </div>
         <p class="fine rank-note" id="rankNote">「人気の機材」: デスク発信者がよく使っている機材と、このツールの利用者に人気の機材です。</p>
         <div class="chips" id="chips"></div>
@@ -1175,6 +1198,121 @@ function addCustom(cat, name) {
   flashItem(it.id);
   dockHint(it);
 }
+// ---- 入力を楽にする ----
+// 何点かまとめて追加する（「戻す」1回で全部戻る）。e: { cid } か { cat, name }。price（円）・color は任意。commit は呼ぶ側で
+function addBatch(entries) {
+  const added = [];
+  for (const e of entries) {
+    const c = e.cid && catalogById(e.cid);
+    if (e.cid && !c) continue;
+    const it = c ? newItem(c.cat, c.name, c.spec, e.cid) : newItem(e.cat, e.name || CAT_LABEL[e.cat], TEMPLATE[e.cat] ? catalogById(TEMPLATE[e.cat]).spec : { conn: DEFAULT_CONN[e.cat] || [] }, null);
+    if (Number.isFinite(e.price) && e.price > 0) it.price = e.price;
+    else if (c && c.ref) { it.price = c.ref; it.pkind = 'ref'; it.pdate = CATALOG_PRICE_DATE; }
+    if (e.color) it.color = e.color;
+    it._exp = false;
+    state.items.push(it); added.push(it);
+  }
+  // 全部入れてからつなぐ（PC が後の行にあっても選べるように）。ドック → モニター → ほかの順
+  const order = { dock: 0, monitor: 1 };
+  for (const it of added.slice().sort((a, b) => (order[a.cat] ?? 2) - (order[b.cat] ?? 2))) { if (!it.link) autoLink(it); }
+  for (const it of added) autoMount(it);
+  return added;
+}
+// よくある構成（カタログの機材で組む。あとで「機種を変える」で入れ替えられる）
+const STARTERS = [
+  { id: 'mac1', label: 'MacBook ＋ 4K モニター', sub: 'MacBook Air・Dell U2723QE・MX Keys S・MX Master 3S', items: ['mba13-m5', 'u2723qe', 'mx-keys-s', 'mx-master-3s'] },
+  { id: 'mac2', label: 'MacBook ＋ モニター2台', sub: 'MacBook Pro・CalDigit TS4・Dell U2723QE ×2・Magic Keyboard・Trackpad', items: ['mbp14-m5pro', 'caldigit-ts4', 'u2723qe', 'u2723qe', 'magic-kb', 'magic-trackpad'] },
+  { id: 'mini', label: 'Mac mini ＋ Studio Display', sub: 'Mac mini・Studio Display・Magic Keyboard・Trackpad・スピーカー', items: ['macmini-m6', 'studio-display-tb5', 'magic-kb', 'magic-trackpad', 'edifier-mr4'] },
+  { id: 'win', label: 'Windows ノート ＋ モニター', sub: 'ThinkPad X1 Carbon・Dell U2723QE・MX Keys S・MX Master 3S', items: ['thinkpad-x1c13', 'u2723qe', 'mx-keys-s', 'mx-master-3s'] },
+  { id: 'game', label: 'ゲーミング PC', sub: 'デスクトップPC・4K 144Hz 有機EL・Keychron・PRO X SUPERLIGHT 2・ヘッドホン', items: ['win-desktop', '27gr93u', 'keychron-q1max', 'gpx-sl2', 'wh1000xm6'] },
+  { id: 'two', label: 'PC 2台（Mac ＋ 自作PC）', sub: 'MacBook Pro・デスクトップPC・モニター・キーボード・マウスを2台で共有', items: ['mbp14-m5pro', 'win-desktop', 'u2723qe', 'mx-keys-s', 'mx-master-3s'], two: true },
+];
+function addStarter(id) {
+  const st = STARTERS.find(x => x.id === id); if (!st) return;
+  const added = addBatch(st.items.map(cid => ({ cid })));
+  if (st.two) for (const it of added) {
+    const o = secondOptions(it), pick = it.cat === 'monitor' ? o.find(x => x.v === 'dp') || o.find(x => x.v === 'hdmi') : o.find(x => x.v === 'bt') || o[0];
+    if (pick) it.link2 = { h: pick.h, p: pick.p, v: pick.v };
+  }
+  commit(true);
+  toast(`「${st.label}」の ${added.length}点を追加しました。カードの「機種を変える」で、自分の機材に入れ替えられます`, 4500);
+}
+// 機種を入れ替える（置き場所・つなぎ先・メモはそのまま）
+function swapModel(it, cid) {
+  const c = catalogById(cid); if (!c || c.cat !== it.cat || c.id === it.cid) return;
+  const old = it.name, linked = new Set(state.items.filter(k => k.link).map(k => k.id));
+  it.cid = cid; it.name = c.name; it.spec = clone(c.spec); it.dim = null;
+  if (it.price == null || it.pkind === 'ref') { it.price = c.ref ?? null; it.pkind = c.ref ? 'ref' : 'paid'; it.pdate = c.ref ? CATALOG_PRICE_DATE : ''; }
+  normalize();
+  for (const k of state.items) if (!k.link && (k === it || linked.has(k.id))) autoLink(k);   // つなげなくなったものは選び直す
+  commit(true);
+  toast(`${old} を ${c.name} に変えました`);
+}
+
+// 検索の表記ゆれ: 全角・半角、大文字・小文字、空白や記号を無視し、カタカナの呼び名も英字で探す
+const KANA_ALIAS = Object.entries({
+  マックブック: 'macbook', マックミニ: 'macmini', マックスタジオ: 'macstudio', マックス: 'max', マック: 'mac', エアー: 'air', エア: 'air', プロ: 'pro', ミニ: 'mini', スタジオ: 'studio',
+  アップル: 'apple', アイパッド: 'ipad', アイフォン: 'iphone', エアポッズ: 'airpods', マジック: 'magic', トラックパッド: 'trackpad', キーボード: 'keyboard', ディスプレイ: 'display', ディスプレー: 'display',
+  デル: 'dell', エルジー: 'lg', ウルトラギア: 'ultragear', エイスース: 'asus', エイサス: 'asus', アスース: 'asus', ベンキュー: 'benq', エイゾー: 'eizo', サムスン: 'samsung', オデッセイ: 'odyssey',
+  ロジクール: 'logicool', ロジテック: 'logitech', マスター: 'master', エニウェア: 'anywhere', キーズ: 'keys', キークロン: 'keychron', リアルフォース: 'realforce', ハッピーハッキング: 'hhkb',
+  カルデジット: 'caldigit', アンカー: 'anker', ベルキン: 'belkin', ソニー: 'sony', エルガト: 'elgato', シュア: 'shure', ボーズ: 'bose', ゼンハイザー: 'sennheiser', エディファイア: 'edifier',
+  スクリーンバー: 'screenbar', ハロー: 'halo', ヒュー: 'hue', エルゴトロン: 'ergotron', フレキシスポット: 'flexispot', ハーマンミラー: 'hermanmiller', シンクパッド: 'thinkpad', サーフェス: 'surface',
+  レイザー: 'razer', スーパーライト: 'superlight', ナッフィー: 'nuphy', ロフリー: 'lofree',
+}).sort((a, b) => b[0].length - a[0].length);
+const toKata = t => t.replace(/[\u3041-\u3096]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60));
+const normQ = t => toKata(String(t).normalize('NFKC').toLowerCase()).replace(/[\s\-_・·,，.。、"'“”″()（）\[\]【】\/／|+＋:：]/g, '');
+const aliasQ = t => { let x = toKata(String(t).normalize('NFKC').toLowerCase()); for (const [k, v] of KANA_ALIAS) x = x.split(k).join(v); return normQ(x); };
+const hayCache = new Map();
+function hayOf(c) {
+  if (!hayCache.has(c.id)) hayCache.set(c.id, normQ(c.name + ' ' + CAT_LABEL[c.cat] + ' ' + c.id) + '|' + aliasQ(c.name));
+  return hayCache.get(c.id);
+}
+const wordHit = (hay, w) => hay.includes(normQ(w)) || hay.includes(aliasQ(w));
+
+// 貼り付けた1行に近いカタログの機材（点数の高い順）
+const qTokens = t => toKata(String(t).normalize('NFKC').toLowerCase()).split(/[\s・·,，、\/／|()（）\[\]【】+＋"“”″]+/).map(x => aliasQ(x)).filter(Boolean);
+const prefixLen = (a, b) => { let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; };
+let catVocab = null;   // カタログの名前に出てくる日本語の語（テンキーレス など）。機種を見分けるのに使う
+function matchCatalog(text, n = 5) {
+  if (!catVocab) catVocab = new Set(CATALOG.flatMap(c => qTokens(c.name)).filter(x => !/[a-z0-9]/.test(x) && x.length >= 3));
+  const L = aliasQ(text), all = qTokens(text), lt = all.filter(x => /[a-z0-9]/.test(x) || catVocab.has(x));   // lt: 型番などの英数字の語と、機種を見分ける日本語の語
+  const out = [];
+  for (const c of CATALOG) {
+    const main = c.name.replace(/[（(][^）)]*[）)]/g, ' ');
+    const ct = qTokens(c.name), inMain = new Set(qTokens(main)), hay = aliasQ(splitBrand(c.name)[0] + c.name);   // 「Apple MacBook …」の Apple も当たりにする
+    let tot = 0, got = 0, rest = all.slice(), Lr = L;
+    for (const t of ct) {
+      const w = t.length * (inMain.has(t) || /^m\d/.test(t) || t === 'pro' || t === 'max' ? 1 : .5);   // かっこの中の型番などは軽く（Mac の M4 Pro などは別）
+      tot += w;
+      const k = rest.indexOf(t);
+      if (k >= 0) { rest.splice(k, 1); Lr = Lr.replace(t, ''); got += w; }   // 同じ語は1回ずつ（「Pro」が1つなら M4 Pro ではなく M4）
+      else if (!all.includes(t) && Lr.includes(t)) { Lr = Lr.replace(t, ''); got += w; }   // 続けて書いたもの（macbookpro14 など）
+      else if (t.length >= 5 && lt.some(x => x.length >= 4 && prefixLen(x, t) >= t.length - 2)) got += w * .7;   // 型番の末尾違い（-W など）
+    }
+    if (!got) continue;
+    const cov = lt.length ? lt.filter(x => hay.includes(x) || ct.some(t => Math.min(x.length, t.length) >= 4 && prefixLen(x, t) >= Math.min(x.length, t.length) - 2)).length / lt.length : 1;
+    out.push({ c, sc: got / tot * (.5 + .5 * cov) + got * .002 });   // 同点なら、より長く一致したもの（M4 より M4 Pro）
+  }
+  return out.sort((a, b) => b.sc - a.sc).slice(0, n);
+}
+// 名前からカテゴリを推測する（カタログにない機材）
+const CAT_GUESS = [
+  ['arm', /アーム|\barm\b|ノートpcスタンド|laptop ?stand/i],
+  ['dock', /ドック|dock|ハブ|\bhub\b|切替器|kvm/i],
+  ['computer', /macbook|mac ?mini|mac ?studio|imac|ノート ?pc|laptop|thinkpad|surface|zenbook|自作|デスクトップ ?pc|ゲーミング ?pc|desktop|^pc$/i],
+  ['monitor', /モニター|ディスプレイ|display|monitor|\d{2}(インチ|型)|ultragear|odyssey|proart|flexscan|zenscreen/i],
+  ['keyboard', /キーボード|keyboard|hhkb|realforce|keychron|nuphy|テンキー|numpad/i],
+  ['mouse', /マウス|mouse|トラックパッド|trackpad|トラックボール|trackball|mx master|mx anywhere|viper|superlight/i],
+  ['camera', /カメラ|webcam|マイク|\bmic\b|brio|c920|facecam|yeti|sm7b/i],
+  ['audio', /スピーカー|speaker|ヘッドホン|ヘッドフォン|イヤホン|airpods|headphone|オーディオ|\bdac\b|アンプ/i],
+  ['lighting', /ライト|light|ランプ|lamp|screenbar|\bhue\b|照明/i],
+  ['charger', /充電器|charger|電源タップ|\bgan\b|モバイルバッテリー/i],
+  ['mobile', /iphone|ipad|galaxy|pixel|スマホ|タブレット/i],
+  ['furniture', /デスク|desk|チェア|chair|天板|マット|椅子|昇降|ワゴン|棚/i],
+  ['arm', /スタンド|stand/i],
+];
+function guessCat(name) { const t = String(name).normalize('NFKC'); const g = CAT_GUESS.find(([, re]) => re.test(t)); return g ? g[0] : 'other'; }
+
 // 追加した直後にいちばん自然な接続先を選んでおく
 // 追加した機材のつなぎ先を自動で選ぶ。空いているポートを優先し、モニターは出せるリフレッシュレート、
 // 同じならドック・ハブ（PC のポートを空けておく）を選ぶ
@@ -1757,6 +1895,53 @@ function render() {
   renderSide();
 }
 
+// ---- まとめて貼り付け ----
+let pasteRows = [];
+const COLOR_WORD = [['white', /ホワイト|白|white/i], ['black', /ブラック|黒|black/i], ['silver', /シルバー|silver/i]];
+function readPaste() {
+  const lines = $('#pasteText').value.split(/\r?\n/);
+  pasteRows = lines.map(l => parseLine(l)).filter(Boolean).slice(0, 60).map(p => {
+    const text = `${p.brand} ${p.name}`.trim(), cands = matchCatalog(text).filter(x => x.sc >= .15);
+    const price = (p.price.match(/[\d,]+/g) || []).reduce((s, d) => s + Number(d.replace(/,/g, '')), 0) || null;
+    const col = COLOR_WORD.find(([, re]) => re.test(text));
+    // 見出しらしい行（カタログに近いものも価格も型番もない）は、最初はチェックを外しておく
+    const on = !!(cands.length || price || /[a-z0-9]/i.test(text.normalize('NFKC')));
+    return { text, price, cands, pick: cands[0] && cands[0].sc >= .55 ? cands[0].c.id : '', cat: guessCat(text), on, color: col ? col[0] : '' };
+  });
+  renderPaste();
+}
+function renderPaste() {
+  const box = $('#pasteRows');
+  if (!pasteRows.length) { box.innerHTML = $('#pasteText').value.trim() ? '<p class="hint">読み取れる行がありませんでした。1行に1つずつ書いてください。</p>' : ''; return; }
+  const on = pasteRows.filter(r => r.on), fromCat = on.filter(r => r.pick).length;
+  box.innerHTML = pasteRows.map((r, i) => `<div class="paste-row${r.on ? '' : ' off'}"><input type="checkbox" data-pon="${i}"${r.on ? ' checked' : ''} aria-label="${esc(r.text)} を追加する">
+    <div class="pr-main"><div class="pr-src">${esc(r.text)}${r.price ? ` <span class="pr-price">${yen(r.price)}</span>` : ''}</div>
+    <div class="pr-sel"><select class="text" data-ppick="${i}" aria-label="カタログの機材">${r.cands.map(x => `<option value="${x.c.id}"${r.pick === x.c.id ? ' selected' : ''}>${esc(x.c.name)}</option>`).join('')}<option value=""${r.pick ? '' : ' selected'}>カタログにない（自分の機材として追加）</option></select>
+    ${r.pick ? '' : `<select class="text" data-pcat="${i}" aria-label="種類">${CATS.map(c => `<option value="${c.id}"${c.id === r.cat ? ' selected' : ''}>${esc(c.label)}</option>`).join('')}</select>`}</div></div></div>`).join('')
+    + `<div class="paste-foot"><span class="hint">カタログから ${fromCat}点・自分の機材として ${on.length - fromCat}点。価格が書いてあれば入れます</span><button class="btn primary" type="button" id="pasteAdd"${on.length ? '' : ' disabled'}>${on.length}点を追加</button></div>`;
+}
+function wirePaste() {
+  const box = $('#pasteBox');
+  $('#pasteBtn').addEventListener('click', () => { box.hidden = !box.hidden; $('#pasteBtn').setAttribute('aria-expanded', String(!box.hidden)); if (!box.hidden) $('#pasteText').focus(); });
+  let t = 0;
+  $('#pasteText').addEventListener('input', () => { clearTimeout(t); t = setTimeout(readPaste, 250); });
+  $('#pasteRows').addEventListener('change', e => {
+    const d = e.target.dataset;
+    if (d.pon) pasteRows[+d.pon].on = e.target.checked;
+    if (d.ppick) pasteRows[+d.ppick].pick = e.target.value;
+    if (d.pcat) pasteRows[+d.pcat].cat = e.target.value;
+    renderPaste();
+  });
+  $('#pasteRows').addEventListener('click', e => {
+    if (!e.target.closest('#pasteAdd')) return;
+    const rows = pasteRows.filter(r => r.on); if (!rows.length) return;
+    const added = addBatch(rows.map(r => r.pick ? { cid: r.pick, price: r.price, color: r.color } : { cat: r.cat, name: r.text.slice(0, 60), price: r.price, color: r.color }));
+    commit(true);
+    $('#pasteText').value = ''; pasteRows = []; renderPaste(); box.hidden = true; $('#pasteBtn').setAttribute('aria-expanded', 'false');
+    toast(`${added.length}点を追加しました`);
+  });
+}
+
 function renderChips() {
   const all = [{ id: '', label: 'すべて' }, ...CATS.filter(c => CATALOG.some(x => x.cat === c.id))];
   $('#chips').innerHTML = all.map(c => `<button class="chip" type="button" data-cat="${c.id}" aria-pressed="${activeCat === c.id}">${esc(c.label)}</button>`).join('');
@@ -1764,14 +1949,15 @@ function renderChips() {
 function renderResults() {
   const q = $('#q').value.trim().toLowerCase();
   if (!q && !activeCat) { $('#results').innerHTML = ''; return; }
-  const words = q.split(/\s+/).filter(Boolean);
-  const hits = CATALOG.filter(c =>
-    (!activeCat || c.cat === activeCat) &&
-    words.every(w => (c.name + ' ' + CAT_LABEL[c.cat] + ' ' + c.id).toLowerCase().includes(w))
-  ).slice(0, words.length ? 20 : 40);
+  const words = q.split(/[\s　]+/).filter(Boolean), qn = normQ(q), qa = aliasQ(q);
+  // 名前が検索語で始まるもの・続けて含むものを先に
+  const rank = c => { const n = normQ(c.name), a = aliasQ(c.name); return (n.startsWith(qn) || a.startsWith(qa) ? 2 : 0) + (n.includes(qn) || a.includes(qa) ? 1 : 0); };
+  const hits = CATALOG.filter(c => (!activeCat || c.cat === activeCat) && words.every(w => wordHit(hayOf(c), w)))
+    .map((c, i) => ({ c, i, r: words.length ? rank(c) : 0 })).sort((a, b) => b.r - a.r || a.i - b.i).map(x => x.c)
+    .slice(0, words.length ? 20 : 40);
   $('#results').innerHTML = hits.length
     ? hits.map(c => `<button class="result" type="button" data-add="${c.id}"><span style="min-width:0"><b>${esc(c.name)}</b><small>${esc(CAT_LABEL[c.cat])} · ${esc(specText(c))}${c.ref ? ` · 参考 ${yen(c.ref)}` : ''}</small></span><span class="plus" aria-hidden="true">＋</span><span class="sr">追加</span></button>`).join('')
-    : `<div class="hint">見つかりませんでした。下の「カタログにないとき」から追加できます。</div>`;
+    : `<div class="hint">見つかりませんでした。下の「カタログにないとき」から追加できます（名前を入れると種類を自動で選びます）。</div>`;
 }
 
 function sevOf(it, checks) {
@@ -1793,6 +1979,10 @@ function itemHTML(it, checks) {
   if (base && base.note && JSON.stringify(base.spec) === JSON.stringify(it.spec)) parts.push(`<div class="spec-note">※ ${esc(base.note)}</div>`);
 
   const fields = [];
+  const sameCat = CATALOG.filter(c => c.cat === it.cat);
+  if (sameCat.length > 1 || (sameCat.length && !it.cid)) {
+    fields.push(`<label class="fld"><span>機種を変える</span><select class="text" data-swap="1" aria-label="機種を変える">${it.cid ? '' : '<option value="" selected>（自分で入れた機材）</option>'}${sameCat.map(c => `<option value="${c.id}"${c.id === it.cid ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label>`);
+  }
   const needsLink = it.cat === 'monitor' || it.cat === 'dock' || ((it.spec.conn || []).length && it.cat !== 'computer' && it.cat !== 'charger');
   if (needsLink) {
     const opts = linkOptions(it);
@@ -1961,7 +2151,9 @@ function compactHTML(it, checks) {
 function renderList() {
   const list = $('#list');
   if (!state.items.length) {
-    list.innerHTML = `<div class="card empty"><p>まだ機材がありません。<br>上の検索から追加するか、サンプルを見てみてください。</p><button class="btn primary" type="button" data-sample>サンプルを読み込む</button></div>`;
+    list.innerHTML = `<div class="card empty"><p>まだ機材がありません。<br>よくある構成から始めて機種を入れ替えるか、上の検索・「まとめて貼り付け」で追加してください。</p>
+      <div class="starter-grid">${STARTERS.map(s => `<button class="starter" type="button" data-starter="${s.id}"><b>${esc(s.label)}</b><small>${esc(s.sub)}</small></button>`).join('')}</div>
+      <button class="btn" type="button" data-sample>サンプルを読み込む</button></div>`;
     return;
   }
   const checks = runChecks();
@@ -2302,9 +2494,16 @@ function wire() {
     $('#customBase').innerHTML = `<option value="">元にする機材: なし（標準の仕様）</option>` + list.map(c => `<option value="${c.id}">元にする: ${esc(c.name)}</option>`).join('');
     $('#customBase').disabled = !list.length;
   };
-  fillBase(); cs.addEventListener('change', fillBase);
+  fillBase(); cs.addEventListener('change', () => { cs.dataset.touched = '1'; fillBase(); });
+  // 名前を入れると種類を推測して選ぶ（自分で選んだあとは変えない）
+  $('#customName').addEventListener('input', e => {
+    if (cs.dataset.touched) return;
+    const g = guessCat(e.target.value);
+    if (g !== 'other' && g !== cs.value) { cs.value = g; fillBase(); }
+  });
 
   $('#q').addEventListener('input', renderResults);
+  wirePaste();
   $('#chips').addEventListener('click', e => {
     const b = e.target.closest('[data-cat]'); if (!b) return;
     activeCat = activeCat === b.dataset.cat ? '' : b.dataset.cat;
@@ -2316,7 +2515,7 @@ function wire() {
   $('#customAdd').addEventListener('click', () => {
     const base = $('#customBase').value, name = $('#customName').value.trim();
     if (base) addBasedOn(base, name); else addCustom(cs.value, name);
-    $('#customName').value = '';
+    $('#customName').value = ''; delete cs.dataset.touched;
   });
   $('#customName').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) $('#customAdd').click(); });
 
@@ -2332,6 +2531,8 @@ function wire() {
       commit(true); return;
     }
     if (e.target.closest('[data-sample]')) loadSample();
+    const stb = e.target.closest('[data-starter]');
+    if (stb) { addStarter(stb.dataset.starter); return; }
     const lm = e.target.closest('[data-list-mode]');
     if (lm) { listCompact = lm.dataset.listMode === '1'; for (const i of state.items) i._exp = false; try { localStorage.setItem('desk-setup:compact', listCompact ? '1' : '0'); } catch (err) {} renderList(); return; }
     const ex = e.target.closest('[data-expand]'), fd = e.target.closest('[data-fold]');
@@ -2383,6 +2584,7 @@ function wire() {
     }
   });
   list.addEventListener('change', e => {
+    if (e.target.dataset.swap) { const it = byId(e.target.closest('.item').dataset.id); if (it && e.target.value) swapModel(it, e.target.value); return; }
     if (e.target.dataset.mount) {
       const a = byId(e.target.closest('.item').dataset.id), mid = e.target.dataset.mount; if (!a) return;
       for (const o of state.items) if (o.cat === 'arm') o.mount = (o.mount || []).filter(id => id !== mid);   // ほかのアームからは外す
