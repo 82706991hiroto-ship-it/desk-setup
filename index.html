@@ -1270,17 +1270,19 @@ function hayOf(c) {
 const wordHit = (hay, w) => hay.includes(normQ(w)) || hay.includes(aliasQ(w));
 
 // 貼り付けた1行に近いカタログの機材（点数の高い順）
-const qTokens = t => toKata(String(t).normalize('NFKC').toLowerCase()).split(/[\s・·,，、\/／|()（）\[\]【】+＋"“”″]+/).map(x => aliasQ(x)).filter(Boolean);
+const qPrep = t => toKata(String(t).normalize('NFKC').toLowerCase()).replace(/([a-z0-9])\+/g, '$1plus').replace(/(\d+(?:\.\d)?)\s*(?:inch|インチ|型|")/g, '$1');   // MV7+ は MV7 と別物、11inch = 11"
+const qTokens = t => qPrep(t).split(/[\s・·,，、\/／|()（）\[\]【】+＋"“”″]+/).map(x => aliasQ(x)).filter(Boolean);
 const prefixLen = (a, b) => { let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; };
 let catVocab = null;   // カタログの名前に出てくる日本語の語（テンキーレス など）。機種を見分けるのに使う
 function matchCatalog(text, n = 5) {
   if (!catVocab) catVocab = new Set(CATALOG.flatMap(c => qTokens(c.name)).filter(x => !/[a-z0-9]/.test(x) && x.length >= 3));
-  const L = aliasQ(text), all = qTokens(text), lt = all.filter(x => /[a-z0-9]/.test(x) || catVocab.has(x));   // lt: 型番などの英数字の語と、機種を見分ける日本語の語
+  const L = aliasQ(qPrep(text)), all = qTokens(text), lt = all.filter(x => /[a-z0-9]/.test(x) || catVocab.has(x));   // lt: 型番などの英数字の語と、機種を見分ける日本語の語
   const out = [];
   for (const c of CATALOG) {
     const main = c.name.replace(/[（(][^）)]*[）)]/g, ' ');
     const ct = qTokens(c.name), inMain = new Set(qTokens(main)), hay = aliasQ(splitBrand(c.name)[0] + c.name);   // 「Apple MacBook …」の Apple も当たりにする
     let tot = 0, got = 0, rest = all.slice(), Lr = L;
+    if (!ct.length) continue;
     for (const t of ct) {
       const w = t.length * (inMain.has(t) || /^m\d/.test(t) || t === 'pro' || t === 'max' ? 1 : .5);   // かっこの中の型番などは軽く（Mac の M4 Pro などは別）
       tot += w;
@@ -1297,15 +1299,16 @@ function matchCatalog(text, n = 5) {
 }
 // 名前からカテゴリを推測する（カタログにない機材）
 const CAT_GUESS = [
+  ['furniture', /デスクマット|desk ?mat|マウスパッド|mouse ?pad|デスクシェルフ|desk ?shelf|モニター台|kanademono|wallhack|sihoo|herman ?miller|steelcase|オカムラ|okamura|天板/i],
   ['arm', /アーム|\barm\b|ノートpcスタンド|laptop ?stand/i],
   ['dock', /ドック|dock|ハブ|\bhub\b|切替器|kvm/i],
   ['computer', /macbook|mac ?mini|mac ?studio|imac|ノート ?pc|laptop|thinkpad|surface|zenbook|自作|デスクトップ ?pc|ゲーミング ?pc|desktop|^pc$/i],
-  ['monitor', /モニター|ディスプレイ|display|monitor|\d{2}(インチ|型)|ultragear|odyssey|proart|flexscan|zenscreen/i],
+  ['monitor', /モニター|ディスプレイ|display|monitor|\d{2}(インチ|型)|ultragear|odyssey|proart|flexscan|zenscreen|alienware ?aw\d|\baw\d{4}/i],
   ['keyboard', /キーボード|keyboard|hhkb|realforce|keychron|nuphy|テンキー|numpad/i],
-  ['mouse', /マウス|mouse|トラックパッド|trackpad|トラックボール|trackball|mx master|mx anywhere|viper|superlight/i],
+  ['mouse', /マウス|mouse|トラックパッド|trackpad|トラックボール|trackball|mx master|mx anywhere|viper|superlight|g ?pro ?(x )?wireless|deathadder|zowie|pulsar/i],
   ['camera', /カメラ|webcam|マイク|\bmic\b|brio|c920|facecam|yeti|sm7b/i],
-  ['audio', /スピーカー|speaker|ヘッドホン|ヘッドフォン|イヤホン|airpods|headphone|オーディオ|\bdac\b|アンプ/i],
-  ['lighting', /ライト|light|ランプ|lamp|screenbar|\bhue\b|照明/i],
+  ['audio', /スピーカー|speaker|ヘッドホン|ヘッドフォン|イヤホン|airpods|headphone|オーディオ|\bdac\b|アンプ|kanto|edifier|audioengine|presonus|genelec|\bnwm\b|topping|fiio|universal audio|\bvolt ?\d|focusrite|scarlett|motu|audient|\biem\b/i],
+  ['lighting', /ライト|light|ランプ|lamp|screenbar|\bhue\b|照明|louis ?poulsen|panthella/i],
   ['charger', /充電器|charger|電源タップ|\bgan\b|モバイルバッテリー/i],
   ['mobile', /iphone|ipad|galaxy|pixel|スマホ|タブレット/i],
   ['furniture', /デスク|desk|チェア|chair|天板|マット|椅子|昇降|ワゴン|棚/i],
@@ -2062,7 +2065,7 @@ function itemHTML(it, checks) {
       <span class="hint">購入先のリンクは共有リンクには入りません。「記事用に書き出す」でだけ使います。</span>
     </div></details>`);
 
-  if (!DESK_SKIP.has(it.cat)) {
+  if (onDeskCat(it)) {
     const bd = baseDims(it), u = it.dim || [], nf = v => String(r1(v));
     const src = it.cid && CATALOG_DIM[it.cid] ? 'カタログの実寸' : '名前と種類からの目安';
     const k = kindOf(it);
@@ -2130,7 +2133,7 @@ function specEditor(it) {
       + num('maxInch', '画面サイズの上限 (インチ)', z(a.maxInch), 1, U) + num('deskT', 'あなたの天板の厚み (cm)', (state.desk && state.desk.t) || 2.5, .1)
       + `<span class="hint full">アームのパッケージや公式サイトの「対応重量」「取り付け可能な天板の厚さ」を入れてください。2台用は1本の腕あたりの重さです。</span>`;
   }
-  if (DESK_SKIP.has(it.cat)) return '';
+  if (!onDeskCat(it)) return '';
   const conn = s.conn || [];
   return `<div class="full conn-row">${Object.entries(CONN_LABEL).map(([k, l]) => `<span class="toggle"><input type="checkbox" data-f="conn.${k}"${conn.includes(k) ? ' checked' : ''}> ${l}</span>`).join('')}</div>`
     + num('chargeW', 'USB から取る電力 (W)', s.chargeW || 0, .5)
@@ -3771,6 +3774,7 @@ async function leaveRank() {
 let wireMode = 'desk';
 try { const m = localStorage.getItem('desk-setup:wire-mode'); wireMode = m === 'tree' || m === '3d' ? m : 'desk'; } catch (e) {}
 const DESK_SKIP = new Set(['furniture', 'arm']);
+const onDeskCat = it => !DESK_SKIP.has(it.cat) || /^(deskmat|shelf)$/.test(kindOf(it));   // デスクマット・デスクシェルフは配置図と 3D に出す
 
 // 真上から見た大きさ（cm）
 // ---- 機材の大きさ（cm） ----
@@ -3891,13 +3895,22 @@ const CATALOG_DIM = {
 };
 const MIC_RE = /マイク|\bmic(rophone)?\b|MV7|Wave:?\s?\d|Yeti|SM7|NT-USB|AT20\d\d|FIFINE/i;
 // 形の種類（大きさではなく、カテゴリと名前で決める）
+// 机の上の小物（デスクレシピの写真によく出るもの）。カテゴリがその他・デスクまわりのときに名前から
+const EXTRA_KIND = [
+  ['deskmat', /デスクマット|desk ?mat|マウスパッド|mouse ?pad|フェルトマット|SP-00\d/i],
+  ['shelf', /デスクシェルフ|シェルフ|desk ?shelf|モニター台|机上台|デスクラック/i],
+  ['plant', /植物|観葉|フェイクグリーン|グリーン|plant|fejka|kusa|多肉|サボテン/i],
+  ['clock', /時計|clock|カレンダー|calendar/i],
+  ['controller', /stream ?deck|左手デバイス|macro ?pad|tourbox|loupedeck/i],
+];
 function kindOf(it) {
   const n = it.name;
+  if (it.cat === 'other' || it.cat === 'furniture') { const x = EXTRA_KIND.find(([, re]) => re.test(n)); if (x) return x[0]; }
   switch (it.cat) {
     case 'computer': return /デスクトップ|desktop|tower|タワー/i.test(n) ? 'tower' : /mini|Studio|NUC|ミニPC/i.test(n) ? 'smallpc' : 'laptop';
     case 'monitor': return /モバイル|portable/i.test(n) ? 'portable' : 'monitor';
     case 'mouse': return /trackpad|トラックパッド/i.test(n) ? 'trackpad' : 'mouse';
-    case 'audio': return /AirPods(?! ?Max)|EarPods|イヤホン|Buds|WF-/i.test(n) ? 'earbuds' : /ヘッドホン|ヘッドフォン|WH-|ATH-|AirPods ?Max|headphone/i.test(n) ? 'headphones' : /インターフェース|interface|MOTU|Scarlett|Focusrite/i.test(n) ? 'interface' : MIC_RE.test(n) ? 'mic' : 'speaker';
+    case 'audio': return /AirPods(?! ?Max)|EarPods|イヤホン|Buds|WF-/i.test(n) ? 'earbuds' : /ヘッドホン|ヘッドフォン|WH-|ATH-|AirPods ?Max|headphone|\bnwm\b/i.test(n) ? 'headphones' : /インターフェース|interface|MOTU|Scarlett|Focusrite|\bDAC\b|アンプ|Volt ?\d|Topping|FiiO|Universal Audio/i.test(n) ? 'interface' : MIC_RE.test(n) ? 'mic' : 'speaker';
     case 'camera': return MIC_RE.test(n) ? 'mic' : 'webcam';
     case 'lighting': return /ScreenBar|モニターライト|monitor ?light/i.test(n) ? 'monbar' : /ライトバー|light ?bar|Play/i.test(n) ? 'lightbar' : 'lamp';
     case 'mobile': return /iPad|タブレット|tablet/i.test(n) ? 'tablet' : /スタンド|3-in-1|stand/i.test(n) ? 'stand' : 'phone';
@@ -3944,6 +3957,11 @@ function guessDims(it) {
     case 'phone': return [7.5, 15.5, .8];
     case 'dock': return [14, 8, 3];
     case 'charger': return [8, 8, 3];
+    case 'deskmat': return /マウスパッド|mouse ?pad/i.test(n) ? [45, 40, .3] : [90, 40, .3];
+    case 'shelf': return [90, 22, 10];
+    case 'plant': return [15, 15, 30];
+    case 'clock': return [9, 7, 9];
+    case 'controller': return [12, 8.5, 3];
     default: return [12, 12, 6];
   }
 }
@@ -4038,6 +4056,12 @@ function autoDesk(items, W, D, fixed) {
     kind('monbar').forEach(l => put(l, m0.x, py));
   }
   kind('lightbar').forEach((l, i) => put(l, i ? Math.min(W - 6, right + 6) : Math.max(6, left - 6), 8));
+  // デスクマットは手前の真ん中（キーボード・マウスの下）、シェルフはモニターの手前
+  kind('deskmat').forEach((m, i) => { const [w, h] = fp.get(m.id); put(m, W / 2 + i * 8, D - h / 2 - 3 - i * 4); });
+  kind('shelf').forEach((s, i) => { const [, h] = fp.get(s.id); put(s, W / 2, Math.min(D * .5, (mons.length ? 26 : 6) + h / 2 + i * (h + 2))); });
+  kind('plant').forEach((pl, i) => put(pl, W - 10 - i * 18, 10));
+  kind('clock').forEach((c, i) => put(c, W * .68 + i * 12, 30));
+  kind('controller').forEach((c, i) => put(c, W / 2 - 36 - i * 14, D - 30));
   kind('mic').forEach((c, i) => put(c, W / 2 - 38 - i * 14, D * .5));
   by('computer').forEach((c, i) => {
     const [w, h] = fp.get(c.id), k = kindOf(c);
@@ -4056,28 +4080,42 @@ function autoDesk(items, W, D, fixed) {
     else put(d, W + w / 2 + 6, 10 + i * (h + 4));
   });
   by('charger').forEach((c, i) => put(c, -12, 18 + i * 14));      // 充電器は机の下・横
-  let ry = D - 12;
-  for (const it of items) if (!pos.has(it.id)) { put(it, W - 10, ry); ry -= 20; }
+  for (const it of items) if (!pos.has(it.id)) put(it, W - 12, D - 12);   // 決まった置き場所のないものは、右手前のあいている所（下で探す）
   // 重なったら少しずつずらす
   const box = (it, p) => { const [w, h] = fp.get(it.id) || footprint(it); return [p.x - w / 2, p.y - h / 2, p.x + w / 2, p.y + h / 2]; };
   const hit = (a, b) => a[0] < b[2] - .5 && b[0] < a[2] - .5 && a[1] < b[3] - .5 && b[1] < a[3] - .5;
   // 机の下のものは、机の上のものとは重ならないので別に数える
   const placedTop = (fixed || []).filter(f => !underDesk(f.it)).map(f => box(f.it, f.p));
   const placedUnder = (fixed || []).filter(f => underDesk(f.it)).map(f => box(f.it, f.p));
-  for (const it of items) {
+  // 大きいもの・よく使うものから場所を決める（小物がモニターを押し出さないように）
+  const pri = it => it.cat === 'monitor' ? 0 : it.cat === 'computer' ? 1 : /^(keyboard|mouse|trackpad)$/.test(kindOf(it)) ? 2 : it.cat === 'dock' ? 3 : kindOf(it) === 'speaker' ? 4 : 5;
+  const inDesk = (it, p) => { const [w, h] = fp.get(it.id); return p.x - w / 2 >= -.5 && p.x + w / 2 <= W + .5 && p.y - h / 2 >= -.5 && p.y + h / 2 <= D + .5; };
+  // 机の上のあいている所を、置きたかった場所から近い順に探す
+  const findFree = (it, placed, x0, y0) => {
+    const [w, h] = fp.get(it.id); let best = null, bd = Infinity;
+    for (let x = w / 2 + 2; x <= W - w / 2 - 2; x += 4) for (let y = h / 2 + 2; y <= D - h / 2 - 2; y += 4) {
+      const d = Math.hypot(x - x0, y - y0); if (d >= bd) continue;
+      if (!placed.some(b2 => hit(b2, box(it, { x, y })))) { best = { x, y }; bd = d; }
+    }
+    return best;
+  };
+  for (const it of items.slice().sort((a, b) => pri(a) - pri(b))) {
     const placed = underDesk(it) ? placedUnder : placedTop;
+    if (/^(deskmat|shelf)$/.test(kindOf(it))) continue;   // 上に物を載せるので、重なりは気にしない
     if (/^(webcam|monbar|lightbar)$/.test(kindOf(it))) { placed.push(box(it, pos.get(it.id))); continue; }
-    const p = pos.get(it.id);
+    const p = pos.get(it.id), x0 = p.x, y0 = p.y, wasIn = inDesk(it, p);
     for (let n = 0; n < 80 && placed.some(b => hit(b, box(it, p))); n++) {
       p.y -= 3;
       if (p.y < fp.get(it.id)[1] / 2 + 2) { p.y = D - fp.get(it.id)[1] / 2 - 2; p.x -= 6; }
     }
+    // ずらしても重なる・机からはみ出したときは、あいている所を探す
+    if (placed.some(b => hit(b, box(it, p))) || (wasIn && !inDesk(it, p))) { const f = findFree(it, placed, x0, y0); if (f) Object.assign(p, f); else Object.assign(p, { x: x0, y: y0 }); }
     placed.push(box(it, p));
   }
   return pos;
 }
 
-function deskItems() { return state.items.filter(i => !DESK_SKIP.has(i.cat)); }
+function deskItems() { return state.items.filter(onDeskCat); }
 function deskPositions() {
   const W = state.desk.w, D = state.desk.d, items = deskItems();
   const auto = autoDesk(items.filter(i => !i.pos), W, D, items.filter(i => i.pos).map(i => ({ it: i, p: i.pos })));
@@ -4253,6 +4291,11 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
     // モニターに載せるライトとカメラ: 画面の上の細い帯と小さな箱
     if (k === 'monbar') return `<rect class="box" x="${f1(x)}" y="${f1(y + h / 2 - 3)}" width="${f1(w)}" height="6" rx="3" fill="${C.accent}" stroke="${edge === C.line ? C.fg : edge}" stroke-width="1"/>`;
     if (k === 'webcam') return `<rect class="box" x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="3" fill="${C.sub}" stroke="${edge === C.line ? C.sub : edge}" stroke-width="${sw}"/><circle cx="${f1(x + w / 2)}" cy="${f1(y + h - 4)}" r="2.5" fill="${C.page}"/>`;
+    if (k === 'deskmat') return `<rect class="box" x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="${f1(Math.min(10, h / 6))}" fill="${C.line}" fill-opacity=".38" stroke="${edge}" stroke-width="${sw}"${dash}/>`;
+    if (k === 'shelf') return `<rect class="box" x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="3" fill="${C.card}" stroke="${edge === C.line ? C.sub : edge}" stroke-width="${sw}"${dash}/><line x1="${f1(x + 4)}" y1="${f1(y + h * .35)}" x2="${f1(x + w - 4)}" y2="${f1(y + h * .35)}" stroke="${C.line}" stroke-width="1"/><line x1="${f1(x + 4)}" y1="${f1(y + h * .68)}" x2="${f1(x + w - 4)}" y2="${f1(y + h * .68)}" stroke="${C.line}" stroke-width="1"/>`;
+    if (k === 'plant') { const r = Math.min(w, h) / 2; return `<circle class="box" cx="${f1(x + w / 2)}" cy="${f1(y + h / 2)}" r="${f1(r)}" fill="${C.fg}" fill-opacity=".28" stroke="${edge === C.line ? C.fg : edge}" stroke-width="${sw}"/>` + [0, 72, 144, 216, 288].map(a => `<ellipse cx="${f1(x + w / 2 + Math.cos(a * Math.PI / 180) * r * .45)}" cy="${f1(y + h / 2 + Math.sin(a * Math.PI / 180) * r * .45)}" rx="${f1(r * .32)}" ry="${f1(r * .16)}" transform="rotate(${a} ${f1(x + w / 2 + Math.cos(a * Math.PI / 180) * r * .45)} ${f1(y + h / 2 + Math.sin(a * Math.PI / 180) * r * .45)})" fill="${C.fg}" opacity=".55"/>`).join(''); }
+    if (k === 'clock') return `${`<rect class="box" x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="${f1(Math.min(w, h) / 4)}" fill="${C.page}" stroke="${edge}" stroke-width="${sw}"${dash}/>`}<circle cx="${f1(x + w / 2)}" cy="${f1(y + h / 2)}" r="${f1(Math.min(w, h) * .3)}" fill="none" stroke="${C.sub}" stroke-width="1"/>`;
+    if (k === 'controller') { const o2 = [`<rect class="box" x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="${f1(Math.min(6, h / 4))}" fill="${C.page}" stroke="${edge}" stroke-width="${sw}"${dash}/>`]; const cs = 5, rs = 3, kw = (w - 6) / cs, kh = (h - 6) / rs; for (let r = 0; r < rs; r++) for (let c = 0; c < cs; c++) o2.push(`<rect x="${f1(x + 3 + c * kw + .8)}" y="${f1(y + 3 + r * kh + .8)}" width="${f1(kw - 1.6)}" height="${f1(kh - 1.6)}" rx="1.2" fill="${C.text}" opacity=".55"/>`); return o2.join(''); }
     if (k === 'mouse') return `<ellipse class="box" cx="${f1(x + w / 2)}" cy="${f1(y + h / 2)}" rx="${f1(w / 2)}" ry="${f1(h / 2)}" fill="${C.page}" stroke="${edge}" stroke-width="${sw}"${dash}/><line x1="${f1(x + w / 2)}" y1="${f1(y + 2)}" x2="${f1(x + w / 2)}" y2="${f1(y + h * .4)}" stroke="${C.line}" stroke-width="1"/>`;
     o.push(base());
     if (k === 'keyboard') {
@@ -4273,7 +4316,8 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
     }
     return o.join('');
   };
-  for (const it of [...items.filter(i => !underDesk(i)), ...items.filter(underDesk)]) {
+  const flat = i => /^(deskmat|shelf)$/.test(kindOf(i));
+  for (const it of [...items.filter(flat), ...items.filter(i => !underDesk(i) && !flat(i)), ...items.filter(i => underDesk(i) && !flat(i))]) {
     const p = pos.get(it.id); if (!p) continue;
     const [w, h] = footprint(it), x = X(p.x - w / 2), y = Y(p.y - h / 2), ww = w * S, hh = h * S;
     const onDesk = p.x - w / 2 >= -1 && p.x + w / 2 <= W + 1 && p.y - h / 2 >= -1 && p.y + h / 2 <= D + 1;
@@ -4317,7 +4361,7 @@ function deskSVG(C, forExport, sel, K = 1) {   // K: 画面で縮小して見る
     const mountedK = /^(monbar|webcam)$/.test(kindOf(it));
     if (mountedK && it.id !== sel) { out.push('</g>'); continue; }
     const fsN = Math.max(9, Math.min(13, hh * .3)) * K;
-    const inner = it.cat !== 'monitor' && !mountedK && !/^(keyboard|mouse)$/.test(kindOf(it)) && hh >= fsN * 1.6 && textW(it.name, fsN) <= ww - 12;
+    const inner = it.cat !== 'monitor' && !mountedK && !/^(keyboard|mouse|plant|clock|controller)$/.test(kindOf(it)) && hh >= fsN * 1.6 && textW(it.name, fsN) <= ww - 12;
     const nm = inner ? cutTo(it.name, ww - 12, fsN * .62) : cutTo(it.name, Math.max(ww + 40, 120 * K), 6.6 * K);
     const fsUse = inner ? fsN : 10.5 * K;
     const ty = inner ? y + hh / 2 + fsUse * .35 + (kindOf(it) === 'laptop' ? hh * .12 : 0) : y + hh + fsUse * 1.15;
@@ -4938,6 +4982,35 @@ function build3d(C, light) {
       // ケース（角の丸い小さな箱の代わりに、平たい円柱）
       const cs = new T.Mesh(new T.CylinderGeometry(b.w / 2, b.w / 2, b.d, 24), tone(it, pale)); cs.rotation.x = Math.PI / 2; cs.scale.set(1, 1, 1); cs.position.set(0, b.w / 2, 0); cs.castShadow = true; g.add(cs);
       topY = b.w;
+      anchors.set(it.id, new T.Vector3(X, base + 1, Z));
+    } else if (b.kind === 'deskmat') {
+      const mt = box(b.w, Math.max(.2, b.h), b.d, tone(it, mat(light ? '#d6d6cf' : '#55585c', { roughness: .95 }))); mt.position.set(0, Math.max(.2, b.h) / 2, 0); mt.castShadow = false; g.add(mt);
+      topY = 1; anchors.set(it.id, new T.Vector3(X, base + .3, Z));
+    } else if (b.kind === 'shelf') {
+      // 天板の上に置く台: 板と左右の脚
+      const wood = tone(it, mat(light ? '#c8a27a' : '#9a7b5b', { roughness: .8 })), th = 1.8;
+      const top = box(b.w, th, b.d, wood); top.position.set(0, b.h - th / 2, 0); g.add(top);
+      for (const sx of [-1, 1]) { const leg = box(th, b.h - th, b.d, wood); leg.position.set(sx * (b.w / 2 - th / 2 - 2), (b.h - th) / 2, 0); g.add(leg); }
+      anchors.set(it.id, new T.Vector3(X, base + b.h, Z));
+    } else if (b.kind === 'plant') {
+      const r = Math.min(b.w, b.d) / 2;
+      const pot = new T.Mesh(new T.CylinderGeometry(r * .7, r * .55, b.h * .35, 24), tone(it, pale)); pot.position.set(0, b.h * .175, 0); pot.castShadow = true; g.add(pot);
+      const leaf = mat('#5f8f5a', { roughness: .8 });
+      for (const [dx, dy, dz, s] of [[0, .62, 0, 1], [r * .35, .5, r * .2, .7], [-r * .35, .52, -r * .15, .75], [r * .1, .78, -r * .25, .6]]) {
+        const bl = new T.Mesh(new T.SphereGeometry(r * .7 * s, 16, 12), leaf); bl.position.set(dx, b.h * dy, dz); bl.castShadow = true; g.add(bl);
+      }
+      anchors.set(it.id, new T.Vector3(X, base + 1, Z));
+    } else if (b.kind === 'clock') {
+      const cb = box(b.w, b.h, b.d, tone(it, pale)); cb.position.set(0, b.h / 2, 0); g.add(cb);
+      const face = new T.Mesh(new T.CircleGeometry(Math.min(b.w, b.h) * .36, 28), mat('#ffffff', { roughness: .3 })); face.position.set(0, b.h / 2, b.d / 2 + .05); g.add(face);
+      for (const [l, a] of [[.22, .5], [.3, 2.2]]) { const hand = box(.25, Math.min(b.w, b.h) * l, .05, dark); hand.position.set(Math.sin(a) * Math.min(b.w, b.h) * l / 2, b.h / 2 + Math.cos(a) * Math.min(b.w, b.h) * l / 2, b.d / 2 + .1); hand.rotation.z = -a; g.add(hand); }
+      anchors.set(it.id, new T.Vector3(X, base + 1, Z));
+    } else if (b.kind === 'controller') {
+      // 手前に傾いたボタンの並び（Stream Deck など）
+      const body = box(b.w, b.h, b.d, tone(it, dark)); body.position.set(0, b.h / 2, 0); body.rotation.x = -.35; g.add(body);
+      const keyM = mat(light ? '#e9eef2' : '#9fb3c3', { emissive: light ? '#000000' : '#2a3a48', emissiveIntensity: .4 });
+      const cs = 5, rs = 3, kw = (b.w - 1.6) / cs, kd = (b.d - 1.6) / rs;
+      for (let r = 0; r < rs; r++) for (let c = 0; c < cs; c++) { const k = box(kw * .72, .35, kd * .72, keyM); k.position.set(-b.w / 2 + .8 + kw * (c + .5), b.h / 2 + .2, -b.d / 2 + .8 + kd * (r + .5)); body.add(k); }
       anchors.set(it.id, new T.Vector3(X, base + 1, Z));
     } else if (b.kind === 'trackpad' || b.kind === 'tablet' || b.kind === 'phone') {
       const sl = box(b.w, b.h, b.d, tone(it, b.kind === 'trackpad' ? silver : dark)); sl.position.set(0, b.h / 2, 0); g.add(sl);
