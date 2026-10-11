@@ -2346,7 +2346,9 @@ async function shareUrl() {
 // 保存のたびに前の状態を積む（1操作 = 1回）。文字の入力だけは、続けて打った分をまとめて1回にする
 const undo = { stack: [], last: null, at: 0, typing: false };
 function resetUndo() { undo.stack = []; undo.last = JSON.stringify(serialize()); undo.at = 0; syncUndo(); }
-function syncUndo() { const b = $('#undoBtn'); if (b) b.disabled = !undo.stack.length; }
+function syncUndo() { const b = $('#undoBtn'); if (b) b.disabled = !(typeof tab !== 'undefined' && tab === 'photo' ? pundo : undo).stack.length; }
+// 「戻す」は、写真タブでは写真の書き込みを、ほかのタブでは機材の構成を戻す
+function undoAny() { if (tab === 'photo') undoPhotoOnce(); else undoOnce(); }
 function trackUndo(typing) {
   const cur = JSON.stringify(serialize());
   if (undo.last !== null && cur !== undo.last) {
@@ -2823,6 +2825,32 @@ function loadPhoto() {
 }
 function savePhoto() {
   try { localStorage.setItem(PHOTO_KEY, JSON.stringify(photo)); } catch (e) {}
+  trackPhotoUndo();
+}
+// 写真タブの「戻す」: ラベル・見た目の変更を1操作ずつ（写真そのものの差し替え・消去は戻せないので、そこで履歴を区切る）
+const pundo = { stack: [], last: null, at: 0, typing: '' };
+function trackPhotoUndo() {
+  const cur = JSON.stringify(photo);
+  if (pundo.last !== null && cur !== pundo.last) {
+    const now = Date.now(), el = document.activeElement;
+    // ラベルの文字を続けて打った分は1回にまとめる（欄が変わったら別の1回）
+    const key = el && el.dataset && el.dataset.af ? el.dataset.af + '@' + ((el.closest('[data-ann]') || {}).dataset || {}).ann : '';
+    if (!(key && pundo.typing === key && now - pundo.at < 1500)) { pundo.stack.push(pundo.last); if (pundo.stack.length > 60) pundo.stack.shift(); }
+    pundo.at = now; pundo.typing = key;
+  }
+  pundo.last = cur; syncUndo();
+}
+function resetPhotoUndo() { pundo.stack = []; pundo.last = JSON.stringify(photo); pundo.at = 0; pundo.typing = ''; syncUndo(); }
+function undoPhotoOnce() {
+  if (!pundo.stack.length) { toast('戻せる操作がありません'); return; }
+  const prev = pundo.stack.pop();
+  photo = JSON.parse(prev); pundo.last = prev; pundo.at = 0; pundo.typing = '';
+  if (selAnn && !photo.anns.some(a => a.id === selAnn)) selAnn = null;
+  if (armed && armed.pending && !photo.pending.some(x => x.id === armed.pending)) armed = null;
+  try { localStorage.setItem(PHOTO_KEY, prev); } catch (e) {}
+  if (typeof closeQuick === 'function') closeQuick();
+  renderPhoto(); syncUndo();
+  toast('一つ戻しました');
 }
 function loadImage(src) {
   return new Promise((ok, ng) => { const im = new Image(); im.onload = () => ok(im); im.onerror = ng; im.src = src; });
@@ -2847,7 +2875,7 @@ async function setPhotoFile(file) {
   if (!armed && photo.pending.length) armed = { pending: photo.pending[0].id };
   try { localStorage.setItem(PHOTO_IMG_KEY, data); }
   catch (e) { toast('写真が大きく、ブラウザに保存できませんでした。再読み込みすると消えます'); }
-  savePhoto();
+  savePhoto(); resetPhotoUndo();
   renderPhoto();
 }
 
@@ -2965,7 +2993,7 @@ function autoLayout(list) {
   const ctx = $('#photoCanvas').getContext('2d'), done = [];
   for (const a of list) {
     const sp = bestSpot(a, done.map(o => labelBox(ctx, o)));
-    a.lx = sp.x; a.ly = sp.y; a.curve = 'a';
+    a.lx = sp.x; a.ly = sp.y; a.curve = ARROW_STYLES.some(([v]) => v === photo.arrow) ? photo.arrow : 'a';   // 「矢印」でまとめて選んだ形はそのまま
     done.push(a);
   }
 }
@@ -3248,6 +3276,7 @@ function setTab(t) {
   const was = tab;
   if (t === 'check' && !NARROW.matches) t = 'list';
   tab = t;
+  syncUndo();
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
   const lv = $('#listView');
   lv.hidden = t !== 'list' && t !== 'check'; lv.dataset.sub = t === 'check' ? 'check' : 'list';
@@ -3426,7 +3455,7 @@ function wirePhoto() {
     if (!confirm('写真と、置いたラベルをすべて消しますか？')) return;
     photoImg = null; photo.anns = []; selAnn = null; armed = null;
     try { localStorage.removeItem(PHOTO_IMG_KEY); } catch (e) {}
-    savePhoto(); renderPhoto();
+    savePhoto(); resetPhotoUndo(); renderPhoto();
   });
 
   document.addEventListener('keydown', e => {
@@ -3443,6 +3472,7 @@ function wirePhoto() {
 async function initPhoto() {
   wirePhoto();
   const img = loadPhoto();
+  pundo.last = JSON.stringify(photo);
   if (img) { try { photoImg = await loadImage(img); } catch (e) { photoImg = null; } }
   let t = 'list';
   try { t = localStorage.getItem('desk-setup:tab') || 'list'; } catch (e) {}
@@ -5725,9 +5755,9 @@ async function init() {
   syncHead();
   render();
   resetUndo();
-  $('#undoBtn').addEventListener('click', undoOnce);
+  $('#undoBtn').addEventListener('click', undoAny);
   document.addEventListener('keydown', e => {
-    if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) { e.preventDefault(); undoOnce(); }
+    if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) { e.preventDefault(); undoAny(); }
   });
   await initPhoto();
 }
