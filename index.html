@@ -16,7 +16,7 @@
 <meta name="theme-color" content="#0f1114">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600;700&family=Klee+One:wght@400;600&family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@500;700&family=Yomogi&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&family=Caveat:wght@600;700&family=Klee+One:wght@400;600&family=Mochiy+Pop+One&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@500;700&family=Yomogi&family=Zen+Maru+Gothic:wght@500;700&family=Patrick+Hand&family=Zen+Kurenaido&family=M+PLUS+Rounded+1c:wght@500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
 <script>
   (function () {
     var t = null;
@@ -709,11 +709,11 @@
         <div class="search-row">
           <input class="text" id="q" type="search" placeholder="機材名で検索（例: MacBook, U2723QE, HHKB）" autocomplete="off" aria-label="機材を検索">
           <button class="btn" id="rankBtn" type="button" title="人気の機材（ランキング）から選ぶ">人気の機材</button>
-          <button class="btn" id="pasteBtn" type="button" aria-expanded="false" aria-controls="pasteBox" title="メモやブログの機材リストを貼り付けて、まとめて追加">まとめて貼り付け</button>
+          <button class="btn" id="bulkBtn" type="button" aria-expanded="false" aria-controls="bulkBox" title="メモやブログの機材リストを貼り付けて、まとめて追加">まとめて貼り付け</button>
         </div>
-        <div class="paste-box" id="pasteBox" hidden>
-          <textarea class="text" id="pasteText" rows="5" placeholder="メモやブログの機材リストを貼り付けてください（1行に1つ）。例:&#10;MacBook Pro 14 M4 Pro ¥328,800&#10;Dell U2723QE 72,800円&#10;HHKB Hybrid Type-S 白" aria-label="機材リストを貼り付け"></textarea>
-          <div id="pasteRows"></div>
+        <div class="paste-box" id="bulkBox" hidden>
+          <textarea class="text" id="bulkText" rows="5" placeholder="メモやブログの機材リストを貼り付けてください（1行に1つ）。例:&#10;MacBook Pro 14 M4 Pro ¥328,800&#10;Dell U2723QE 72,800円&#10;HHKB Hybrid Type-S 白" aria-label="機材リストを貼り付け"></textarea>
+          <div id="bulkRows"></div>
         </div>
         <p class="fine rank-note" id="rankNote">「人気の機材」: デスク発信者がよく使っている機材と、このツールの利用者に人気の機材です。</p>
         <div class="chips" id="chips"></div>
@@ -858,6 +858,8 @@
         <div class="font-grid" id="fontGrid" role="radiogroup" aria-label="フォント"></div>
         <div class="opt-row"><span>色</span><span class="seg" data-opt="color"><button type="button" data-v="auto">自動</button><button type="button" data-v="light">白</button><button type="button" data-v="dark">黒</button></span></div>
         <div class="opt-row"><span>大きさ</span><input type="range" id="sizeRange" min="0.6" max="1.8" step="0.05" aria-label="文字の大きさ"></div>
+        <div class="opt-row"><span>矢印</span><span class="seg" id="arrowAll" aria-label="すべてのラベルの矢印の形"><button type="button" data-v="a">カーブ</button><button type="button" data-v="b">逆カーブ</button><button type="button" data-v="h">回り込み</button><button type="button" data-v="s">まっすぐ</button></span></div>
+        <p class="fine" style="margin:4px 0 0">矢印はすべてのラベルをまとめて変えます。1つずつは「置いたラベル」で選べます。</p>
       </section>
 
       <section class="card" aria-labelledby="exportTitle">
@@ -1899,11 +1901,11 @@ function render() {
 }
 
 // ---- まとめて貼り付け ----
-let pasteRows = [];
+let bulkRows = [];   // 構成タブの「まとめて貼り付け」で読み取った行（写真タブの貼り付けとは別）
 const COLOR_WORD = [['white', /ホワイト|白|white/i], ['black', /ブラック|黒|black/i], ['silver', /シルバー|silver/i]];
 function readPaste() {
-  const lines = $('#pasteText').value.split(/\r?\n/);
-  pasteRows = lines.map(l => parseLine(l)).filter(Boolean).slice(0, 60).map(p => {
+  const lines = $('#bulkText').value.split(/\r?\n/);
+  bulkRows = lines.map(l => parseLine(l)).filter(Boolean).slice(0, 60).map(p => {
     const text = `${p.brand} ${p.name}`.trim(), cands = matchCatalog(text).filter(x => x.sc >= .15);
     const price = (p.price.match(/[\d,]+/g) || []).reduce((s, d) => s + Number(d.replace(/,/g, '')), 0) || null;
     const col = COLOR_WORD.find(([, re]) => re.test(text));
@@ -1914,33 +1916,33 @@ function readPaste() {
   renderPaste();
 }
 function renderPaste() {
-  const box = $('#pasteRows');
-  if (!pasteRows.length) { box.innerHTML = $('#pasteText').value.trim() ? '<p class="hint">読み取れる行がありませんでした。1行に1つずつ書いてください。</p>' : ''; return; }
-  const on = pasteRows.filter(r => r.on), fromCat = on.filter(r => r.pick).length;
-  box.innerHTML = pasteRows.map((r, i) => `<div class="paste-row${r.on ? '' : ' off'}"><input type="checkbox" data-pon="${i}"${r.on ? ' checked' : ''} aria-label="${esc(r.text)} を追加する">
+  const box = $('#bulkRows');
+  if (!bulkRows.length) { box.innerHTML = $('#bulkText').value.trim() ? '<p class="hint">読み取れる行がありませんでした。1行に1つずつ書いてください。</p>' : ''; return; }
+  const on = bulkRows.filter(r => r.on), fromCat = on.filter(r => r.pick).length;
+  box.innerHTML = bulkRows.map((r, i) => `<div class="paste-row${r.on ? '' : ' off'}"><input type="checkbox" data-pon="${i}"${r.on ? ' checked' : ''} aria-label="${esc(r.text)} を追加する">
     <div class="pr-main"><div class="pr-src">${esc(r.text)}${r.price ? ` <span class="pr-price">${yen(r.price)}</span>` : ''}</div>
     <div class="pr-sel"><select class="text" data-ppick="${i}" aria-label="カタログの機材">${r.cands.map(x => `<option value="${x.c.id}"${r.pick === x.c.id ? ' selected' : ''}>${esc(x.c.name)}</option>`).join('')}<option value=""${r.pick ? '' : ' selected'}>カタログにない（自分の機材として追加）</option></select>
     ${r.pick ? '' : `<select class="text" data-pcat="${i}" aria-label="種類">${CATS.map(c => `<option value="${c.id}"${c.id === r.cat ? ' selected' : ''}>${esc(c.label)}</option>`).join('')}</select>`}</div></div></div>`).join('')
-    + `<div class="paste-foot"><span class="hint">カタログから ${fromCat}点・自分の機材として ${on.length - fromCat}点。価格が書いてあれば入れます</span><button class="btn primary" type="button" id="pasteAdd"${on.length ? '' : ' disabled'}>${on.length}点を追加</button></div>`;
+    + `<div class="paste-foot"><span class="hint">カタログから ${fromCat}点・自分の機材として ${on.length - fromCat}点。価格が書いてあれば入れます</span><button class="btn primary" type="button" id="bulkAdd"${on.length ? '' : ' disabled'}>${on.length}点を追加</button></div>`;
 }
 function wirePaste() {
-  const box = $('#pasteBox');
-  $('#pasteBtn').addEventListener('click', () => { box.hidden = !box.hidden; $('#pasteBtn').setAttribute('aria-expanded', String(!box.hidden)); if (!box.hidden) $('#pasteText').focus(); });
+  const box = $('#bulkBox');
+  $('#bulkBtn').addEventListener('click', () => { box.hidden = !box.hidden; $('#bulkBtn').setAttribute('aria-expanded', String(!box.hidden)); if (!box.hidden) $('#bulkText').focus(); });
   let t = 0;
-  $('#pasteText').addEventListener('input', () => { clearTimeout(t); t = setTimeout(readPaste, 250); });
-  $('#pasteRows').addEventListener('change', e => {
+  $('#bulkText').addEventListener('input', () => { clearTimeout(t); t = setTimeout(readPaste, 250); });
+  $('#bulkRows').addEventListener('change', e => {
     const d = e.target.dataset;
-    if (d.pon) pasteRows[+d.pon].on = e.target.checked;
-    if (d.ppick) pasteRows[+d.ppick].pick = e.target.value;
-    if (d.pcat) pasteRows[+d.pcat].cat = e.target.value;
+    if (d.pon) bulkRows[+d.pon].on = e.target.checked;
+    if (d.ppick) bulkRows[+d.ppick].pick = e.target.value;
+    if (d.pcat) bulkRows[+d.pcat].cat = e.target.value;
     renderPaste();
   });
-  $('#pasteRows').addEventListener('click', e => {
-    if (!e.target.closest('#pasteAdd')) return;
-    const rows = pasteRows.filter(r => r.on); if (!rows.length) return;
+  $('#bulkRows').addEventListener('click', e => {
+    if (!e.target.closest('#bulkAdd')) return;
+    const rows = bulkRows.filter(r => r.on); if (!rows.length) return;
     const added = addBatch(rows.map(r => r.pick ? { cid: r.pick, price: r.price, color: r.color } : { cat: r.cat, name: r.text.slice(0, 60), price: r.price, color: r.color }));
     commit(true);
-    $('#pasteText').value = ''; pasteRows = []; renderPaste(); box.hidden = true; $('#pasteBtn').setAttribute('aria-expanded', 'false');
+    $('#bulkText').value = ''; bulkRows = []; renderPaste(); box.hidden = true; $('#bulkBtn').setAttribute('aria-expanded', 'false');
     toast(`${added.length}点を追加しました`);
   });
 }
@@ -2805,6 +2807,10 @@ const PFONTS = {
   sans:  { label: 'ゴシック',   note: 'Noto Sans JP',     stack: '"Noto Sans JP", "Hiragino Sans", sans-serif',    w: [700, 500], load: ['Noto Sans JP'] },
   serif: { label: '明朝',       note: 'Shippori Mincho',  stack: '"Shippori Mincho", "Noto Serif JP", serif',      w: [700, 500], load: ['Shippori Mincho'] },
   pop:   { label: 'ポップ',     note: 'Mochiy Pop One',   stack: '"Mochiy Pop One", "Noto Sans JP", sans-serif',   w: [400, 400], load: ['Mochiy Pop One'] },
+  pentouch: { label: '英字ペン',  note: 'Patrick Hand',     stack: '"Patrick Hand", "Zen Kurenaido", "Klee One", sans-serif', w: [400, 400], load: ['Patrick Hand', 'Zen Kurenaido'] },
+  kurenaido: { label: '筆ペン風', note: 'Zen Kurenaido',    stack: '"Zen Kurenaido", "Klee One", sans-serif',        w: [400, 400], load: ['Zen Kurenaido'] },
+  rounded: { label: '丸ゴシック細', note: 'M PLUS Rounded 1c', stack: '"M PLUS Rounded 1c", "Zen Maru Gothic", sans-serif', w: [700, 500], load: ['M PLUS Rounded 1c'] },
+  kiwi:  { label: '丸明朝',     note: 'Kiwi Maru',        stack: '"Kiwi Maru", "Shippori Mincho", serif',          w: [500, 400], load: ['Kiwi Maru'] },
 };
 const pfont = () => PFONTS[photo.font] || PFONTS.hand;
 
@@ -2865,8 +2871,18 @@ function labelBox(ctx, a) {
 }
 
 // ラベルから矢印の先までの曲線（始点・制御点）
+// 矢印の線: 始点 s から3次ベジェ（c1, c2）で (tx, ty) へ
 function arrowGeom(box, a) {
-  const g = pBase() * 0.35, tx = a.tx, ty = a.ty;
+  const b = pBase(), g = b * 0.35, tx = a.tx, ty = a.ty;
+  if (a.curve === 'h') {
+    // 回り込み: ラベルの横（価格の行のあたり）から横へ出て、目標を少し通り過ぎてから振り返るように入る
+    const dir = tx >= box.x + box.w / 2 ? 1 : -1;
+    const s = { x: dir > 0 ? box.x + box.w + g : box.x - g, y: box.y + box.h * .72 };
+    const dx = Math.abs(tx - s.x), dy = ty - s.y, R = Math.max(b * 1.4, Math.min(Math.max(dx, b), Math.abs(dy) + b) * .55);
+    const c1 = { x: s.x + dir * (dx * .85 + R * .9), y: s.y + dy * .08 };
+    const c2 = { x: tx + dir * R, y: ty + (dy < 0 ? 1 : -1) * R * .55 };
+    return { s, c1, c2 };
+  }
   const clampX = x => Math.min(box.x + box.w * 0.8, Math.max(box.x + box.w * 0.2, x));
   let s, vert = true;
   if (ty > box.y + box.h) s = { x: clampX(tx), y: box.y + box.h + g };
@@ -2876,7 +2892,8 @@ function arrowGeom(box, a) {
   if (a.curve === 's') c = { x: (s.x + tx) / 2, y: (s.y + ty) / 2 };
   else if ((a.curve === 'b') === vert) c = { x: tx, y: s.y };
   else c = { x: s.x, y: ty };
-  return { s, c };
+  // 2次ベジェ（制御点 c）を3次に直す
+  return { s, c1: { x: s.x + (c.x - s.x) * 2 / 3, y: s.y + (c.y - s.y) * 2 / 3 }, c2: { x: tx + (c.x - tx) * 2 / 3, y: ty + (c.y - ty) * 2 / 3 } };
 }
 
 // 写真の画素（明るさの判定と、空いている場所さがしに使う）
@@ -2971,10 +2988,10 @@ function drawPhoto(ctx, forExport) {
     ctx.shadowColor = glow; ctx.shadowBlur = b * 0.22; ctx.shadowOffsetY = b * 0.03;
     ctx.fillStyle = ink; ctx.strokeStyle = ink;
     for (const l of box.lines) { ctx.font = `${l.w} ${l.s}px ${box.f}`; ctx.fillText(l.t, box.x, box.y + l.y); }
-    const { s, c } = arrowGeom(box, a);
+    const { s, c1, c2 } = arrowGeom(box, a);
     ctx.lineWidth = Math.max(2, b * 0.085);
-    ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.quadraticCurveTo(c.x, c.y, a.tx, a.ty); ctx.stroke();
-    const from = Math.hypot(a.tx - c.x, a.ty - c.y) > 1 ? c : s;
+    ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, a.tx, a.ty); ctx.stroke();
+    const from = Math.hypot(a.tx - c2.x, a.ty - c2.y) > 1 ? c2 : Math.hypot(a.tx - c1.x, a.ty - c1.y) > 1 ? c1 : s;
     const ang = Math.atan2(a.ty - from.y, a.tx - from.x), L = b * 0.5;
     ctx.beginPath();
     ctx.moveTo(a.tx - L * Math.cos(ang - 0.5), a.ty - L * Math.sin(ang - 0.5));
@@ -3048,6 +3065,7 @@ function renderPhoto() {
     sg.querySelectorAll('button').forEach(bt => bt.setAttribute('aria-pressed', String(photo[sg.dataset.opt] === bt.dataset.v)));
   });
   $('#sizeRange').value = photo.size;
+  $('#arrowAll').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === photo.arrow)));
   renderFontGrid();
   renderPickList();
   renderAnnList();
@@ -3077,10 +3095,11 @@ function renderPickList() {
   $('#pickList').innerHTML = html;
 }
 
+const ARROW_STYLES = [['a', 'カーブ'], ['b', '逆カーブ'], ['h', '回り込み'], ['s', 'まっすぐ']];
 function renderAnnList() {
   $('#annCount').textContent = photo.anns.length ? `${photo.anns.length}件` : '';
   if (!photo.anns.length) { $('#annList').innerHTML = `<span class="hint">まだありません。</span>`; return; }
-  const curves = [['a', 'カーブ'], ['b', '逆カーブ'], ['s', 'まっすぐ']];
+  const curves = ARROW_STYLES;
   const colors = [['', '全体に合わせる'], ['light', '白'], ['dark', '黒']];
   $('#annList').innerHTML = photo.anns.map(a => `<div class="ann${a.id === selAnn ? ' sel' : ''}" data-ann="${a.id}">
     <div class="ann-grid">
@@ -3118,7 +3137,7 @@ function labelSource(src) {
 function placeAt(x, y, src = armed) {
   const d = labelSource(src);
   if (!d) { armed = null; renderPhoto(); return; }
-  const a = { id: (photo.seq++).toString(36), item: d.item, brand: d.brand, name: d.name, price: d.price, tx: x, ty: y, lx: 0, ly: 0, curve: 'a' };
+  const a = { id: (photo.seq++).toString(36), item: d.item, brand: d.brand, name: d.name, price: d.price, tx: x, ty: y, lx: 0, ly: 0, curve: ARROW_STYLES.some(([v]) => v === photo.arrow) ? photo.arrow : 'a' };
   photo.anns.push(a);
   const ctx = $('#photoCanvas').getContext('2d');
   const sp = bestSpot(a, photo.anns.filter(o => o !== a).map(o => labelBox(ctx, o)));
@@ -3346,6 +3365,13 @@ function wirePhoto() {
     if (cc) { if (cc.dataset.v) a.color = cc.dataset.v; else delete a.color; savePhoto(); renderAnnList(); selectAnn(a.id); }
   });
 
+  $('#arrowAll').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || !photo.anns.length) return;
+    for (const a of photo.anns) a.curve = b.dataset.v;
+    photo.arrow = b.dataset.v;   // これから置くラベルも同じ形に
+    savePhoto(); renderAnnList(); redraw();
+    $('#arrowAll').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  });
   document.querySelectorAll('.seg[data-opt]').forEach(sg => sg.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     photo[sg.dataset.opt] = b.dataset.v; savePhoto(); renderPhoto();
